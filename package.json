@@ -1,0 +1,32 @@
+{
+  "name": "flamework-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rbxtsc",
+    "watch": "rbxtsc -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rbxts/compiler-types": "^2.0.2-types.0",
+    "@rbxts/types": "^1.0.642",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-roblox-ts": "^0.0.30",
+    "prettier": "^2.3.2",
+    "rbxts-transformer-flamework": "^1.0.0-beta.21",
+    "roblox-ts": "^2.1.0",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "@flamework/components": "^1.0.0-beta.21",
+    "@flamework/core": "^1.0.0-beta.21",
+    "@flamework/networking": "^1.0.0-beta.21"
+  }
+}
