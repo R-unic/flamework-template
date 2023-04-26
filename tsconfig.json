@@ -18,10 +18,10 @@
 
 		// configurable
 		"rootDir": "src",
-		"outDir": "out",
+		"outDir": "dist",
 		"baseUrl": "src",
 		"incremental": true,
-		"tsBuildInfoFile": "out/tsconfig.tsbuildinfo",
+		"tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
 
 		"experimentalDecorators": true,
 		"plugins": [

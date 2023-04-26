@@ -1,5 +1,5 @@
 {
-	"name": "flamework-game",
+	"name": "mineblox",
 	"globIgnorePaths": [
 		"**/package.json",
 		"**/tsconfig.json"
@@ -9,7 +9,7 @@
 		"ServerScriptService": {
 			"$className": "ServerScriptService",
 			"TS": {
-				"$path": "out/server"
+				"$path": "dist/server"
 			}
 		},
 		"ReplicatedStorage": {
@@ -27,7 +27,7 @@
 				}
 			},
 			"TS": {
-				"$path": "out/shared"
+				"$path": "dist/shared"
 			}
 		},
 		"StarterPlayer": {
@@ -35,7 +35,7 @@
 			"StarterPlayerScripts": {
 				"$className": "StarterPlayerScripts",
 				"TS": {
-					"$path": "out/client"
+					"$path": "dist/client"
 				}
 			}
 		},
