@@ -6,7 +6,7 @@ import { tween } from "shared/utilities/ui";
 import ButtonAnimation from "client/base-components/button-animation";
 
 interface Attributes {
-  RotationAngle: number;
+  RotationGoal: number;
   Speed?: number;
 }
 
@@ -27,7 +27,7 @@ export class RotationAnimation extends ButtonAnimation<Attributes> implements On
 
   public active(): void {
     tween(this.instance, this.tweenInfo, {
-      Rotation: this.attributes.RotationAngle
+      Rotation: this.attributes.RotationGoal
     });
   }
 

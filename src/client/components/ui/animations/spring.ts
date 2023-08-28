@@ -8,13 +8,14 @@ import ButtonAnimation from "client/base-components/button-animation";
 const { EasingStyle } = Enum;
 
 interface Attributes {
+  ScaleIncrement?: number;
   Speed?: number;
 }
 
 @Component({ tag: "SpringAnimation" })
 export class SpringAnimation extends ButtonAnimation<Attributes> implements OnStart {
   private readonly scale = this.instance.FindFirstChildOfClass("UIScale") ?? new Instance("UIScale", this.instance);
-  private readonly scaleIncrement = 0.05;
+  private readonly scaleIncrement = this.attributes.ScaleIncrement ?? 0.05;
 
   protected readonly tweenInfo = new TweenInfoBuilder()
     .SetEasingStyle(EasingStyle.Elastic)
