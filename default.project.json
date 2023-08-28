@@ -1,5 +1,5 @@
 {
-	"name": "mineblox",
+	"name": "FlameworkGame",
 	"globIgnorePaths": [
 		"**/package.json",
 		"**/tsconfig.json"
