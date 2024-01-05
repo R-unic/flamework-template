@@ -4,7 +4,6 @@ import { StorableVector3 } from "shared/data-models/utility";
 const { round, abs } = math;
 
 export const Assets = ReplicatedFirst.Assets;
-export const Player = Players.LocalPlayer;
 
 export const now = () => round(tick());
 export const toStorableVector3 = ({ X, Y, Z }: Vector3) => ({ x: X, y: Y, z: Z });
