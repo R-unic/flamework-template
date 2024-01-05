@@ -5,7 +5,7 @@ import { Context as InputContext } from "@rbxts/gamejoy";
 import { Axis, Union } from "@rbxts/gamejoy/out/Actions";
 import { StrictMap } from "@rbxts/strict-map";
 
-import { Player } from "shared/utilities/helpers";
+import { Player } from "shared/utilities/client";
 
 const { abs } = math;
 
