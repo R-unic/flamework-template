@@ -3,7 +3,7 @@
 		"prefix":[ "controller", "flameworkcontroller"],
 		"description": "Create a Flamework controller",
 		"body": [
-			"import { Controller, OnInit } from \"@flamework/core\";",
+			"import { Controller, type OnInit } from \"@flamework/core\";",
 			"",
 			"@Controller()",
 			"export class ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g} implements OnInit {",
@@ -18,7 +18,7 @@
 		"prefix":[ "service", "flameworkservice"],
 		"description": "Create a Flamework service",
 		"body": [
-			"import { Service, OnInit } from \"@flamework/core\";",
+			"import { Service, type OnInit } from \"@flamework/core\";",
 			"",
 			"@Service()",
 			"export class ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g} implements OnInit {",
@@ -33,7 +33,7 @@
 		"prefix":[ "component", "flameworkcomponent"],
 		"description": "Create a Flamework component",
 		"body": [
-			"import { OnStart } from \"@flamework/core\";",
+			"import type { OnStart } from \"@flamework/core\";",
 			"import { Component, BaseComponent } from \"@flamework/components\";",
 			"",
 			"interface Attributes {}",

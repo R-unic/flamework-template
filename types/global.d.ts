@@ -1,4 +1,4 @@
-type None = undefined | null | void;
+type None = undefined | void;
 type Maybe<T> = T | None;
 
 type DeepReadonly<T> =
