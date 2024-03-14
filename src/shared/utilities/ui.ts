@@ -1,7 +1,6 @@
 import { TweenInfoBuilder } from "@rbxts/builders";
 import { TweenService } from "@rbxts/services";
 
-
 export function tween<T extends Instance = Instance>(
   instance: T,
   tweenInfo: TweenInfo | TweenInfoBuilder,

@@ -1,19 +1,28 @@
 import { Networking } from "@flamework/networking";
-import { DataKey, DataValue, GameDataModel } from "./data-models/generic";
+import type{ DataValue } from "./data-models/generic";
+import type { GitHubInfo } from "./structs/github";
 
 interface ServerEvents {
-  initializeData(): void;
-  dataLoaded(): void;
-  setData(key: DataKey, value: DataValue): void;
-  incrementData(key: ExtractKeys<GameDataModel, number>, amount?: number): void;
+  data: {
+    initialize(): void;
+    set(directory: string, value: DataValue): void;
+    increment(directory: string, amount?: number): void;
+  };
 }
 
 interface ClientEvents {
-  dataUpdate(key: DataKey, value: DataValue): void;
+  data: {
+    updated(directory: string, value: DataValue): void;
+  };
 }
 
 interface ServerFunctions {
-  getData(key: DataKey): DataValue;
+  data: {
+    get(directory: string): DataValue;
+  };
+  github: {
+    getInfo(): GitHubInfo;
+  };
 }
 
 interface ClientFunctions {}

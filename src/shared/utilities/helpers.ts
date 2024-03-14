@@ -1,13 +1,14 @@
-import { ReplicatedFirst } from "@rbxts/services";
+import { ReplicatedFirst, RunService as Runtime } from "@rbxts/services";
 import StringUtils from "@rbxts/string-utils";
 
-import { StorableVector3 } from "../data-models/utility";
+import { StorableVector3 } from "../structs/common";
 import { Exception } from "../exceptions";
 
 const { floor, log, abs, max, min } = math;
 
 export const Assets = ReplicatedFirst.Assets;
 
+export const isNaN = (n: number) => n !== n;
 export const toStorableVector3 = ({ X, Y, Z }: Vector3) => ({ x: X, y: Y, z: Z });
 export const toUsableVector3 = ({ x, y, z }: StorableVector3) => new Vector3(x, y, z);
 export function toRegion3({ CFrame, Size }: Part, areaShrink = 0): Region3 {
@@ -20,6 +21,29 @@ export function toRegion3({ CFrame, Size }: Part, areaShrink = 0): Region3 {
     new Vector3(x - wsx + areaShrink, y - wsy, z - wsz + areaShrink),
     new Vector3(x + wsx - areaShrink, y + wsy, z + wsz - areaShrink)
   );
+}
+
+export function shuffle<T>(array: T[]): T[] {
+  // Fisher-Yates shuffle algorithm
+  const shuffledArray = [...array];
+  for (let i = shuffledArray.size() - 1; i > 0; i--) {
+    const j = math.floor(math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+  return shuffledArray;
+}
+
+export async function getInstancePath(instance: Instance): Promise<string> {
+  let path = instance.GetFullName()
+    .gsub("Workspace", "World")[0]
+    .gsub("PlayerGui", "UI")[0];
+
+  if (Runtime.IsClient()) {
+    const { Player } = await import("./client");
+    path = path.gsub(`Players.${Player.Name}.`, "")[0];
+  }
+
+  return path;
 }
 
 export function removeDuplicates<T extends defined>(array: T[]): T[] {
