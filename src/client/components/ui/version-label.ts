@@ -3,7 +3,7 @@ import { Component, BaseComponent } from "@flamework/components";
 import { slice } from "@rbxts/string-utils";
 
 import { Functions } from "client/network";
-import { PlayerGui } from "shared/utilities/client";
+import { PlayerGui } from "shared/utility/client";
 import type { LogStart } from "shared/hooks";
 
 const REFRESH_RATE = 180; //seconds (3 mins)

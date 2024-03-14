@@ -2,7 +2,7 @@ import { OnStart } from "@flamework/core";
 import { Component } from "@flamework/components";
 import { TweenInfoBuilder } from "@rbxts/builders";
 
-import { tween } from "shared/utilities/ui";
+import { tween } from "shared/utility/ui";
 import ButtonAnimation from "client/base-components/button-animation";
 
 const { EasingStyle } = Enum;

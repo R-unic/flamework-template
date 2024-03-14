@@ -1,5 +1,5 @@
 import { BaseComponent } from "@flamework/components";
-import { getInstancePath } from "./utilities/helpers";
+import { getInstancePath } from "./utility/helpers";
 import { Reflect } from "@flamework/core";
 
 type LogFunctionName = ExtractKeys<typeof Log, Callback>;
