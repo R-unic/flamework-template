@@ -24,6 +24,10 @@ namespace Log {
     log("warning", message);
   }
 
+  export function fatal(message: string): void {
+    log("fatal", message);
+  }
+
   /**
    * @param name Name of the component class
    * @param component The component itself
