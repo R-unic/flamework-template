@@ -1,0 +1,3 @@
+interface Workspace extends WorldModel {
+
+}
