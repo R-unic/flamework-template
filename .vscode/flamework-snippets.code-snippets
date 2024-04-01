@@ -46,4 +46,25 @@
 			"}",
 		]
 	},
+
+	"UI Component": {
+		"prefix":[ "uicomponent" ],
+		"description": "Create a UI component",
+		"body": [
+			"import type { OnStart } from \"@flamework/core\";",
+			"import { Component, BaseComponent } from \"@flamework/components\";",
+			"",
+			"import { PlayerGui } from \"shared/utilities/client\";",
+			"",
+			"@Component({",
+			"\ttag: \"${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g}\",",
+			"\tancestorWhitelist: [ PlayerGui ]"
+			"})"
+			"export class ${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g} extends BaseComponent<{}, ${1:GuiObject}> implements OnStart {",
+				"\tpublic onStart(): void {",
+					"\t\t$2",
+				"\t}",
+			"}",
+		]
+	}
 }
