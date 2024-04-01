@@ -7,8 +7,8 @@ import type { LogStart } from "shared/hooks";
 @Service({ loadOrder: 1 })
 export class PlayersService implements OnStart, LogStart {
   public onStart(): void {
-    const joinListeners = new Set<OnPlayerJoin>();
-    const leaveListeners = new Set<OnPlayerLeave>();
+    const joinListeners = new Set<OnPlayerJoin>;
+    const leaveListeners = new Set<OnPlayerLeave>;
     Modding.onListenerAdded<OnPlayerJoin>(object => joinListeners.add(object));
     Modding.onListenerRemoved<OnPlayerJoin>(object => joinListeners.delete(object));
     Modding.onListenerAdded<OnPlayerLeave>(object => leaveListeners.add(object));

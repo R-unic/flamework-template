@@ -12,6 +12,7 @@ const PlayerData = Firebase.fetch("playerData");
 @Service()
 export class DatabaseService implements OnInit, LogStart {
 	public readonly loaded = new Signal<(player: Player) => void>;
+	public readonly updated = new Signal<<T = unknown>(directory: string, value: T) => void>;
 
 	public onInit(): void {
 		Events.data.initialize.connect((player) => this.setup(player));
