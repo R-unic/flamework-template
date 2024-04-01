@@ -1,3 +1,0 @@
-interface SoundService extends Instance {
-
-}

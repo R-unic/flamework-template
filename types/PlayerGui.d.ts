@@ -1,3 +1,0 @@
-interface PlayerGui extends BasePlayerGui {
-
-}
