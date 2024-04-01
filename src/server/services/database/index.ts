@@ -1,7 +1,6 @@
 import { OnInit, Service } from "@flamework/core";
 import Signal from "@rbxts/signal";
 
-import { DataValue } from "shared/data-models/generic";
 import { Events, Functions } from "server/network";
 import Firebase from "./firebase";
 import Log from "shared/logger";
@@ -21,12 +20,12 @@ export class DatabaseService implements OnInit, LogStart {
 		Functions.data.get.setCallback((player, key) => this.get(player, key));
 	}
 
-	public get<T extends DataValue>(player: Player, directory: string): T {
+	public get<T>(player: Player, directory: string, defaultValue?: T): T {
 		const fullDirectory = this.getDirectoryForPlayer(player, directory);
-		return PlayerData.get(fullDirectory);
+		return PlayerData.get(fullDirectory) ?? <T>defaultValue;
 	}
 
-	public set<T extends DataValue>(player: Player, directory: string, value: T): void {
+	public set<T>(player: Player, directory: string, value: T): void {
 		const fullDirectory = this.getDirectoryForPlayer(player, directory);
 		PlayerData.set(fullDirectory, value);
 		Events.data.updated(player, fullDirectory, value);
@@ -43,12 +42,13 @@ export class DatabaseService implements OnInit, LogStart {
 	}
 
 	private setup(player: Player): void {
-    this.initialize(player, "playtime", 0);
+		// Initialize your values here.
+    // e.x. this.initialize(player, "playtime", 0);
 		this.loaded.Fire(player);
 		Log.info("Initialized data");
 	}
 
-	private initialize<T extends DataValue>(player: Player, directory: string, initialValue: T): void {
+	private initialize<T>(player: Player, directory: string, initialValue: T): void {
 		const fullDirectory = this.getDirectoryForPlayer(player, directory);
 		const value = PlayerData.get<Maybe<T>>(fullDirectory) ?? initialValue;
 		this.set(player, directory, value);
