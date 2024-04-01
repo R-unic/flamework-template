@@ -4,3 +4,4 @@
 *.tsbuildinfo
 flamework.build
 package-lock.json
+.env

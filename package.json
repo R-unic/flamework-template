@@ -28,13 +28,14 @@
     "@flamework/components": "latest",
     "@flamework/core": "latest",
     "@flamework/networking": "latest",
-    "@rbxts/janitor": "^1.15.7-ts.0",
-    "@rbxts/signal": "^1.1.1",
-    "@rbxts/timer": "^0.0.9",
     "@rbxts/builders": "^1.0.2",
     "@rbxts/gamejoy": "^1.1.4",
+    "@rbxts/janitor": "^1.15.7-ts.0",
     "@rbxts/object-utils": "^1.0.4",
+    "@rbxts/signal": "^1.1.1",
+    "@rbxts/strict-map": "^1.0.2",
     "@rbxts/string-utils": "^1.0.3",
-    "@rbxts/strict-map": "^1.0.2"
+    "@rbxts/timer": "^0.0.9",
+    "rbxts-transform-env": "^2.2.0"
   }
 }

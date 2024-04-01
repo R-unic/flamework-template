@@ -2,12 +2,12 @@ import { type OnInit, Service } from "@flamework/core";
 import Signal from "@rbxts/signal";
 
 import { Events, Functions } from "server/network";
-import Firebase from "./firebase";
+import Firebase from "server/firebase";
 import Log from "shared/logger";
 
 import type { LogStart } from "shared/hooks";
 
-const PlayerData = Firebase.fetch("playerData");
+const db = new Firebase;
 
 @Service()
 export class DatabaseService implements OnInit, LogStart {
@@ -23,18 +23,18 @@ export class DatabaseService implements OnInit, LogStart {
 
 	public get<T>(player: Player, directory: string, defaultValue?: T): T {
 		const fullDirectory = this.getDirectoryForPlayer(player, directory);
-		return PlayerData.get(fullDirectory) ?? <T>defaultValue;
+		return db.get(fullDirectory) ?? <T>defaultValue;
 	}
 
 	public set<T>(player: Player, directory: string, value: T): void {
 		const fullDirectory = this.getDirectoryForPlayer(player, directory);
-		PlayerData.set(fullDirectory, value);
+		db.set(fullDirectory, value);
 		this.update(player, fullDirectory, value);
 	}
 
 	public increment(player: Player, directory: string, amount = 1): number {
 		const fullDirectory = this.getDirectoryForPlayer(player, directory);
-		const value = PlayerData.increment(fullDirectory, amount);
+		const value = db.increment(fullDirectory, amount);
 		this.update(player, fullDirectory, value);
 
 		return value;
@@ -42,7 +42,7 @@ export class DatabaseService implements OnInit, LogStart {
 
 	public delete(player: Player, directory: string): void {
 		const fullDirectory = this.getDirectoryForPlayer(player, directory);
-		PlayerData.delete(fullDirectory);
+		db.delete(fullDirectory);
 		this.update(player, fullDirectory, undefined);
 	}
 
@@ -61,7 +61,7 @@ export class DatabaseService implements OnInit, LogStart {
 
 	private initialize<T>(player: Player, directory: string, initialValue: T): void {
 		const fullDirectory = this.getDirectoryForPlayer(player, directory);
-		const value = PlayerData.get<Maybe<T>>(fullDirectory) ?? initialValue;
+		const value = db.get<Maybe<T>>(fullDirectory) ?? initialValue;
 		this.set(player, directory, value);
 	}
 
