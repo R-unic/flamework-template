@@ -3,3 +3,4 @@
 /include
 *.tsbuildinfo
 flamework.build
+package-lock.json

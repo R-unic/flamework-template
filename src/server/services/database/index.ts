@@ -1,4 +1,5 @@
-import { OnInit, Service } from "@flamework/core";
+import { type OnInit, type OnStart, Service } from "@flamework/core";
+import { Players } from "@rbxts/services";
 import Signal from "@rbxts/signal";
 
 import { Events, Functions } from "server/network";
@@ -6,11 +7,12 @@ import Firebase from "./firebase";
 import Log from "shared/logger";
 
 import type { LogStart } from "shared/hooks";
+import Object from "@rbxts/object-utils";
 
 const PlayerData = Firebase.fetch("playerData");
 
 @Service()
-export class DatabaseService implements OnInit, LogStart {
+export class DatabaseService implements OnInit, OnStart, LogStart {
 	public readonly loaded = new Signal<(player: Player) => void>;
 	public readonly updated = new Signal<<T = unknown>(directory: string, value: T) => void>;
 
@@ -21,6 +23,16 @@ export class DatabaseService implements OnInit, LogStart {
 		Functions.data.get.setCallback((player, key) => this.get(player, key));
 	}
 
+	public onStart(): void {
+		const allPlayerData = PlayerData.get<Record<string, object>>("") ?? {};
+		for (const [userID, playerData] of Object.entries(allPlayerData)) {
+			const player = Players.GetPlayerByUserId(tonumber(userID)!);
+			if (!player) continue;
+			for (const [key, value] of Object.entries(playerData))
+				this.update(player, `${userID}/${key}`, value);
+		}
+	}
+
 	public get<T>(player: Player, directory: string, defaultValue?: T): T {
 		const fullDirectory = this.getDirectoryForPlayer(player, directory);
 		return PlayerData.get(fullDirectory) ?? <T>defaultValue;
@@ -28,8 +40,7 @@ export class DatabaseService implements OnInit, LogStart {
 
 	public set<T>(player: Player, directory: string, value: T): void {
 		const fullDirectory = this.getDirectoryForPlayer(player, directory);
-		PlayerData.set(fullDirectory, value);
-		Events.data.updated(player, fullDirectory, value);
+		this.update(player, fullDirectory, value);
 	}
 
 	public increment(player: Player, directory: string, amount = 1): number {
@@ -40,6 +51,11 @@ export class DatabaseService implements OnInit, LogStart {
 	public delete(player: Player, directory: string): void {
 		const fullDirectory = this.getDirectoryForPlayer(player, directory);
 		return PlayerData.delete(fullDirectory);
+	}
+
+	private update(player: Player, fullDirectory: string, value: unknown) {
+		PlayerData.set(fullDirectory, value);
+		Events.data.updated(player, fullDirectory, value);
 	}
 
 	private setup(player: Player): void {

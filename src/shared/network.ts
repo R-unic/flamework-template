@@ -1,24 +1,23 @@
 import { Networking } from "@flamework/networking";
-import type{ DataValue } from "./data-models/generic";
 import type { GitHubInfo } from "./structs/github";
 
 interface ServerEvents {
   data: {
     initialize(): void;
-    set(directory: string, value: DataValue): void;
+    set(directory: string, value: unknown): void;
     increment(directory: string, amount?: number): void;
   };
 }
 
 interface ClientEvents {
   data: {
-    updated(directory: string, value: DataValue): void;
+    updated(directory: string, value: unknown): void;
   };
 }
 
 interface ServerFunctions {
   data: {
-    get(directory: string): DataValue;
+    get(directory: string): unknown;
   };
   github: {
     getInfo(): GitHubInfo;
