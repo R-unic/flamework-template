@@ -8,7 +8,7 @@ It includes a few extra utilities.
 First, create the folder on your computer where you want your project to be stored.
 Then, open a terminal at that directory and run the following commands:
 
-```sh
+```powershell
 npx degit R-unic/flamework-template
 npm i
 ```
@@ -23,4 +23,4 @@ FIREBASE_URL=https://database-name-default-rtdb.firebaseio.com/
 FIREBASE_AUTH=tHiSisAfaKEFiRebAsEAuTHkeY
 ```
 
-That's it! The template has been installed. For further information on how to use Flamework in your project, please see [here](https://fireboltofdeath.dev/docs/flamework).
+That's it! The template has been installed. For further information on how to use Flamework in your project, please see [here](https://flamework.fireboltofdeath.dev/).
