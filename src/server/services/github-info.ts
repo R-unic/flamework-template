@@ -8,7 +8,8 @@ import type { GitHubCommitResponse, GitHubInfo, GitHubTag } from "shared/structs
 @Service()
 export class GitHubInfoService implements OnInit, LogStart {
   // Put your repo name here! e.g. R-unic/tabletop-lounge
-  private readonly baseURL = "https://api.github.com/repos/R-unic/tabletop-lounge";
+  private readonly repository = "R-unic/tabletop-lounge"
+  private readonly baseURL = "https://api.github.com/repos";
 
   public onInit(): void {
     const repeatTryGet = (): GitHubInfo => {
@@ -33,6 +34,6 @@ export class GitHubInfoService implements OnInit, LogStart {
   }
 
   private request<T>(path: string): T {
-    return <T>HTTP.JSONDecode(HTTP.GetAsync(`${this.baseURL}/${path}`, true));
+    return <T>HTTP.JSONDecode(HTTP.GetAsync(`${this.baseURL}/${this.repository}/${path}`, true));
   }
 }
