@@ -1,6 +1,7 @@
 import { BaseComponent } from "@flamework/components";
-import { getInstancePath } from "./utility/helpers";
+import { flatten, getInstancePath } from "./utility/helpers";
 import { Reflect } from "@flamework/core";
+import repr from "./utility/repr";
 
 type LogFunctionName = ExtractKeys<typeof Log, Callback>;
 
@@ -8,24 +9,29 @@ const DISABLED: Partial<Record<LogFunctionName, boolean>> = {
 
 };
 
-const log = (category: LogFunctionName, ...messages: unknown[]): void => {
+const log = (category: LogFunctionName, ...messages: defined[]): void => {
   if (DISABLED[category]) return;
-  print(`[${category.upper()}]:`, ...messages);
+
+  const prefix = `[${category.upper()}]:`;
+  if (category === "fatal")
+    error(`${prefix} ${flatten(messages).map(v => typeOf(v) === "table" ? repr(v) : v).join(" ")}`, 4);
+  else
+    print(prefix, ...messages);
 }
 
 const getName = (obj: object) => (<string>Reflect.getMetadata(obj, "identifier")).split("@")[1];
 
 namespace Log {
-  export function info(...messages: unknown[]): void {
+  export function info(...messages: defined[]): void {
     log("info", ...messages);
   }
 
-  export function warning(message: string): void {
-    log("warning", message);
+  export function warning(...messages: defined[]): void {
+    log("warning", messages);
   }
 
-  export function fatal(message: string): void {
-    log("fatal", message);
+  export function fatal(...messages: defined[]): void {
+    log("fatal", messages);
   }
 
   /**

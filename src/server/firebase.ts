@@ -10,9 +10,9 @@ const DB_URL = $env.string("FIREBASE_URL");
 
 // Complain if we don't have values to input
 if (!DB_AUTH)
-  throw Log.fatal("[Firebase]: No value for FIREBASE_AUTH in .env file")
+  Log.fatal("[Firebase]: No value for FIREBASE_AUTH in .env file")
 if (!DB_URL)
-  throw Log.fatal("[Firebase]: No value for FIREBASE_URL in .env file")
+  Log.fatal("[Firebase]: No value for FIREBASE_URL in .env file")
 
 export default class Firebase {
   private readonly auth = `.json?auth=${DB_AUTH}`;
