@@ -1,7 +1,7 @@
 import { ReplicatedFirst, RunService as Runtime, MarketplaceService as Market } from "@rbxts/services";
 import StringUtils from "@rbxts/string-utils";
 
-import { StorableVector3 } from "../structs/common";
+import { StorableVector3 } from "../data-models/common";
 import { Exception } from "../exceptions";
 
 const { floor, log, abs, max, min } = math;
