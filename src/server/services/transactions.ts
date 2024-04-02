@@ -10,7 +10,7 @@ const enum ProductIDs {
 }
 
 @Service()
-export class TransactionService implements OnInit {
+export class TransactionsService implements OnInit {
   private readonly rewardHandlers: Record<number, RewardHandler> = {
     // [ProductIDs.Gold5000]: player => this.db.increment(player, "gold", 5000)
   }

@@ -24,11 +24,11 @@ export function toRegion3({ CFrame, Size }: Part, areaShrink = 0): Region3 {
 }
 
 export interface DevProductInfo {
-  Description: string;
-  PriceInRobux: number;
-  ProductId: number;
-  IconImageAssetId: number;
-  Name: string;
+  readonly Description: string;
+  readonly PriceInRobux: number;
+  readonly ProductId: number;
+  readonly IconImageAssetId: number;
+  readonly Name: string;
 }
 
 export function getDevProducts(): DevProductInfo[] {
