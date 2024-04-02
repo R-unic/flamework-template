@@ -1,34 +1,24 @@
 import Log from "./logger";
 
-export class Exception {
-	public constructor(
-		name: string,
-		public readonly message: string,
-		public readonly level?: number
-	) {
-		Log.fatal(`${name}Exception: ${message}`);
-	}
-}
-
-export class FlameworkIgnitionException extends Exception {
+export class FlameworkIgnitionException extends Log.Exception {
 	public constructor(public readonly message: string) {
 		super("FlameworkIgnition", message);
 	}
 }
 
-export class MissingAttributeException extends Exception {
+export class MissingAttributeException extends Log.Exception {
 	public constructor(instance: Instance, attributeName: string) {
 		super("MissingAttribute", `${instance.ClassName} "${instance.Name}" is missing attribute "${attributeName}"`);
 	}
 }
 
-export class HttpException extends Exception {
+export class HttpException extends Log.Exception {
 	public constructor(message: string) {
 		super("Http", message);
 	}
 }
 
-export class MissingEnvValueException extends Exception {
+export class MissingEnvValueException extends Log.Exception {
 	public constructor(valueName: string) {
 		super("MissingEnvValue", `"${valueName}" was not found in .env file`);
 	}

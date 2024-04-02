@@ -6,7 +6,7 @@ import { Functions } from "client/network";
 import { PlayerGui } from "shared/utility/client";
 import type { LogStart } from "shared/hooks";
 
-const REFRESH_RATE = 180; //seconds (3 mins)
+const REFRESH_RATE = 180; // seconds (3 mins)
 
 @Component({
   tag: "VersionLabel",

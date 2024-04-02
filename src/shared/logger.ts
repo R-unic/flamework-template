@@ -1,6 +1,7 @@
 import { BaseComponent } from "@flamework/components";
-import { flatten, getInstancePath } from "./utility/helpers";
 import { Reflect } from "@flamework/core";
+
+import { flatten, getInstancePath } from "./utility/helpers";
 import repr from "./utility/repr";
 
 type LogFunctionName = ExtractKeys<typeof Log, Callback>;
@@ -22,6 +23,16 @@ const log = (category: LogFunctionName, ...messages: defined[]): void => {
 const getName = (obj: object) => (<string>Reflect.getMetadata(obj, "identifier")).split("@")[1];
 
 namespace Log {
+  export class Exception {
+    public constructor(
+      name: string,
+      public readonly message: string,
+      public readonly level?: number
+    ) {
+      Log.fatal(`${name}Exception: ${message}`);
+    }
+  }
+
   export function info(...messages: defined[]): void {
     log("info", ...messages);
   }
