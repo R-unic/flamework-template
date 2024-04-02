@@ -14,10 +14,6 @@ export const enum DiscordMessageType {
   Purchase = "Product Purchased"
 }
 
-// To set up:
-// Create a Discord webhook and replace "discord.com" with "hooks.hyra.io".
-// Now place it in your .env file under DISCORD_WEBHOOK.
-
 @Service()
 export class DiscordService {
   public log(player: Player, logType: DiscordMessageType, message?: string, fields?: DiscordEmbedField[]): void {
