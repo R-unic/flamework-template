@@ -1,4 +1,4 @@
-import { ReplicatedFirst, RunService as Runtime } from "@rbxts/services";
+import { ReplicatedFirst, RunService as Runtime, MarketplaceService as Market } from "@rbxts/services";
 import StringUtils from "@rbxts/string-utils";
 
 import { StorableVector3 } from "../structs/common";
@@ -21,6 +21,39 @@ export function toRegion3({ CFrame, Size }: Part, areaShrink = 0): Region3 {
     new Vector3(x - wsx + areaShrink, y - wsy, z - wsz + areaShrink),
     new Vector3(x + wsx - areaShrink, y + wsy, z + wsz - areaShrink)
   );
+}
+
+export interface DevProductInfo {
+  Description: string;
+  PriceInRobux: number;
+  ProductId: number;
+  IconImageAssetId: number;
+  Name: string;
+}
+
+export function getDevProducts(): DevProductInfo[] {
+  return getPageContents(Market.GetDeveloperProductsAsync());
+}
+
+export function getPageContents<T extends defined>(pages: Pages<T>): T[] {
+  const contents: T[] = [];
+  while (!pages.IsFinished) {
+    const page = pages.GetCurrentPage();
+    for (const item of page)
+      contents.push(item);
+
+    pages.AdvanceToNextPageAsync();
+  }
+
+  return contents;
+}
+
+export function toNearestFiveOrTen(n: number): number {
+  let result = floor(n / 5 + 0.5) * 5;
+  if (result % 10 !== 0)
+    result += 10 - result % 10;
+
+  return result;
 }
 
 export function shuffle<T>(array: T[]): T[] {
