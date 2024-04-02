@@ -3,16 +3,17 @@ import { endsWith, slice } from "@rbxts/string-utils";
 import { $env } from "rbxts-transform-env";
 import Object from "@rbxts/object-utils";
 
+import { MissingEnvValueException } from "shared/exceptions";
 import Log from "shared/logger";
 
 const DB_AUTH = $env.string("FIREBASE_AUTH");
 const DB_URL = $env.string("FIREBASE_URL");
 
 // Complain if we don't have values to input
-if (!DB_AUTH)
-  Log.fatal("[Firebase]: No value for FIREBASE_AUTH in .env file")
-if (!DB_URL)
-  Log.fatal("[Firebase]: No value for FIREBASE_URL in .env file")
+if (DB_AUTH === undefined)
+  throw new MissingEnvValueException("DISCORD_WEBHOOK");
+if (DB_URL === undefined)
+  throw new MissingEnvValueException("DISCORD_WEBHOOK");
 
 export default class Firebase {
   private readonly auth = `.json?auth=${DB_AUTH}`;
