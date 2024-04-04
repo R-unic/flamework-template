@@ -20,6 +20,8 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-roblox-ts": "^0.0.30",
     "prettier": "^2.3.2",
+    "rbxts-transform-env": "latest",
+    "rbxts-transform-package-json": "latest",
     "rbxts-transformer-flamework": "latest",
     "roblox-ts": "^2.3.0-dev-e6e7658",
     "typescript": "5.3.3"
@@ -35,7 +37,6 @@
     "@rbxts/signal": "^1.1.1",
     "@rbxts/strict-map": "^1.0.2",
     "@rbxts/string-utils": "^1.0.3",
-    "@rbxts/timer": "^0.0.9",
-    "rbxts-transform-env": "^2.2.0"
+    "@rbxts/timer": "^0.0.9"
   }
 }
