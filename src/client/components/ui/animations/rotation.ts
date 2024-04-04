@@ -7,22 +7,28 @@ import ButtonAnimation from "client/base-components/button-animation";
 
 interface Attributes {
   RotationGoal: number;
-  Speed?: number;
+  Speed: number;
 }
 
 const { EasingStyle } = Enum;
 
-@Component({ tag: "RotationAnimation" })
+@Component({
+  tag: "RotationAnimation",
+  defaults: {
+    RotationGoal: 15,
+    Speed: 0.35
+  }
+})
 export class RotationAnimation extends ButtonAnimation<Attributes> implements OnStart {
   private readonly defaultRotation = this.instance.Rotation;
   protected override readonly includeClick = false;
 
   protected readonly tweenInfo = new TweenInfoBuilder()
     .SetEasingStyle(EasingStyle.Quad)
-    .SetTime(this.attributes.Speed ?? 0.35);
+    .SetTime(this.attributes.Speed);
 
   public onStart(): void {
-    this.connectEvents();
+    super.onStart();
   }
 
   public active(): void {

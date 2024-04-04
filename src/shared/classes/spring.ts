@@ -52,9 +52,11 @@ export class Spring {
     const scaledDt: number = (min(dt, 1) * this.speed) / Spring.iterations;
     for (let i = 0; i < Spring.iterations; i++) {
       const force: Vector3 = this.target.sub(this.position);
-      let acceleration: Vector3 = force.mul(this.force).div(this.mass);
+      const acceleration: Vector3 = force
+        .mul(this.force)
+        .div(this.mass)
+        .sub(this.velocity.mul(this.damping));
 
-      acceleration = acceleration.sub(this.velocity.mul(this.damping));
       this.velocity = this.velocity.add(acceleration.mul(scaledDt));
       this.position = this.position.add(this.velocity.mul(scaledDt));
     }

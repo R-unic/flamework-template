@@ -7,21 +7,27 @@ import ButtonAnimation from "client/base-components/button-animation";
 
 interface Attributes {
   OffsetGoal: Vector2;
-  Speed?: number;
+  Speed: number;
 }
 
 const { EasingStyle } = Enum;
 
-@Component({ tag: "GradientAnimation" })
+@Component({
+  tag: "GradientAnimation",
+  defaults: {
+    OffsetGoal: 0.15,
+    Speed: 0.1
+  }
+})
 export class GradientAnimation extends ButtonAnimation<Attributes, GuiButton & { UIGradient: UIGradient; }> implements OnStart {
   private readonly defaultOffset = this.instance.UIGradient.Offset;
 
   protected readonly tweenInfo = new TweenInfoBuilder()
     .SetEasingStyle(EasingStyle.Quad)
-    .SetTime(this.attributes.Speed ?? 0.1);
+    .SetTime(this.attributes.Speed);
 
   public onStart(): void {
-    this.connectEvents();
+    super.onStart();
   }
 
   public active(): void {

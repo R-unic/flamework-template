@@ -7,22 +7,28 @@ import ButtonAnimation from "client/base-components/button-animation";
 
 interface Attributes {
   TransparencyGoal: number;
-  Speed?: number;
+  Speed: number;
 }
 
 const { EasingStyle } = Enum;
 
-@Component({ tag: "TransparencyAnimation" })
+@Component({
+  tag: "TransparencyAnimation",
+  defaults: {
+    TransparencyGoal: 0.5,
+    Speed: 0.35
+  }
+})
 export class TransparencyAnimation extends ButtonAnimation<Attributes> implements OnStart {
   private readonly defaultTransparency = this.instance.Transparency;
   protected override readonly includeClick = false;
 
   protected readonly tweenInfo = new TweenInfoBuilder()
     .SetEasingStyle(EasingStyle.Quad)
-    .SetTime(this.attributes.Speed ?? 0.35);
+    .SetTime(this.attributes.Speed);
 
   public onStart(): void {
-    this.connectEvents();
+    super.onStart();
   }
 
   public active(): void {
