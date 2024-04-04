@@ -1,5 +1,6 @@
 import { BaseComponent } from "@flamework/components";
 import { Reflect } from "@flamework/core";
+import { $print, $error } from "rbxts-transform-debug"
 
 import { flatten, getInstancePath } from "./utility/helpers";
 import repr from "./utility/repr";
@@ -15,9 +16,9 @@ const log = (category: LogFunctionName, ...messages: defined[]): void => {
 
   const prefix = `[${category.upper()}]:`;
   if (category === "fatal")
-    error(`${prefix} ${flatten(messages).map(v => typeOf(v) === "table" ? repr(v) : v).join(" ")}`, 4);
+    $error(`${prefix} ${flatten(messages).map(v => typeOf(v) === "table" ? repr(v) : v).join(" ")}`, 4);
   else
-    print(prefix, ...messages);
+    $print(prefix, ...messages);
 }
 
 const getName = (obj: object) => (<string>Reflect.getMetadata(obj, "identifier")).split("@")[1];

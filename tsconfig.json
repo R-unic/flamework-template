@@ -31,7 +31,7 @@
 			}, {
 				"transform": "rbxts-transform-env"
 			}, {
-				"transform": "rbxts-transform-package-json"
+				"transform": "rbxts-transform-debug"
 			}
 		]
 	}
