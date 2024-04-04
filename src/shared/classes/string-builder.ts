@@ -1,5 +1,5 @@
 export default class StringBuilder {
-  protected indentation = 0;
+  public indentation = 0;
   private readonly parts: string[] = [];
 
   /**
@@ -12,7 +12,7 @@ export default class StringBuilder {
   /**
    * All of the parts combined
    */
-  protected get generated(): string {
+  public string(): string {
     return this.parts.join("");
   }
 
@@ -27,28 +27,28 @@ export default class StringBuilder {
   /**
    * Retrieves the last string piece appended
    */
-  protected peekLastPart(): string {
+  public peekLastPart(): string {
     return this.parts[this.parts.size() - 1];
   }
 
   /**
    * Removes the last string piece appended
    */
-  protected popLastPart(): string | undefined {
+  public popLastPart(): string | undefined {
     return this.parts.pop();
   }
 
   /**
    * Add indentation for the next lines appended
    */
-  protected pushIndentation(): void {
+  public pushIndentation(): void {
     this.indentation++;
   }
 
   /**
    * Remove indentation for the next lines appended
    */
-  protected popIndentation(): void {
+  public popIndentation(): void {
     this.indentation--;
   }
 
@@ -56,7 +56,7 @@ export default class StringBuilder {
    * Appends new lines
    * @param amount The amount of new lines to append, defaults to 1
    */
-  protected newLine(amount = 1): void {
+  public newLine(amount = 1): void {
     this.append(("\n" + " ".rep(this.tabSize).rep(this.indentation)).rep(amount));
   }
 }

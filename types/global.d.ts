@@ -1,5 +1,10 @@
-type None = undefined | void;
-type Maybe<T> = T | None;
+type Maybe<T> = T | undefined;
+
+type If<Value extends boolean, TrueResult, FalseResult = null> = Value extends true
+  ? TrueResult
+  : Value extends false
+  ? FalseResult
+  : TrueResult | FalseResult;
 
 type DeepReadonly<T> =
     T extends (infer R)[] ? DeepReadonlyArray<R> :
