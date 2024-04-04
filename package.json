@@ -23,8 +23,8 @@
     "rbxts-transform-debug": "latest",
     "rbxts-transform-env": "latest",
     "rbxts-transformer-flamework": "latest",
-    "roblox-ts": "^2.3.0-dev-e6e7658",
-    "typescript": "5.3.3"
+    "roblox-ts": "^2.3.0",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "@flamework/components": "latest",

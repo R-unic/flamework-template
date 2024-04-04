@@ -23,7 +23,7 @@ export class ScaleAnimation extends ButtonAnimation<Attributes> implements OnSta
     .SetTime(this.attributes.Speed ?? 0.35);
 
   public onStart(): void {
-    this.onStart();
+    super.onStart();
   }
 
   protected inactive(): void {
