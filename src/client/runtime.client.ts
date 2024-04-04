@@ -1,6 +1,6 @@
 import { Flamework } from "@flamework/core";
 import { FlameworkIgnitionException } from "shared/exceptions";
-import * as Dependencies from "shared/utility/dependencies";
+import * as Dependencies from "shared/dependencies";
 
 try {
 	Dependencies.registerAll();
