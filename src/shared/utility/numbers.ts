@@ -26,7 +26,7 @@ export function commaFormat(n: number | string): string {
 }
 const suffixes = <const>["K", "M", "B", "T", "Q"];
 export function toSuffixedNumber(n: number): string {
-  if (n < 100000)
+  if (n < 100_000)
     return commaFormat(n);
 
   const index = floor(log(n, 1000)) - 1;

@@ -2,7 +2,7 @@ import type { OnStart } from "@flamework/core";
 import { BaseComponent } from "@flamework/components";
 import { Janitor } from "@rbxts/janitor";
 
-export default abstract class ButtonAnimation<A extends {} = {}, I extends GuiButton = GuiButton> extends BaseComponent<A, I> implements OnStart {
+export default abstract class BaseButtonAnimation<A extends {} = {}, I extends GuiButton = GuiButton> extends BaseComponent<A, I> implements OnStart {
   protected readonly includeClick: boolean = true;
   protected readonly janitor = new Janitor;
   protected hovered = false;

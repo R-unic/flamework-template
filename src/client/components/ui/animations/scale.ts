@@ -3,7 +3,7 @@ import { Component } from "@flamework/components";
 import { TweenInfoBuilder } from "@rbxts/builders";
 
 import { tween } from "shared/utility/ui";
-import ButtonAnimation from "client/base-components/button-animation";
+import ButtonTweenAnimation from "client/base-components/button-tween-animation";
 
 const { EasingStyle } = Enum;
 
@@ -13,7 +13,7 @@ interface Attributes {
 }
 
 @Component({ tag: "ScaleAnimation" })
-export class ScaleAnimation extends ButtonAnimation<Attributes> implements OnStart {
+export class ScaleAnimation extends ButtonTweenAnimation<Attributes> implements OnStart {
   private readonly scale = this.instance.FindFirstChildOfClass("UIScale") ?? new Instance("UIScale", this.instance);
   private readonly defaultScale = this.scale.Scale;
   private readonly scaleIncrement = this.attributes.ScaleIncrement ?? 0.05;

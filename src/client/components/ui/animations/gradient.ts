@@ -3,7 +3,7 @@ import { Component } from "@flamework/components";
 import { TweenInfoBuilder } from "@rbxts/builders";
 
 import { tween } from "shared/utility/ui";
-import ButtonAnimation from "client/base-components/button-animation";
+import ButtonTweenAnimation from "client/base-components/button-tween-animation";
 
 interface Attributes {
   OffsetGoal: Vector2;
@@ -19,7 +19,7 @@ const { EasingStyle } = Enum;
     Speed: 0.1
   }
 })
-export class GradientAnimation extends ButtonAnimation<Attributes, GuiButton & { UIGradient: UIGradient; }> implements OnStart {
+export class GradientAnimation extends ButtonTweenAnimation<Attributes, GuiButton & { UIGradient: UIGradient; }> implements OnStart {
   private readonly defaultOffset = this.instance.UIGradient.Offset;
 
   protected readonly tweenInfo = new TweenInfoBuilder()

@@ -3,7 +3,7 @@ import { Component } from "@flamework/components";
 import { TweenInfoBuilder } from "@rbxts/builders";
 
 import { tween } from "shared/utility/ui";
-import ButtonAnimation from "client/base-components/button-animation";
+import ButtonTweenAnimation from "client/base-components/button-tween-animation";
 
 interface Attributes {
   TransparencyGoal: number;
@@ -19,7 +19,7 @@ const { EasingStyle } = Enum;
     Speed: 0.35
   }
 })
-export class TransparencyAnimation extends ButtonAnimation<Attributes> implements OnStart {
+export class TransparencyAnimation extends ButtonTweenAnimation<Attributes> implements OnStart {
   private readonly defaultTransparency = this.instance.Transparency;
   protected override readonly includeClick = false;
 

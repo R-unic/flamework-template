@@ -3,7 +3,7 @@ import { Component } from "@flamework/components";
 import { TweenInfoBuilder } from "@rbxts/builders";
 
 import { tween } from "shared/utility/ui";
-import ButtonAnimation from "client/base-components/button-animation";
+import ButtonTweenAnimation from "client/base-components/button-tween-animation";
 
 interface Attributes {
   RotationGoal: number;
@@ -19,7 +19,7 @@ const { EasingStyle } = Enum;
     Speed: 0.35
   }
 })
-export class RotationAnimation extends ButtonAnimation<Attributes> implements OnStart {
+export class RotationAnimation extends ButtonTweenAnimation<Attributes> implements OnStart {
   private readonly defaultRotation = this.instance.Rotation;
   protected override readonly includeClick = false;
 
