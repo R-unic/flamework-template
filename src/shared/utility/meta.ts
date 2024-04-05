@@ -1,3 +1,6 @@
+/**
+ * Generates a [mapping] decorator, and map, for the given object type and constructor arguments
+ */
 export function createMappingDecorator<T extends object, Args extends any[]>() {
   type ObjectConstructor = new (...args: Args) => T;
 
