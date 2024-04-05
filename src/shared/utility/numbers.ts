@@ -2,6 +2,8 @@ import Log from "shared/logger";
 
 const { floor, log } = math;
 
+export const isNaN = (n: number) => n !== n;
+
 export function toNearestFiveOrTen(n: number): number {
   let result = floor(n / 5 + 0.5) * 5;
   if (result % 10 !== 0)

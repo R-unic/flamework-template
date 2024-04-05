@@ -1,5 +1,5 @@
 import type { Registry } from "@rbxts/cmdr";
-import { isNaN } from "shared/utility/helpers";
+import { isNaN } from "shared/utility/numbers";
 
 export = function (registry: Registry): void {
   registry.RegisterType("any", {

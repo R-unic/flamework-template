@@ -1,8 +1,9 @@
 import { BaseComponent } from "@flamework/components";
 import { Reflect } from "@flamework/core";
-import { $print, $error, $dbg } from "rbxts-transform-debug"
+import { $print, $error } from "rbxts-transform-debug"
 
-import { flatten, getInstancePath } from "./utility/helpers";
+import { flatten } from "./utility/array";
+import { getInstancePath } from "./utility/instances";
 import repr from "./utility/repr";
 
 type LogFunctionName = ExtractKeys<typeof Log, Callback>;

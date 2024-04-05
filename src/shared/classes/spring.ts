@@ -1,4 +1,4 @@
-import { isNaN } from "../utility/helpers";
+import { isNaN } from "shared/utility/numbers";
 
 const { min, huge: INF } = math;
 
@@ -19,7 +19,7 @@ export class Spring {
     public force = 50,
     public damping = 4,
     public speed = 4
-  ) {}
+  ) { }
 
   /**
    * Shove the spring off equilibrium
