@@ -65,6 +65,6 @@ export class DatabaseService implements OnInit, LogStart {
 	}
 
 	private getDirectoryForPlayer(player: Player, directory: string): string {
-		return `${player.UserId}/${directory}`;
+		return `playerData/${player.UserId}/${directory}`;
 	}
 }
