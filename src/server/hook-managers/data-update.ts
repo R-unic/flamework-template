@@ -1,5 +1,5 @@
 import { Service, Modding, type OnStart } from "@flamework/core";
-import { DatabaseService } from "server/services/database";
+import { DatabaseService } from "server/services/third-party/database";
 
 import type { OnDataUpdate } from "shared/hooks";
 
@@ -7,7 +7,7 @@ import type { OnDataUpdate } from "shared/hooks";
 export class DataUpdateService implements OnStart {
   public constructor(
     private readonly database: DatabaseService
-  ) {}
+  ) { }
 
   public onStart(): void {
     const dataUpdateListeners = new Set<OnDataUpdate>;

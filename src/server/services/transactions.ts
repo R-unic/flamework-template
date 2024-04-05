@@ -1,7 +1,7 @@
 import { OnInit, Service } from "@flamework/core";
 import { MarketplaceService as Market, Players } from "@rbxts/services";
 
-import { DatabaseService } from "./database";
+import { DatabaseService } from "./third-party/database";
 import Log from "shared/logger";
 
 type RewardHandler = (player: Player) => void;
@@ -17,7 +17,7 @@ export class TransactionsService implements OnInit {
 
   public constructor(
     private readonly db: DatabaseService
-  ) {}
+  ) { }
 
   public onInit(): void {
     Market.ProcessReceipt = ({ PlayerId, ProductId, PurchaseId }) => {

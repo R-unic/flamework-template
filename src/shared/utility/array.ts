@@ -1,10 +1,10 @@
-const { max, min } = math;
+const { max, min, floor, random } = math;
 
 export function shuffle<T>(array: T[]): T[] {
   // Fisher-Yates shuffle algorithm
   const shuffledArray = [...array];
   for (let i = shuffledArray.size() - 1; i > 0; i--) {
-    const j = math.floor(math.random() * (i + 1));
+    const j = floor(random() * (i + 1));
     [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
   }
   return shuffledArray;
