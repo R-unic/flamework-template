@@ -27,7 +27,7 @@ export class DiscordService {
     const data = HTTP.JSONEncode({
       WebhookURL: url,
       WebhookData: {
-        username: "Dragon Legends Logger",
+        username: "Game Logger",
         embeds: [
           {
             title: logType,

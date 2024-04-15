@@ -67,4 +67,26 @@
 			"}",
 		]
 	}
+
+	"Bitfield": {
+		"prefix":[ "bitf, bitfield" ],
+		"description": "Create a Bitfield",
+		"body": [
+			"import Bitfield from \"shared/classes/bitfield\";",
+			"",
+			"export const enum ${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g}Masks {"
+			"\t"
+			"}",
+			""
+			"export class ${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g} extends Bitfield<${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g}Masks> {",
+			"\tpublic constructor() {",
+			"\t\tsuper();",
+			"\t}",
+			"",
+			"\tprotected setDefaults(): void {",
+			"\t",
+			"\t}",
+			"}",
+		]
+	}
 }
