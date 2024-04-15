@@ -1,11 +1,13 @@
-import { Component } from "@flamework/components";
-import type { OnPhysics, OnStart } from "@flamework/core";
+import { Component, type Components } from "@flamework/components";
+import { Dependency, type OnPhysics, type OnStart } from "@flamework/core";
 import { UserInputService as InputService } from "@rbxts/services";
 
 import type { LogStart } from "shared/hooks";
 import { STUDS_TO_METERS_CONSTANT, studsToMeters } from "shared/utility/3D";
 import { InputInfluenced } from "client/base-components/input-influenced";
 import { flattenNumber, isNaN } from "shared/utility/numbers";
+import { Character } from "shared/utility/client";
+import { Events } from "client/network";
 
 const enum MoveDirection {
   Forwards = "Forwards",
@@ -29,7 +31,7 @@ interface Attributes {
     ["Movement_Acceleration"]: 1,
     ["Movement_Friction"]: 0.2,
     ["Movement_JumpCooldown"]: 0.25,
-    ["Movement_JumpForce"]: 15
+    ["Movement_JumpForce"]: 12
   }
 })
 export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart: BasePart; }> implements OnStart, OnPhysics, LogStart {
@@ -38,6 +40,15 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
   private velocity = new Vector3;
   private spacebarDown = false;
   private canJump = true;
+
+  /**
+   * @client
+   */
+  public static start() {
+    Events.character.toggleDefaultMovement(false);
+    const components = Dependency<Components>();
+    components.addComponent<Movement>(Character);
+  }
 
   public onStart(): void {
     const moveKeys = ["W", "A", "S", "D"];

@@ -7,6 +7,9 @@ interface ServerEvents {
     set(directory: string, value: unknown): void;
     increment(directory: string, amount?: number): void;
   };
+  character: {
+    toggleDefaultMovement(on: boolean): void;
+  };
 }
 
 interface ClientEvents {
@@ -24,7 +27,7 @@ interface ServerFunctions {
   };
 }
 
-interface ClientFunctions {}
+interface ClientFunctions { }
 
 export const GlobalEvents = Networking.createEvent<ServerEvents, ClientEvents>();
 export const GlobalFunctions = Networking.createFunction<ServerFunctions, ClientFunctions>();
