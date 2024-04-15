@@ -1,6 +1,6 @@
 import { BaseComponent } from "@flamework/components";
 import { Reflect } from "@flamework/core";
-import { $print, $error } from "rbxts-transform-debug"
+import { RunService as Runtime } from "@rbxts/services";
 
 import { flatten } from "./utility/array";
 import { getInstancePath } from "./utility/instances";
@@ -17,9 +17,9 @@ const log = (category: LogFunctionName, ...messages: defined[]): void => {
 
   const prefix = `[${category.upper()}]:`;
   if (category === "fatal")
-    $error(`${prefix} ${flatten(messages).map(v => typeOf(v) === "table" ? repr(v) : v).join(" ")}`, 4);
+    error(`${prefix} ${flatten(messages).map(v => typeOf(v) === "table" ? repr(v) : v).join(" ")}`, 4);
   else
-    $print(prefix, ...messages);
+    print(prefix, ...messages);
 }
 
 const getName = (obj: object) => (<string>Reflect.getMetadata(obj, "identifier")).split("@")[1];
@@ -33,6 +33,11 @@ namespace Log {
     ) {
       Log.fatal(`${name}Exception: ${message}`);
     }
+  }
+
+  export function debug(...messages: defined[]): void {
+    if (!Runtime.IsStudio()) return;
+    log("debug", ...messages);
   }
 
   export function info(...messages: defined[]): void {

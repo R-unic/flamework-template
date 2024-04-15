@@ -1,8 +1,17 @@
 import Log from "shared/logger";
 
-const { floor, log } = math;
+const { floor, log, abs } = math;
 
 export const isNaN = (n: number) => n !== n;
+
+/**
+ * Returns 0 if the number is close enough to 0 by `epsilon`
+ * @param n
+ * @param epsilon
+ */
+export function flattenNumber(n: number, epsilon = 0.001): number {
+  return abs(n) < epsilon ? 0 : n;
+}
 
 export function toNearestFiveOrTen(n: number): number {
   let result = floor(n / 5 + 0.5) * 5;

@@ -1,5 +1,5 @@
 import { Controller, OnInit } from "@flamework/core";
-import { CollectionService as Collection, HttpService as HTTP, UserInputService as UIS, Workspace as World } from "@rbxts/services";
+import { HttpService as HTTP, UserInputService as UIS, Workspace as World } from "@rbxts/services";
 import { RaycastParamsBuilder } from "@rbxts/builders";
 import { Context as InputContext } from "@rbxts/gamejoy";
 import { Axis, Union } from "@rbxts/gamejoy/out/Actions";

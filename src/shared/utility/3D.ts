@@ -15,3 +15,8 @@ export function toRegion3({ CFrame, Size }: Part, areaShrink = 0): Region3 {
     new Vector3(x + wsx - areaShrink, y + wsy, z + wsz - areaShrink)
   );
 }
+
+export const STUDS_TO_METERS_CONSTANT = 3.571;
+export function studsToMeters(studs: number): number {
+  return studs / STUDS_TO_METERS_CONSTANT;
+}
