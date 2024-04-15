@@ -1,0 +1,7 @@
+/node_modules
+/dist
+/include
+*.tsbuildinfo
+flamework.build
+package-lock.json
+.env

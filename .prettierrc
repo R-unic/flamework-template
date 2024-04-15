@@ -1,0 +1,6 @@
+{
+  "singleQuote": false,
+  "useTabs": true,
+  "tabWidth": 2,
+  "endOfLine": "crlf"
+}

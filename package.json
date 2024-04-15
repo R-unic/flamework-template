@@ -1,0 +1,44 @@
+{
+  "name": "flamework-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rbxtsc",
+    "watch": "rbxtsc -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rbxts/compiler-types": "^2.3.0-types.0",
+    "@rbxts/types": "^1.0.766",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-roblox-ts": "^0.0.30",
+    "prettier": "^2.3.2",
+    "rbxts-transform-debug": "latest",
+    "rbxts-transform-env": "latest",
+    "rbxts-transformer-flamework": "latest",
+    "roblox-ts": "2.3.0",
+    "typescript": "5.2.2"
+  },
+  "dependencies": {
+    "@flamework/components": "latest",
+    "@flamework/core": "latest",
+    "@flamework/networking": "latest",
+    "@rbxts/builders": "^1.0.2",
+    "@rbxts/cmdr": "^1.12.1",
+    "@rbxts/gamejoy": "^1.1.4",
+    "@rbxts/janitor": "^1.15.7-ts.0",
+    "@rbxts/object-utils": "^1.0.4",
+    "@rbxts/signal": "^1.1.1",
+    "@rbxts/strict-map": "^1.0.2",
+    "@rbxts/string-utils": "^1.0.3",
+    "@rbxts/timer": "^0.0.9",
+    "node": "^18.20.1"
+  }
+}
