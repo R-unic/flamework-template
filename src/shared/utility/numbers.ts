@@ -1,8 +1,12 @@
 import Log from "shared/logger";
 
-const { floor, log, abs } = math;
+const { floor, log, abs, clamp } = math;
 
 export const isNaN = (n: number) => n !== n;
+
+export function doubleSidedLimit(n: number, limit: number) {
+  return clamp(n, -limit, limit);
+}
 
 /**
  * Returns 0 if the number is close enough to 0 by `epsilon`

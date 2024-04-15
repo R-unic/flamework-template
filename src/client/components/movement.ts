@@ -3,7 +3,7 @@ import type { OnPhysics, OnStart } from "@flamework/core";
 import { UserInputService as InputService } from "@rbxts/services";
 
 import type { LogStart } from "shared/hooks";
-import { studsToMeters } from "shared/utility/3D";
+import { STUDS_TO_METERS_CONSTANT, studsToMeters } from "shared/utility/3D";
 import { InputInfluenced } from "client/base-components/input-influenced";
 import { flattenNumber, isNaN } from "shared/utility/numbers";
 
@@ -16,20 +16,28 @@ const enum MoveDirection {
 
 interface Attributes {
   ["Movement_Speed"]: number;
+  ["Movement_Acceleration"]: number;
+  ["Movement_Friction"]: number;
+  ["Movement_JumpCooldown"]: number;
+  ["Movement_JumpForce"]: number;
 }
 
 @Component({
   tag: "Movement",
   defaults: {
-    ["Movement_Speed"]: 1
+    ["Movement_Speed"]: 1,
+    ["Movement_Acceleration"]: 1,
+    ["Movement_Friction"]: 0.2,
+    ["Movement_JumpCooldown"]: 0.25,
+    ["Movement_JumpForce"]: 15
   }
 })
 export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart: BasePart; }> implements OnStart, OnPhysics, LogStart {
-  private readonly appliedDirections: MoveDirection[] = [];
+  private readonly root = this.instance.PrimaryPart;
+  private readonly moveDirections: MoveDirection[] = [];
+  private velocity = new Vector3;
   private spacebarDown = false;
   private canJump = true;
-  private jumpCooldown = 0.35;
-  private jumpForce = 50;
 
   public onStart(): void {
     const moveKeys = ["W", "A", "S", "D"];
@@ -39,37 +47,43 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
       this.spacebarDown = true;
       this.jump();
     }));
-    this.janitor.Add(InputService.InputEnded.Connect(() => this.spacebarDown = false));
+    this.janitor.Add(InputService.InputEnded.Connect(({ KeyCode: key }) => {
+      if (key.Name !== "Space") return;
+      this.spacebarDown = false;
+    }));
 
     this.janitor.Add(InputService.InputBegan.Connect(({ KeyCode: key }) => {
       if (!moveKeys.includes(key.Name)) return;
+
       const direction = this.getDirectionFromKey(key.Name);
-      this.move(direction);
+      this.applyMovementDirection(direction);
     }));
     this.janitor.Add(InputService.InputEnded.Connect(({ KeyCode: key }) => {
       if (!moveKeys.includes(key.Name)) return;
+
       const releasedDirection = this.getDirectionFromKey(key.Name);
-      const directionIndex = this.appliedDirections.indexOf(releasedDirection);
-      this.appliedDirections.remove(directionIndex);
+      this.moveDirections.remove(this.moveDirections.indexOf(releasedDirection));
     }));
   }
 
   public onPhysics(dt: number): void {
-    if (!this.isMoving()) return;
+    const directionVector = this.getVectorFromDirections(this.moveDirections);
+    const force = isNaN(directionVector.X) ? new Vector3 : directionVector.mul(studsToMeters(this.getAcceleration())).mul(dt).mul(60);
+    this.velocity = this.velocity
+      .mul(this.isMoving() ? 1 : 1 - this.getFriction())
+      .add(force);
 
-    const directionVector = this.getMoveVector();
     const speed = studsToMeters(this.getSpeed());
-    let force = directionVector.mul(speed).mul(dt).mul(60);
-    if (isNaN(force.X) || isNaN(force.Y) || isNaN(force.Z))
-      force = new Vector3;
+    if (this.velocity.Magnitude > speed)
+      this.velocity = this.velocity.Unit.mul(speed);
 
-    this.instance.PrimaryPart.CFrame = this.instance.PrimaryPart.CFrame.add(force);
+    this.root.CFrame = this.root.CFrame.add(this.velocity);
   }
 
   private jump(): void {
     if (!this.canJump) return;
     this.canJump = false;
-    task.delay(this.jumpCooldown, () => {
+    task.delay(this.getJumpCooldown(), () => {
       this.canJump = true;
       if (!this.spacebarDown) return;
       this.jump();
@@ -77,11 +91,11 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
 
     const yVelocity = flattenNumber(this.getVelocity().Y);
     if (yVelocity !== 0) return;
-    this.addForce(new Vector3(0, this.jumpForce, 0));
+    this.addForce(new Vector3(0, this.getJumpForce() * STUDS_TO_METERS_CONSTANT, 0));
   }
 
-  private move(direction: MoveDirection): void {
-    this.appliedDirections.push(direction);
+  private applyMovementDirection(direction: MoveDirection): void {
+    this.moveDirections.push(direction);
   }
 
   private addForce(force: Vector3): void {
@@ -89,19 +103,45 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
   }
 
   private setForce(force: Vector3): void {
-    this.instance.PrimaryPart.AssemblyLinearVelocity = force;
+    this.root.AssemblyLinearVelocity = force;
   }
 
   private getVelocity(): Vector3 {
-    return this.instance.PrimaryPart.AssemblyLinearVelocity;
+    return this.root.AssemblyLinearVelocity;
   }
 
   private getSpeed(): number {
     return this.attributes["Movement_Speed"];
   }
 
+  private getAcceleration(): number {
+    return this.attributes["Movement_Acceleration"];
+  }
+
+  private getFriction(): number {
+    return this.attributes["Movement_Friction"];
+  }
+
+  private getJumpCooldown(): number {
+    return this.attributes["Movement_JumpCooldown"];
+  }
+
+  private getJumpForce(): number {
+    return this.attributes["Movement_JumpForce"];
+  }
+
   private isMoving(): boolean {
-    return this.appliedDirections.size() > 0;
+    return this.moveDirections.size() > 0;
+  }
+
+  private getVectorFromDirections(directions: MoveDirection[]): Vector3 {
+    let vector = new Vector3;
+    for (const direction of directions) {
+      const directionVector = this.getVectorFromDirection(this.root.CFrame, direction);
+      vector = vector.add(directionVector);
+    }
+
+    return vector.Unit;
   }
 
   private getDirectionFromKey(key: string): MoveDirection {
@@ -117,18 +157,6 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
     }
 
     return <MoveDirection><unknown>undefined;
-  }
-
-  private getMoveVector(): Vector3 {
-    const rootCFrame = this.instance.PrimaryPart.CFrame;
-    let vector = new Vector3;
-
-    for (const direction of this.appliedDirections) {
-      const directionVector = this.getVectorFromDirection(rootCFrame, direction);
-      vector = vector.add(directionVector);
-    }
-
-    return vector.Unit;
   }
 
   private getVectorFromDirection(cframe: CFrame, direction: MoveDirection): Vector3 {
