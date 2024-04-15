@@ -41,9 +41,6 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
   private spacebarDown = false;
   private canJump = true;
 
-  /**
-   * @client
-   */
   public static start() {
     Events.character.toggleDefaultMovement(false);
     const components = Dependency<Components>();

@@ -17,7 +17,7 @@ const log = (category: LogFunctionName, ...messages: defined[]): void => {
 
   const prefix = `[${category.upper()}]:`;
   if (category === "fatal")
-    error(`${prefix} ${flatten(messages).map(v => typeOf(v) === "table" ? repr(v) : v).join(" ")}`, 4);
+    error(`${prefix} ${flatten(messages).map(v => typeOf(v) === "table" ? repr(v) : v).join(" ")}`, 0);
   else
     print(prefix, ...messages);
 }
