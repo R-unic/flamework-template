@@ -1,19 +1,20 @@
 import { slice } from "shared/utility/array";
 import { isUShort } from "shared/utility/numbers";
-import { Encodable, InvalidEncodableException } from "../encodable";
-import type { BinaryReader } from "shared/classes/binary-reader";
 import { Number } from "./number";
+import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
+import type { BinaryReader } from "shared/classes/binary-reader";
 
 // max length 2 ^ 16 (65536)
 export class SizedString extends Encodable {
+  public static readonly kind = EncodableKind.SizedString;
+
   public constructor(
     private readonly value: string,
     private readonly length: ushort = value.size()
   ) { super(); }
 
   public static parse(reader: BinaryReader): string {
-    const length = reader.readUShort();
-    print(length)
+    const length = Number.parse(reader);
     const value = reader.readString(length);
     const sizedString = new SizedString(value, length);
     sizedString.validate();
@@ -23,12 +24,12 @@ export class SizedString extends Encodable {
 
   public encode(): Buffer {
     const lengthBytes = new Number(this.length, 2).encode();
-    print(lengthBytes)
     const characters = this.value.split("");
     const stringBytes = characters.map<byte>(char => utf8.codepoint(char)[0]);
     const paddedStringBytes = slice(stringBytes, 0, this.length);
 
     return [
+      ...new Number(SizedString.kind, 1).encode(),
       ...lengthBytes,
       ...paddedStringBytes
     ];

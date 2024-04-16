@@ -5,6 +5,7 @@ import * as Dependencies from "shared/dependencies";
 // import { PacketHeader } from "./pakt/encodables/packet-header";
 // import { PacketFooter } from "./pakt/encodables/packet-footer";
 // import { Packet } from "./pakt/encodables/packet";
+// import { BinaryReader } from "shared/classes/binary-reader";
 
 try {
 	Dependencies.registerAll();
@@ -21,8 +22,8 @@ try {
 // const footer = new PacketFooter;
 // const validatePayload = (payload: Buffer): boolean => payload.size() > 0;
 // const packet = new Packet(header, payload, footer, validatePayload);
-// const encodedPacket = packet.encode();
-// const parsedPacket = Packet.parse(encodedPacket, validatePayload);
+// const packetReader = new BinaryReader(packet.encode());
+// const parsedPacket = Packet.parse(packetReader, validatePayload);
 
 // print("original packet", packet)
 // print("parsed packet", parsedPacket)

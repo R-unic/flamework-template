@@ -1,10 +1,11 @@
 import { Size } from "shared/utility/number-size";
 import { isShort } from "shared/utility/numbers";
 import { Number } from "./number";
-import { Encodable, InvalidEncodableException } from "../encodable";
+import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
 import type { BinaryReader } from "shared/classes/binary-reader";
 
 export class PacketHeader extends Encodable {
+  public static readonly kind = EncodableKind.PacketHeader;
   public static readonly size = Size.short();
 
   /**
@@ -26,6 +27,7 @@ export class PacketHeader extends Encodable {
   public encode(): Buffer {
     const packetLengthBytes = new Number(this.payloadSize, 1).encode();
     const header: Buffer = [
+      ...new Number(PacketHeader.kind, 1).encode(),
       ...packetLengthBytes
     ];
 

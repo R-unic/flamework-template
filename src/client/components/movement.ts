@@ -44,13 +44,14 @@ interface Attributes {
   }
 })
 export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart: BasePart; }> implements OnStart, OnPhysics, LogStart {
+  public friction = this.attributes.Movement_Friction;
+
   private readonly root = this.instance.PrimaryPart;
   private readonly moveDirections: MoveDirection[] = [];
   private velocity = new Vector3;
   private touchingGround = false;
   private spacebarDown = false;
   private canJump = true;
-  private friction = this.attributes.Movement_Friction;
 
   public static start() {
     Events.character.toggleDefaultMovement(false);
@@ -108,6 +109,42 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
     this.root.CFrame = this.root.CFrame.add(this.velocity);
   }
 
+  public getVelocity(): Vector3 {
+    return this.root.AssemblyLinearVelocity;
+  }
+
+  public getSpeed(): number {
+    return this.attributes.Movement_Speed;
+  }
+
+  public getAcceleration(): number {
+    return this.attributes.Movement_Acceleration;
+  }
+
+  public getAirFriction(): number {
+    return this.attributes.Movement_AirFriction;
+  }
+
+  public canMoveMidair(): boolean {
+    return this.attributes.Movement_CanMoveMidair;
+  }
+
+  public getJumpCooldown(): number {
+    return this.attributes.Movement_JumpCooldown;
+  }
+
+  public getJumpForce(): number {
+    return this.attributes.Movement_JumpForce;
+  }
+
+  public getG(): number {
+    return this.attributes.Movement_GravitationalConstant;
+  }
+
+  public isMoving(): boolean {
+    return this.moveDirections.size() > 0;
+  }
+
   private updateGravity(): void {
     World.Gravity = this.getG() * 20;
   }
@@ -145,42 +182,6 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
 
   private setForce(force: Vector3): void {
     this.root.AssemblyLinearVelocity = force;
-  }
-
-  private getVelocity(): Vector3 {
-    return this.root.AssemblyLinearVelocity;
-  }
-
-  private getSpeed(): number {
-    return this.attributes.Movement_Speed;
-  }
-
-  private getAcceleration(): number {
-    return this.attributes.Movement_Acceleration;
-  }
-
-  private getAirFriction(): number {
-    return this.attributes.Movement_AirFriction;
-  }
-
-  private canMoveMidair(): boolean {
-    return this.attributes.Movement_CanMoveMidair;
-  }
-
-  private getJumpCooldown(): number {
-    return this.attributes.Movement_JumpCooldown;
-  }
-
-  private getJumpForce(): number {
-    return this.attributes.Movement_JumpForce;
-  }
-
-  private getG(): number {
-    return this.attributes.Movement_GravitationalConstant;
-  }
-
-  private isMoving(): boolean {
-    return this.moveDirections.size() > 0;
   }
 
   private getVectorFromDirections(directions: MoveDirection[]): Vector3 {
@@ -235,6 +236,6 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
       .Build();
 
     const result = World.Raycast(root.Position, root.CFrame.UpVector.mul(-5), raycastParams);
-    return result !== undefined && (result.Distance - 0.5) <= distanceToGround;
+    return result !== undefined && (result.Distance - 0.3) <= distanceToGround;
   }
 }
