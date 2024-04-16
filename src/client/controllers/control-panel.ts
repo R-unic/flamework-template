@@ -35,6 +35,9 @@ export class ControlPanelController implements OnStart {
     });
 
     Iris.Init();
+    Iris.UpdateGlobalConfig(Iris.TemplateConfig.colorDark);
+    Iris.UpdateGlobalConfig(Iris.TemplateConfig.sizeClear);
+
     Iris.Connect(() => {
       if (!open) return;
       Iris.Window(["Control Panel"], { size: Iris.State(windowSize) });
