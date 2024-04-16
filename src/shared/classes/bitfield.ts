@@ -14,7 +14,7 @@ export default abstract class Bitfield<Mask extends number> {
   public flags = <Mask>0;
 
   /**
-   * these values must be in order of each mask enum member
+   * These values must be in order of each mask enum member
    */
   protected abstract setDefaults(): void;
 

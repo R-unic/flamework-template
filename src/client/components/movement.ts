@@ -1,6 +1,6 @@
 import { Component, type Components } from "@flamework/components";
 import { Dependency, type OnPhysics, type OnStart } from "@flamework/core";
-import { UserInputService as InputService } from "@rbxts/services";
+import { UserInputService as InputService, Workspace as World } from "@rbxts/services";
 
 import type { LogStart } from "shared/hooks";
 import { STUDS_TO_METERS_CONSTANT, studsToMeters } from "shared/utility/3D";
@@ -8,6 +8,7 @@ import { InputInfluenced } from "client/base-components/input-influenced";
 import { flattenNumber, isNaN } from "shared/utility/numbers";
 import { Character } from "shared/utility/client";
 import { Events } from "client/network";
+import { RaycastParamsBuilder } from "@rbxts/builders";
 
 const enum MoveDirection {
   Forwards = "Forwards",
@@ -17,27 +18,35 @@ const enum MoveDirection {
 }
 
 interface Attributes {
-  ["Movement_Speed"]: number;
-  ["Movement_Acceleration"]: number;
-  ["Movement_Friction"]: number;
-  ["Movement_JumpCooldown"]: number;
-  ["Movement_JumpForce"]: number;
+  Movement_Speed: number;
+  Movement_Acceleration: number;
+  Movement_Friction: number;
+  Movement_AirFriction: number;
+  Movement_CanMoveMidair: boolean;
+  Movement_JumpCooldown: number;
+  Movement_JumpForce: number;
+  Movement_GravitationalConstant: number;
 }
 
 @Component({
   tag: "Movement",
   defaults: {
-    ["Movement_Speed"]: 1,
-    ["Movement_Acceleration"]: 1,
-    ["Movement_Friction"]: 0.2,
-    ["Movement_JumpCooldown"]: 0.25,
-    ["Movement_JumpForce"]: 12
+    Movement_Speed: 1,
+    Movement_Acceleration: 1,
+    Movement_Friction: 0.2,
+    Movement_AirFriction: 0.01,
+    Movement_CanMoveMidair: true,
+    Movement_JumpCooldown: 0.25,
+    Movement_JumpForce: 10,
+    Movement_GravitationalConstant: 7.5 // m/s, 9.81 is earth's constant
   }
 })
 export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart: BasePart; }> implements OnStart, OnPhysics, LogStart {
   private readonly root = this.instance.PrimaryPart;
   private readonly moveDirections: MoveDirection[] = [];
+  private readonly defaultFriction = this.attributes.Movement_Friction;
   private velocity = new Vector3;
+  private touchingGround = false;
   private spacebarDown = false;
   private canJump = true;
 
@@ -48,8 +57,10 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
   }
 
   public onStart(): void {
-    const moveKeys = ["W", "A", "S", "D"];
+    this.updateGravity();
+    this.onAttributeChanged("Movement_GravitationalConstant", () => this.updateGravity());
 
+    const moveKeys = ["W", "A", "S", "D"];
     this.janitor.Add(InputService.InputBegan.Connect(({ KeyCode: key }) => {
       if (key.Name !== "Space") return;
       this.spacebarDown = true;
@@ -74,9 +85,19 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
     }));
   }
 
+  private updateGravity() {
+    World.Gravity = this.getG() * 20;
+  }
+
   public onPhysics(dt: number): void {
     const directionVector = this.getVectorFromDirections(this.moveDirections);
-    const force = isNaN(directionVector.X) ? new Vector3 : directionVector.mul(studsToMeters(this.getAcceleration())).mul(dt).mul(60);
+    this.touchingGround = this.isTouchingGround();
+    this.attributes.Movement_Friction = this.touchingGround ?
+      this.defaultFriction
+      : this.getAirFriction();
+
+    const dontApplyForce = (!this.canMoveMidair() && !this.touchingGround) || isNaN(directionVector.X);
+    const force = dontApplyForce ? new Vector3 : directionVector.mul(studsToMeters(this.getAcceleration())).mul(dt).mul(60);
     this.velocity = this.velocity
       .mul(this.isMoving() ? 1 : 1 - this.getFriction())
       .add(force);
@@ -99,6 +120,7 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
 
     const yVelocity = flattenNumber(this.getVelocity().Y);
     if (yVelocity !== 0) return;
+
     this.addForce(new Vector3(0, this.getJumpForce() * STUDS_TO_METERS_CONSTANT, 0));
   }
 
@@ -119,23 +141,35 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
   }
 
   private getSpeed(): number {
-    return this.attributes["Movement_Speed"];
+    return this.attributes.Movement_Speed;
   }
 
   private getAcceleration(): number {
-    return this.attributes["Movement_Acceleration"];
+    return this.attributes.Movement_Acceleration;
   }
 
   private getFriction(): number {
-    return this.attributes["Movement_Friction"];
+    return this.attributes.Movement_Friction;
+  }
+
+  private getAirFriction(): number {
+    return this.attributes.Movement_AirFriction;
+  }
+
+  private canMoveMidair(): boolean {
+    return this.attributes.Movement_CanMoveMidair;
   }
 
   private getJumpCooldown(): number {
-    return this.attributes["Movement_JumpCooldown"];
+    return this.attributes.Movement_JumpCooldown;
   }
 
   private getJumpForce(): number {
-    return this.attributes["Movement_JumpForce"];
+    return this.attributes.Movement_JumpForce;
+  }
+
+  private getG(): number {
+    return this.attributes.Movement_GravitationalConstant;
   }
 
   private isMoving(): boolean {
@@ -179,5 +213,17 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
       case MoveDirection.Right:
         return RightVector;
     }
+  }
+
+  private isTouchingGround(): boolean {
+    const [_, characterSize] = Character.GetBoundingBox();
+    const distanceToGround = characterSize.Y / 2;
+    const root = Character.PrimaryPart!;
+    const raycastParams = new RaycastParamsBuilder()
+      .AddToFilter(Character)
+      .Build();
+
+    const result = World.Raycast(root.Position, root.CFrame.UpVector.mul(-5), raycastParams);
+    return result !== undefined && (result.Distance - 0.5) <= distanceToGround;
   }
 }

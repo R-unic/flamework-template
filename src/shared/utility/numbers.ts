@@ -4,6 +4,34 @@ const { floor, log, abs, clamp } = math;
 
 export const isNaN = (n: number) => n !== n;
 
+export function isUnsigned(n: number): boolean {
+  return n >= 0;
+}
+
+export function isByte(n: number): n is byte {
+  return isUnsigned(n) && n <= 0XFF;
+}
+
+export function isSByte(n: number): n is sbyte {
+  return n >= -0x80 && n <= 0X7F;
+}
+
+export function isShort(n: number): n is short {
+  return n >= -0x8000 && n <= 0x7FFF;
+}
+
+export function isUShort(n: number): n is ushort {
+  return isUnsigned(n) && n <= 0xFFFF;
+}
+
+export function isInt(n: number): n is int {
+  return n >= -0x80000000 && n <= 0x7FFFFFFF;
+}
+
+export function isUInt(n: number): n is uint {
+  return isUnsigned(n) && n <= 0xFFFFFFFF;
+}
+
 export function doubleSidedLimit(n: number, limit: number) {
   return clamp(n, -limit, limit);
 }

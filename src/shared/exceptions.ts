@@ -23,3 +23,9 @@ export class MissingEnvValueException extends Log.Exception {
 		super("MissingEnvValue", `"${valueName}" was not found in .env file`);
 	}
 }
+
+export class InvalidSerializableException extends Log.Exception {
+	public constructor(serializableName: string, fieldName: string) {
+		super("InvalidSerializable", `Failed to validate serializable "${serializableName}" on field "${fieldName}"`);
+	}
+}
