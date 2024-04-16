@@ -21,9 +21,9 @@ interface Cameras {
 
 @Controller()
 export class CameraController implements OnInit, OnRender, LogStart {
-  public readonly cameraStorage = new Instance("Folder", World);
-  private current!: keyof typeof this.cameras;
-  private cameras!: Cameras;
+  public readonly cameraStorage = new Instance("Actor", World);
+  public cameras!: Cameras;
+  public currentName!: keyof typeof this.cameras;
 
   public onInit(): void {
     this.cameraStorage.Name = "Cameras";
@@ -45,12 +45,12 @@ export class CameraController implements OnInit, OnRender, LogStart {
   }
 
   public set(cameraName: keyof typeof this.cameras): void {
-    this.current = cameraName;
+    this.currentName = cameraName;
     for (const [otherCameraName] of pairs(this.cameras))
       this.get(otherCameraName).toggle(cameraName === otherCameraName);
   }
 
-  private get(cameraName: keyof typeof this.cameras = this.current): CameraControllerComponent {
+  public get(cameraName: keyof typeof this.cameras = this.currentName): CameraControllerComponent {
     return this.cameras[cameraName];
   }
 }

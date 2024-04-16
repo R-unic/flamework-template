@@ -6,7 +6,10 @@ import Iris from "@rbxts/iris";
 
 import { Character, Player } from "shared/utility/client";
 import { DEVELOPERS } from "shared/constants";
+
+import type { CameraController } from "./camera";
 import type { Movement } from "client/components/movement";
+import Object from "@rbxts/object-utils";
 
 @Controller()
 export class ControlPanelController implements OnStart {
@@ -17,7 +20,8 @@ export class ControlPanelController implements OnStart {
   });
 
   public constructor(
-    private readonly components: Components
+    private readonly components: Components,
+    private readonly camera: CameraController
   ) { }
 
   public async onStart(): Promise<void> {
@@ -35,14 +39,36 @@ export class ControlPanelController implements OnStart {
       if (!open) return;
       Iris.Window(["Control Panel"], { size: Iris.State(windowSize) });
 
-      if (movement !== undefined)
-        this.renderMovementTab(movement);
+      this.renderCameraTab();
+      this.renderMovementTab(movement);
 
       Iris.End();
     });
   }
 
-  private renderMovementTab(movement: Movement) {
+  private renderCameraTab(): void {
+    Iris.Tree(["Camera"]);
+
+    const currentCamera = this.camera.get().instance;
+    const fov = Iris.SliderNum(["FOV", 0.25, 1, 120], { number: Iris.State(currentCamera.FieldOfView) });
+    if (fov.numberChanged())
+      currentCamera.FieldOfView = fov.state.number.get();
+
+    const cameraComponents = Object.keys(this.camera.cameras).sort();
+    const componentIndex = Iris.State<keyof typeof this.camera.cameras>(this.camera.currentName);
+    Iris.Combo(["Camera Component"], { index: componentIndex });
+    for (const component of cameraComponents)
+      Iris.Selectable([component, component], { index: componentIndex });
+    Iris.End();
+
+    if (this.camera.currentName !== componentIndex.get())
+      this.camera.set(componentIndex.get());
+
+    Iris.End();
+  }
+
+  private renderMovementTab(movement?: Movement): void {
+    if (movement === undefined) return;
     Iris.Tree(["Movement"]);
 
     const speed = Iris.SliderNum(["Speed", 0.05, 0.05, 30], { number: Iris.State(movement.getSpeed()) });
@@ -53,11 +79,11 @@ export class ControlPanelController implements OnStart {
     if (acceleration.numberChanged())
       movement.attributes.Movement_Acceleration = acceleration.state.number.get();
 
-    const friction = Iris.SliderNum(["Friction", 0.01, 0, 3], { number: Iris.State(movement.friction) });
+    const friction = Iris.SliderNum(["Friction", 0.01, 0, 1], { number: Iris.State(movement.friction) });
     if (friction.numberChanged())
       movement.attributes.Movement_Friction = friction.state.number.get();
 
-    const airFriction = Iris.SliderNum(["Air Friction", 0.01, 0, 3], { number: Iris.State(movement.getAirFriction()) });
+    const airFriction = Iris.SliderNum(["Air Friction", 0.01, 0, 1], { number: Iris.State(movement.getAirFriction()) });
     if (airFriction.numberChanged())
       movement.attributes.Movement_AirFriction = airFriction.state.number.get();
 
