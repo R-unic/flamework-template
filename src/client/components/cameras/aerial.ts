@@ -24,7 +24,7 @@ export class AerialCamera extends CameraControllerComponent<Attributes> implemen
     camera.Name = "AerialCamera";
     camera.Parent = controller.cameraStorage;
 
-    return components.addComponent(camera); // every other camera component should create a new camera
+    return components.addComponent(camera);
   }
 
   public onRender(dt: number): void {

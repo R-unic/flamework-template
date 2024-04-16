@@ -10,11 +10,11 @@ import type { CameraController } from "client/controllers/camera";
 export class DefaultCamera extends CameraControllerComponent {
   public static create(controller: CameraController): DefaultCamera {
     const components = Dependency<Components>();
-    const camera = World.CurrentCamera!;
+    const camera = World.CurrentCamera!; // every other camera component should clone a new camera
     camera.Name = "DefaultCamera";
     camera.Parent = controller.cameraStorage;
 
-    return components.addComponent(camera); // every other camera component should create a new camera
+    return components.addComponent(camera);
   }
 
   public override toggle(on: boolean): void {
