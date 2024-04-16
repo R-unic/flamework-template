@@ -37,8 +37,8 @@ interface Attributes {
     Movement_AirFriction: 0.01,
     Movement_CanMoveMidair: true,
     Movement_JumpCooldown: 0.25,
-    Movement_JumpForce: 10,
-    Movement_GravitationalConstant: 7.5 // m/s, 9.81 is earth's constant
+    Movement_JumpForce: 6,
+    Movement_GravitationalConstant: 3 // m/s, 9.81 is earth's constant
   }
 })
 export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart: BasePart; }> implements OnStart, OnPhysics, LogStart {
