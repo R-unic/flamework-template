@@ -1,9 +1,9 @@
 import { BaseComponent } from "@flamework/components";
-import { Reflect } from "@flamework/core";
 import { RunService as Runtime } from "@rbxts/services";
 
 import { flatten } from "./utility/array";
 import { getInstancePath } from "./utility/instances";
+import { getName } from "./utility/meta";
 import repr from "./utility/repr";
 
 type LogFunctionName = ExtractKeys<typeof Log, Callback>;
@@ -21,8 +21,6 @@ const log = (category: LogFunctionName, ...messages: defined[]): void => {
   else
     print(prefix, ...messages);
 }
-
-const getName = (obj: object) => (<string>Reflect.getMetadata(obj, "identifier")).split("@")[1];
 
 namespace Log {
   export class Exception {

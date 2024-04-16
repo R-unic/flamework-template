@@ -2,7 +2,9 @@ import { Flamework } from "@flamework/core";
 
 import { FlameworkIgnitionException } from "shared/exceptions";
 import * as Dependencies from "shared/dependencies";
-import Pakt from "./pakt";
+// import { PacketHeader } from "./pakt/encodables/packet-header";
+// import { PacketFooter } from "./pakt/encodables/packet-footer";
+// import { Packet } from "./pakt/encodables/packet";
 
 try {
 	Dependencies.registerAll();
@@ -14,14 +16,13 @@ try {
 	throw new FlameworkIgnitionException(<string>e);
 }
 
-// const header = new Pakt.PacketHeader(4); // 4-bit payload width
-// const payload: Buffer = [69];
-// const footer = new Pakt.PacketFooter();
+// const header = new PacketHeader(1);
+// const payload = [69];
+// const footer = new PacketFooter;
+// const validatePayload = (payload: Buffer): boolean => payload.size() > 0;
+// const packet = new Packet(header, payload, footer, validatePayload);
+// const encodedPacket = packet.encode();
+// const parsedPacket = Packet.parse(encodedPacket, validatePayload);
 
-// const validatePayload = (payload: Buffer): boolean => payload.size() === 1;
-// const packet = new Pakt.Packet(header, payload, footer, validatePayload) // validate that payload is 1 byte wide
-// print("original packet", packet);
-// const serializedPacket = packet.serialize();
-// print("serialized packet", serializedPacket);
-// const parsedPacket = Pakt.Packet.parse(serializedPacket, validatePayload);
-// print("parsed packet", parsedPacket);
+// print("original packet", packet)
+// print("parsed packet", parsedPacket)
