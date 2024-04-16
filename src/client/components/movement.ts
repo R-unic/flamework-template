@@ -10,6 +10,8 @@ import { Character } from "shared/utility/client";
 import { Events } from "client/network";
 import { RaycastParamsBuilder } from "@rbxts/builders";
 
+type KeyName = ExtractKeys<typeof Enum.KeyCode, EnumItem>;
+
 const enum MoveDirection {
   Forwards = "Forwards",
   Backwards = "Backwards",
@@ -32,8 +34,8 @@ interface Attributes {
   tag: "Movement",
   defaults: {
     Movement_Speed: 1,
-    Movement_Acceleration: 1,
-    Movement_Friction: 0.2,
+    Movement_Acceleration: 0.5,
+    Movement_Friction: 0.175,
     Movement_AirFriction: 0.01,
     Movement_CanMoveMidair: true,
     Movement_JumpCooldown: 0.25,
@@ -44,11 +46,11 @@ interface Attributes {
 export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart: BasePart; }> implements OnStart, OnPhysics, LogStart {
   private readonly root = this.instance.PrimaryPart;
   private readonly moveDirections: MoveDirection[] = [];
-  private readonly defaultFriction = this.attributes.Movement_Friction;
   private velocity = new Vector3;
   private touchingGround = false;
   private spacebarDown = false;
   private canJump = true;
+  private friction = this.attributes.Movement_Friction;
 
   public static start() {
     Events.character.toggleDefaultMovement(false);
@@ -57,10 +59,11 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
   }
 
   public onStart(): void {
+    this.disableElasticity();
     this.updateGravity();
     this.onAttributeChanged("Movement_GravitationalConstant", () => this.updateGravity());
 
-    const moveKeys = ["W", "A", "S", "D"];
+    const moveKeys: KeyName[] = ["W", "A", "S", "D", "Up", "Left", "Down", "Right"];
     this.janitor.Add(InputService.InputBegan.Connect(({ KeyCode: key }) => {
       if (key.Name !== "Space") return;
       this.spacebarDown = true;
@@ -85,21 +88,17 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
     }));
   }
 
-  private updateGravity() {
-    World.Gravity = this.getG() * 20;
-  }
-
   public onPhysics(dt: number): void {
     const directionVector = this.getVectorFromDirections(this.moveDirections);
     this.touchingGround = this.isTouchingGround();
-    this.attributes.Movement_Friction = this.touchingGround ?
-      this.defaultFriction
+    this.friction = this.touchingGround ?
+      this.attributes.Movement_Friction
       : this.getAirFriction();
 
     const dontApplyForce = (!this.canMoveMidair() && !this.touchingGround) || isNaN(directionVector.X);
     const force = dontApplyForce ? new Vector3 : directionVector.mul(studsToMeters(this.getAcceleration())).mul(dt).mul(60);
     this.velocity = this.velocity
-      .mul(this.isMoving() ? 1 : 1 - this.getFriction())
+      .mul(this.isMoving() ? 1 : 1 - this.friction)
       .add(force);
 
     const speed = studsToMeters(this.getSpeed());
@@ -107,6 +106,18 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
       this.velocity = this.velocity.Unit.mul(speed);
 
     this.root.CFrame = this.root.CFrame.add(this.velocity);
+  }
+
+  private updateGravity(): void {
+    World.Gravity = this.getG() * 20;
+  }
+
+  private disableElasticity(): void {
+    const characterParts = this.instance.GetDescendants()
+      .filter((i): i is BasePart => i.IsA("BasePart"));
+
+    for (const part of characterParts)
+      part.CustomPhysicalProperties = new PhysicalProperties(0.7, 0.3, 1, 0, 0);
   }
 
   private jump(): void {
@@ -148,10 +159,6 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
     return this.attributes.Movement_Acceleration;
   }
 
-  private getFriction(): number {
-    return this.attributes.Movement_Friction;
-  }
-
   private getAirFriction(): number {
     return this.attributes.Movement_AirFriction;
   }
@@ -186,15 +193,19 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
     return vector.Unit;
   }
 
-  private getDirectionFromKey(key: string): MoveDirection {
+  private getDirectionFromKey(key: KeyName): MoveDirection {
     switch (key) {
       case "W":
+      case "Up":
         return MoveDirection.Forwards;
       case "A":
+      case "Left":
         return MoveDirection.Left;
       case "S":
+      case "Down":
         return MoveDirection.Backwards;
       case "D":
+      case "Right":
         return MoveDirection.Right;
     }
 

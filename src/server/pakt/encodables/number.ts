@@ -26,7 +26,7 @@ export class Number<T extends number = number> extends Encodable {
 
   public static parse<T extends number = number>(reader: BinaryReader, sizeInBytes: byte): T {
     const bytes = reader.readBytes(sizeInBytes);
-    const value = createNumberFromBuffer<T>(bytes, sizeInBytes);
+    const value = createNumberFromBuffer<T>(bytes);
     const number = new Number<T>(value, sizeInBytes);
     number.validate();
 

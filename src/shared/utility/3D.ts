@@ -20,3 +20,7 @@ export const STUDS_TO_METERS_CONSTANT = 3.571;
 export function studsToMeters(studs: number): number {
   return studs / STUDS_TO_METERS_CONSTANT;
 }
+
+export function metersToStuds(meters: number): number {
+  return meters * STUDS_TO_METERS_CONSTANT;
+}

@@ -37,7 +37,7 @@ export class MouseController implements OnInit {
   private readonly input = new InputContext({
     ActionGhosting: 0,
     Process: false,
-    RunSynchronously: true
+    RunSynchronously: false
   });
 
   public onInit(): void {
@@ -47,7 +47,7 @@ export class MouseController implements OnInit {
         this.isLmbDown = true;
         this.lmbDown.Fire();
       })
-      .BindEvent("onRelease", this.clickAction.Released, () => {
+      .BindEvent("onLmbRelease", this.clickAction.Released, () => {
         this.isLmbDown = false
       });
 
@@ -56,7 +56,7 @@ export class MouseController implements OnInit {
         this.isRmbDown = true;
         this.rmbDown.Fire();
       })
-      .BindEvent("onRelease", this.rightClickAction.Released, () => {
+      .BindEvent("onRmbRelease", this.rightClickAction.Released, () => {
         this.isRmbDown = false
       });
 
@@ -66,7 +66,7 @@ export class MouseController implements OnInit {
         this.isMmbDown = true;
         this.mmbDown.Fire();
       })
-      .BindEvent("onRelease", this.middleClickAction.Released, () => {
+      .BindEvent("onMmbRelease", this.middleClickAction.Released, () => {
         this.isMmbDown = false
       });
 
