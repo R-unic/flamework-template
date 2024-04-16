@@ -12,7 +12,7 @@ export class InitializationController implements OnStart {
 
   public onStart(): void {
     Events.data.initialize();
-    this.camera.set("Default"); // set to preferred camera
     Movement.start(); // remove if you don't want custom movement
+    this.camera.set("Fixed"); // set to preferred camera
   }
 }

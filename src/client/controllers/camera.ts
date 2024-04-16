@@ -2,16 +2,21 @@ import { Controller, OnRender, type OnInit } from "@flamework/core";
 import { Workspace as World } from "@rbxts/services";
 
 import type { LogStart } from "shared/hooks";
-import type { CameraControllerComponent } from "client/base-components/camera-controller-component";
 import { DefaultCamera } from "client/components/cameras/default";
 import { FirstPersonCamera } from "client/components/cameras/first-person";
 import { AerialCamera } from "client/components/cameras/aerial";
+import { FixedCamera } from "client/components/cameras/fixed";
+import { FlyOnTheWallCamera } from "client/components/cameras/fly-on-the-wall";
+
+import type { CameraControllerComponent } from "client/base-components/camera-controller-component";
 
 // add new camera components here
 interface Cameras {
   readonly Default: DefaultCamera;
   readonly FirstPerson: FirstPersonCamera;
-  readonly Aerial: AerialCamera
+  readonly Aerial: AerialCamera;
+  readonly Fixed: FixedCamera;
+  readonly FlyOnTheWall: FlyOnTheWallCamera;
 }
 
 @Controller()
@@ -25,7 +30,9 @@ export class CameraController implements OnInit, OnRender, LogStart {
     this.cameras = {
       Default: DefaultCamera.create(this),
       FirstPerson: FirstPersonCamera.create(this),
-      Aerial: AerialCamera.create(this)
+      Aerial: AerialCamera.create(this),
+      Fixed: FixedCamera.create(this),
+      FlyOnTheWall: FlyOnTheWallCamera.create(this)
     };
   }
 

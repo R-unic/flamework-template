@@ -12,6 +12,7 @@ export class FirstPersonCamera extends CameraControllerComponent {
     const components = Dependency<Components>();
     const camera = World.CurrentCamera!.Clone();
     camera.Name = "FirstPersonCamera";
+    camera.VRTiltAndRollEnabled = true;
     camera.Parent = controller.cameraStorage;
 
     return components.addComponent(camera);
