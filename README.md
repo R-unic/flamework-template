@@ -1,7 +1,37 @@
 # My Flamework Template
 
-This is my own pre-configured template you can use for your Roblox TypeScript projects that use [Flamework](https://fireboltofdeath.dev/docs/flamework/).
-It includes a few extra utilities.
+This is my own pre-configured template you can use for your Roblox TypeScript projects that use [Flamework](https://fireboltofdeath.dev/docs/flamework/).  
+It aims to be decently simple and lightweight but still provide as many reusable things as possible to create any type of game. React/Roact is not included, you'll have to install that yourself if you want it.  
+
+
+## Features
+- Frontend:
+  - Custom movement system (also optional)
+  - Custom mouse controller
+  - Custom camera controller to switch between cams on the fly with these cam components included:
+    - Default (default roblox cam)
+    - FirstPerson (default roblox cam locked to 1p)
+    - Aerial
+    - Fixed
+    - FlyOnTheWall
+  - UI:
+    - customizable control panel made with iris
+      - you can already modify the movement and camera systems with it
+    - animation components (Gradient, Rotation, Transparency, Scale, SpringScale)
+    - effect controller (such as fading black in/out)
+- Backend:
+  - Cmdr for custom commands
+  - Graceful Firebase API instead of DataStoreService
+  - Discord webhook logger
+  - Product/gamepass transaction handler
+  - GitHub info service
+  - Scheduling service (execute a fn on a loop with a cooldown, e.x. `scheduling.every.second.Connect(...)`)
+- Tons of utility functions and classes (comma format, abbreviation, repr, array shuffle/flatten/reverse, springs, sin/cos waves, bitfields, etc.)
+- Included logger
+- Custom lifecycle hooks:
+  - OnPlayerJoin/OnPlayerLeave
+  - OnDataUpdate
+  - LogStart (logs when a singleton/component is started)
 
 ## Usage
 
