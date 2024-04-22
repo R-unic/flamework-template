@@ -5,6 +5,7 @@ import { Workspace as World } from "@rbxts/services";
 import { Character, Player } from "shared/utility/client";
 import { CameraControllerComponent } from "client/base-components/camera-controller-component";
 import type { CameraController } from "client/controllers/camera";
+import type { CharacterController } from "client/controllers/character";
 
 @Component({ tag: "FlyOnTheWallCamera" })
 export class FlyOnTheWallCamera extends CameraControllerComponent implements OnRender {
@@ -18,9 +19,15 @@ export class FlyOnTheWallCamera extends CameraControllerComponent implements OnR
     return components.addComponent(camera);
   }
 
+  public constructor(
+    private readonly character: CharacterController
+  ) { super(); }
+
   public onRender(dt: number): void {
-    const characterPosition = Character.PrimaryPart.Position;
-    this.lookAt(characterPosition);
+    const root = this.character.getRoot();
+    if (root === undefined) return;
+
+    this.lookAt(root.Position);
   }
 
   public override toggle(on: boolean): void {

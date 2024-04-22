@@ -8,6 +8,10 @@
     "watch": "rbxtsc -w"
   },
   "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/R-unic/flamework-template.git"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
