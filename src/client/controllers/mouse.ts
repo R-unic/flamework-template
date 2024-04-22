@@ -1,23 +1,18 @@
-import { Controller, OnInit } from "@flamework/core";
+import { Controller, type OnInit, type OnRender } from "@flamework/core";
 import { UserInputService as UIS, Workspace as World } from "@rbxts/services";
 import { RaycastParamsBuilder } from "@rbxts/builders";
 import { Context as InputContext } from "@rbxts/gamejoy";
 import { Action, Axis, Union } from "@rbxts/gamejoy/out/Actions";
+import Signal from "@rbxts/signal";
 
 import { Player } from "shared/utility/client";
-import Signal from "@rbxts/signal";
 
 const { abs } = math;
 
 const MOUSE_RAY_DISTANCE = 1000;
 
-export const enum MouseIcon {
-  Default,
-  Drag,
-}
-
 @Controller()
-export class MouseController implements OnInit {
+export class MouseController implements OnInit, OnRender {
   public readonly lmbUp = new Signal<() => void>;
   public readonly rmbUp = new Signal<() => void>;
   public readonly mmbUp = new Signal<() => void>;
@@ -25,9 +20,11 @@ export class MouseController implements OnInit {
   public readonly rmbDown = new Signal<() => void>;
   public readonly mmbDown = new Signal<() => void>;
   public readonly scrolled = new Signal<(delta: number) => void>;
+
   public isLmbDown = false;
   public isRmbDown = false;
   public isMmbDown = false;
+  public behavior: Enum.MouseBehavior = Enum.MouseBehavior.Default;
 
   private readonly playerMouse = Player.GetMouse();
   private readonly clickAction = new Union(["MouseButton1", "Touch"]);
@@ -76,30 +73,31 @@ export class MouseController implements OnInit {
     UIS.TouchEnded.Connect(() => this.isLmbDown = false);
   }
 
+  public onRender(dt: number): void {
+    UIS.MouseBehavior = this.behavior;
+  }
+
+  public getPosition(): Vector2 {
+    return UIS.GetMouseLocation();
+  }
+
   public getWorldPosition(distance = MOUSE_RAY_DISTANCE): Vector3 {
     const { X, Y } = UIS.GetMouseLocation();
     const { Origin, Direction } = World.CurrentCamera!.ViewportPointToRay(X, Y);
     const raycastResult = this.createRay(distance);
-    if (raycastResult)
-      return raycastResult.Position;
-    else
-      return Origin.add(Direction.mul(distance));
+    return raycastResult !== undefined ? raycastResult.Position : Origin.add(Direction.mul(distance));
   }
 
   public target(distance = MOUSE_RAY_DISTANCE): Maybe<BasePart> {
     return this.createRay(distance)?.Instance;
   }
 
-  public delta(): Vector2 {
+  public getDelta(): Vector2 {
     return UIS.GetMouseDelta();
   }
 
-  public setTargetFilter(filterInstance: Instance) {
+  public setTargetFilter(filterInstance: Instance): void {
     this.playerMouse.TargetFilter = filterInstance;
-  }
-
-  public setBehavior(behavior: Enum.MouseBehavior) {
-    UIS.MouseBehavior = behavior;
   }
 
   public setIcon(icon: string): void {
