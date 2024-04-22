@@ -8,19 +8,25 @@ import ButtonTweenAnimation from "client/base-components/button-tween-animation"
 const { EasingStyle } = Enum;
 
 interface Attributes {
-  ScaleIncrement?: number;
-  Speed?: number;
+  ScaleIncrement: number;
+  Speed: number;
 }
 
-@Component({ tag: "ScaleAnimation" })
+@Component({
+  tag: "ScaleAnimation",
+  defaults: {
+    ScaleIncrement: 0.05,
+    Speed: 0.35
+  }
+})
 export class ScaleAnimation extends ButtonTweenAnimation<Attributes> implements OnStart {
   private readonly scale = this.instance.FindFirstChildOfClass("UIScale") ?? new Instance("UIScale", this.instance);
   private readonly defaultScale = this.scale.Scale;
-  private readonly scaleIncrement = this.attributes.ScaleIncrement ?? 0.05;
+  private readonly scaleIncrement = this.attributes.ScaleIncrement;
 
   protected readonly tweenInfo = new TweenInfoBuilder()
     .SetEasingStyle(EasingStyle.Sine)
-    .SetTime(this.attributes.Speed ?? 0.35);
+    .SetTime(this.attributes.Speed);
 
   public onStart(): void {
     super.onStart();
