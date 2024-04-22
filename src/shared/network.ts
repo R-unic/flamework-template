@@ -1,5 +1,6 @@
 import { Networking } from "@flamework/networking";
 import type { GitHubInfo } from "./structs/github";
+import type { GamepassInfo } from "./structs/roblox-api";
 
 interface ServerEvents {
   data: {
@@ -24,6 +25,9 @@ interface ServerFunctions {
   };
   github: {
     getInfo(): GitHubInfo;
+  };
+  roblox: {
+    getGamepasses(amount?: number): GamepassInfo[];
   };
 }
 
