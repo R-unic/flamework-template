@@ -12,7 +12,7 @@ const db = new Firebase;
 @Service()
 export class DatabaseService implements OnInit, LogStart {
 	public readonly loaded = new Signal<(player: Player) => void>;
-	public readonly updated = new Signal<<T = unknown>(directory: string, value: T) => void>;
+	public readonly updated = new Signal<<T = unknown>(player: Player, directory: string, value: T) => void>;
 
 	public onInit(): void {
 		Events.data.initialize.connect((player) => this.setup(player));
@@ -47,7 +47,7 @@ export class DatabaseService implements OnInit, LogStart {
 	}
 
 	private update(player: Player, fullDirectory: string, value: unknown): void {
-		this.updated.Fire(fullDirectory, value);
+		this.updated.Fire(player, fullDirectory, value);
 		Events.data.updated(player, fullDirectory, value);
 	}
 

@@ -1,6 +1,6 @@
 import { Controller, Modding, type OnStart } from "@flamework/core";
 
-import type { OnDataUpdate } from "shared/hooks";
+import type { OnDataUpdate } from "client/hooks";
 import { Events } from "client/network";
 
 @Controller()
