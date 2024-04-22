@@ -1,4 +1,4 @@
-import { Size } from "shared/utility/number-size";
+import { Size } from "shared/utility/numbers";
 import { isShort } from "shared/utility/numbers";
 import { Number } from "./number";
 import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";

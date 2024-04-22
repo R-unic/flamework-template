@@ -1,6 +1,6 @@
 import { HttpService as HTTP } from "@rbxts/services";
 
-import { Size } from "shared/utility/number-size";
+import { Size } from "shared/utility/numbers";
 import { SizedString } from "./sized-string";
 import { Number } from "./number";
 import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";

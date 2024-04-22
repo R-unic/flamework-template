@@ -1,4 +1,4 @@
-import { Size } from "shared/utility/number-size";
+import { Size } from "shared/utility/numbers";
 import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
 import type { BinaryReader } from "shared/classes/binary-reader";
 

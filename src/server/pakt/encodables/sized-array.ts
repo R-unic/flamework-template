@@ -1,8 +1,7 @@
 import { flatten, slice } from "shared/utility/array";
-import { isUShort } from "shared/utility/numbers";
+import { Number } from "./number";
 import { Encodable, EncodableKind, Encodables, InvalidEncodableException } from "../encodable";
 import type { BinaryReader } from "shared/classes/binary-reader";
-import { Number } from "./number";
 import Log from "shared/logger";
 
 const FillerBytes: Record<string, Buffer> = {

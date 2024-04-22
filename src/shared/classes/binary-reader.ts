@@ -1,4 +1,4 @@
-import { Size } from "shared/utility/number-size";
+import { Size } from "shared/utility/numbers";
 import { slice } from "shared/utility/array";
 import Log from "shared/logger";
 
