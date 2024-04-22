@@ -27,6 +27,10 @@ export function getPageContents<T extends defined>(pages: Pages<T>): T[] {
   return contents;
 }
 
+export function getCharacterParts(character: Model): BasePart[] {
+  return character.GetDescendants().filter((i): i is BasePart => i.IsA("BasePart"));
+}
+
 export async function getInstancePath(instance: Instance): Promise<string> {
   let path = instance.GetFullName()
     .gsub("Workspace", "World")[0]
