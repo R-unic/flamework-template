@@ -15,7 +15,7 @@ const DISABLED: Partial<Record<LogFunctionName, boolean>> = {
 const log = (category: LogFunctionName, ...messages: defined[]): void => {
   if (DISABLED[category]) return;
 
-  const prefix = `[${category.upper()}]:`;
+  const prefix = `[${category.upper().gsub("_", " ")[0]}]:`;
   if (category === "fatal")
     error(`${prefix} ${flatten(messages).map(v => typeOf(v) === "table" ? repr(v) : v).join(" ")}`, 0);
   else
@@ -43,11 +43,11 @@ namespace Log {
   }
 
   export function warning(...messages: defined[]): void {
-    log("warning", messages);
+    log("warning", ...messages);
   }
 
   export function fatal(...messages: defined[]): void {
-    log("fatal", messages);
+    log("fatal", ...messages);
   }
 
   /**
