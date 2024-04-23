@@ -2,14 +2,15 @@ import { Components } from "@flamework/components";
 import { Controller, type OnStart } from "@flamework/core";
 import { Context as InputContext } from "@rbxts/gamejoy";
 import { RunService as Runtime } from "@rbxts/services";
+import Object from "@rbxts/object-utils";
 import Iris from "@rbxts/iris";
 
-import { Character, Player } from "shared/utility/client";
+import { Player } from "shared/utility/client";
 import { DEVELOPERS } from "shared/constants";
 
 import type { CameraController } from "./camera";
+import type { CharacterController } from "./character";
 import type { Movement } from "client/components/movement";
-import Object from "@rbxts/object-utils";
 
 @Controller()
 export class ControlPanelController implements OnStart {
@@ -21,12 +22,13 @@ export class ControlPanelController implements OnStart {
 
   public constructor(
     private readonly components: Components,
-    private readonly camera: CameraController
+    private readonly camera: CameraController,
+    private readonly character: CharacterController
   ) { }
 
   public async onStart(): Promise<void> {
     const windowSize = new Vector2(300, 400);
-    const movement = await this.components.waitForComponent<Movement>(Character);
+    const movement = await this.components.waitForComponent<Movement>(this.character.mustGet());
     let open = false;
 
     this.input.Bind("RightShift", () => {

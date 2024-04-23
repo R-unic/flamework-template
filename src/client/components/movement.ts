@@ -6,9 +6,9 @@ import type { LogStart } from "shared/hooks";
 import { STUDS_TO_METERS_CONSTANT, studsToMeters } from "shared/utility/3D";
 import { InputInfluenced } from "client/base-components/input-influenced";
 import { flattenNumber, isNaN } from "shared/utility/numbers";
-import { Character } from "shared/utility/client";
 import { Events } from "client/network";
 import { RaycastParamsBuilder } from "@rbxts/builders";
+import { CharacterController } from "client/controllers/character";
 
 type KeyName = ExtractKeys<typeof Enum.KeyCode, EnumItem>;
 
@@ -30,6 +30,10 @@ interface Attributes {
   Movement_GravitationalConstant: number;
 }
 
+/**
+ * This works great for singleplayer!
+ * Unfortunately in multiplayer movement appears laggy.
+ */
 @Component({
   tag: "Movement",
   defaults: {
@@ -55,9 +59,14 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
 
   public static start() {
     Events.character.toggleDefaultMovement(false);
+    const character = Dependency<CharacterController>();
     const components = Dependency<Components>();
-    components.addComponent<Movement>(Character);
+    components.addComponent<Movement>(character.mustGet());
   }
+
+  public constructor(
+    private readonly character: CharacterController
+  ) { super(); }
 
   public onStart(): void {
     this.disableElasticity();
@@ -90,21 +99,22 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
   }
 
   public onPhysics(dt: number): void {
+    const character = this.character.get();
+    if (character === undefined) return;
+
     const directionVector = this.getVectorFromDirections(this.moveDirections);
     this.touchingGround = this.isTouchingGround();
     this.friction = this.touchingGround ?
       this.attributes.Movement_Friction
       : this.getAirFriction();
 
+    const speed = studsToMeters(this.getSpeed());
     const dontApplyForce = (!this.canMoveMidair() && !this.touchingGround) || isNaN(directionVector.X);
-    const force = dontApplyForce ? new Vector3 : directionVector.mul(studsToMeters(this.getAcceleration())).mul(dt).mul(60);
+    const desiredForce = directionVector.mul(studsToMeters(this.getAcceleration() * dt * 60)).Unit.mul(speed);
+    const force = dontApplyForce ? new Vector3 : desiredForce.sub(this.velocity);
     this.velocity = this.velocity
       .mul(this.isMoving() ? 1 : 1 - this.friction)
       .add(force);
-
-    const speed = studsToMeters(this.getSpeed());
-    if (this.velocity.Magnitude > speed)
-      this.velocity = this.velocity.Unit.mul(speed);
 
     this.root.CFrame = this.root.CFrame.add(this.velocity);
   }
@@ -228,11 +238,14 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
   }
 
   private isTouchingGround(): boolean {
-    const [_, characterSize] = Character.GetBoundingBox();
+    const character = this.character.get();
+    if (character === undefined) return false;
+
+    const [_, characterSize] = character.GetBoundingBox();
     const distanceToGround = characterSize.Y / 2;
-    const root = Character.PrimaryPart!;
+    const root = this.character.getRoot()!;
     const raycastParams = new RaycastParamsBuilder()
-      .AddToFilter(Character)
+      .AddToFilter(character)
       .Build();
 
     const result = World.Raycast(root.Position, root.CFrame.UpVector.mul(-5), raycastParams);
