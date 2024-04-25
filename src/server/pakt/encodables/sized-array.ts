@@ -1,6 +1,7 @@
 import { flatten, slice } from "shared/utility/array";
 import { Number } from "./number";
-import { Encodable, EncodableKind, Encodables, InvalidEncodableException } from "../encodable";
+import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
+import { Encodables } from "../encodables";
 import type { BinaryReader } from "shared/classes/binary-reader";
 import Log from "shared/logger";
 
