@@ -4,10 +4,13 @@ import Log from "shared/logger";
 
 class MissingByteException extends Log.Exception {
   public constructor() {
-    super("BinaryReader.MissingByte", "Attempted to read byte that did not exist. This is caused by reading past the buffers extents.");
+    super("BinaryReader.MissingByte", "Attempted to read byte that did not exist. This is usually caused by reading past the buffers extents");
   }
 }
 
+/**
+ * Reads binary data from a buffer
+ */
 export class BinaryReader {
   private offset = 0;
   private bitOffset = 0;
@@ -93,15 +96,15 @@ export class BinaryReader {
     let remainingBits = amount;
 
     while (remainingBits > 0) {
-      const bitsToRead = math.min(Size.byte() - this.bitOffset, remainingBits);
+      const bitsToRead = math.min(Size.byte - this.bitOffset, remainingBits);
       const mask = (1 << bitsToRead) - 1;
-      const bits = (this.peekByte() >> (Size.byte() - this.bitOffset - bitsToRead)) & mask;
+      const bits = (this.peekByte() >> (Size.byte - this.bitOffset - bitsToRead)) & mask;
       currentByte = (currentByte << bitsToRead) | bits;
 
       remainingBits -= bitsToRead;
       this.bitOffset += bitsToRead;
 
-      if (this.bitOffset === Size.byte()) {
+      if (this.bitOffset === Size.byte) {
         result.push(currentByte);
         currentByte = 0;
         this.offset++;
@@ -111,7 +114,7 @@ export class BinaryReader {
 
     // If there are remaining bits, add the partially assembled byte to the result
     if (remainingBits > 0)
-      result.push(currentByte << (Size.byte() - this.bitOffset - remainingBits));
+      result.push(currentByte << (Size.byte - this.bitOffset - remainingBits));
 
     return result;
   }

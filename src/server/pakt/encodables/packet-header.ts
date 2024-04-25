@@ -6,7 +6,7 @@ import type { BinaryReader } from "shared/classes/binary-reader";
 
 export class PacketHeader extends Encodable {
   public static readonly kind = EncodableKind.PacketHeader;
-  public static readonly size = Size.short();
+  public static readonly size = Size.short;
 
   /**
    * @param payloadSize In bytes

@@ -11,15 +11,14 @@ export function shuffle<T>(array: T[]): T[] {
 }
 
 export function removeDuplicates<T extends defined>(array: T[]): T[] {
-  const seen: T[] = [];
-  const result: T[] = [];
-  for (const value of array)
-    if (!seen.includes(value)) {
-      result.push(value);
-      seen.push(value);
+  const seen = new Set<T>();
+  return array.filter((value) => {
+    if (!seen.has(value)) {
+      seen.add(value);
+      return true;
     }
-
-  return result;
+    return false;
+  });
 }
 
 export function flatten<T extends defined>(array: (T | T[])[]): T[] {

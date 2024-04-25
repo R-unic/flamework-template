@@ -7,7 +7,7 @@ import { Encodable, EncodableKind, InvalidEncodableException } from "../encodabl
 import type { BinaryReader } from "shared/classes/binary-reader";
 
 const PAKT_SESSION_ID = HTTP.GenerateGUID(false);
-export const SESSION_ID_SIZE = PAKT_SESSION_ID.size() * Size.byte();
+export const SESSION_ID_SIZE = PAKT_SESSION_ID.size() * Size.byte;
 
 export class PacketFooter extends Encodable {
   public static readonly kind = EncodableKind.PacketFooter;

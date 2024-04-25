@@ -5,21 +5,11 @@ const { floor, log, abs, clamp } = math;
 export const isNaN = (n: number) => n !== n;
 
 export namespace Size {
-  export function byte(): ushort {
-    return 8;
-  }
-  export function short(): ushort {
-    return 16;
-  }
-  export function int(): ushort {
-    return 32;
-  }
-  export function long(): ushort {
-    return 64;
-  }
-  export function bigint(): ushort {
-    return 128;
-  }
+  export const byte = 8;
+  export const short = 16;
+  export const int = 32;
+  export const long = 64;
+  export const bigint = 128;
 }
 
 export function isUnsigned(n: number): boolean {

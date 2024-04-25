@@ -5,7 +5,7 @@ import type { BinaryReader } from "shared/classes/binary-reader";
 function createBufferFromNumber(value: number, sizeInBytes: byte): Buffer {
   const buffer: Buffer = [];
   for (let i = 0; i < sizeInBytes; i++)
-    buffer.push((value >> (i * Size.byte())) & 0xFF);
+    buffer.push((value >> (i * Size.byte)) & 0xFF);
 
   return buffer;
 }
@@ -13,7 +13,7 @@ function createBufferFromNumber(value: number, sizeInBytes: byte): Buffer {
 function createNumberFromBuffer<T extends number = number>(buffer: Buffer): T {
   let value = 0;
   for (const [i, byte] of pairs(buffer)) {
-    value |= byte << ((i - 1) * Size.byte());
+    value |= byte << ((i - 1) * Size.byte);
   }
 
   return <T>value;
