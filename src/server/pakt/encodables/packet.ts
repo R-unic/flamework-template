@@ -1,10 +1,15 @@
 import { BinaryReader } from "shared/classes/binary-reader";
+
 import { PacketHeader } from "./packet-header";
 import { PacketFooter, SESSION_ID_SIZE } from "./packet-footer";
 import { Number } from "./number";
-import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
+import { SizedString } from "./sized-string";
+import { SizedArray } from "./sized-array";
+import { Encodable, EncodableKind, InvalidEncodableException, type StaticEncodable } from "../encodable";
 
-export type PayloadValidator = (payload: Buffer) => void;
+type EncodableWrappedValue = Encodable & {
+  value: unknown;
+};
 
 export class Packet extends Encodable {
   public static readonly kind = EncodableKind.Packet;
@@ -12,27 +17,26 @@ export class Packet extends Encodable {
 
   public constructor(
     public readonly header: PacketHeader,
-    public readonly payload: Buffer,
-    public readonly footer: PacketFooter,
-    private readonly validatePayload: PayloadValidator
+    public readonly payload: EncodableWrappedValue[],
+    public readonly footer: PacketFooter
   ) { super(); }
 
-  public static parse(reader: BinaryReader, validatePayload: PayloadValidator): Packet {
-    const kind = Number.parse(reader);
+  public static parse<T extends defined = defined>(reader: BinaryReader, allEncodables: StaticEncodable[]): Packet {
+    const kind = reader.readByte();
     const header = PacketHeader.parse(reader);
-    const payload = reader.readBytes(header.payloadSize);
+    const payload = SizedArray.parse<T>(reader, allEncodables);
     const footer = PacketFooter.parse(reader);
-    const packet = new Packet(header, payload, footer, validatePayload);
-    packet.validate();
+    const packet = new Packet(header, <EncodableWrappedValue[]><unknown>payload, footer);
+    packet.validate(payload);
 
     return packet;
   }
 
   public encode(): Buffer {
-    const packet: Buffer = [...new Number(Packet.kind, 1).encode()];
+    const packet: Buffer = [Packet.kind];
     for (const byte of this.header.encode())
       packet.push(byte);
-    for (const byte of this.payload)
+    for (const byte of new SizedArray(this.payload).encode())
       packet.push(byte);
     for (const byte of this.footer.encode())
       packet.push(byte);
@@ -40,9 +44,10 @@ export class Packet extends Encodable {
     return packet;
   }
 
-  public validate(): void {
+  public validate(...args: unknown[]): void {
+    const [parsedPayload] = args;
     this.header.validate();
-    this.validatePayload(this.payload);
+    this.validatePayload(<defined[]>parsedPayload);
     this.footer.validate();
   }
 
@@ -50,4 +55,17 @@ export class Packet extends Encodable {
     if (expression) return;
     throw new InvalidEncodableException("Packet", fieldName);
   }
+
+  private validatePayload(parsedPayload: defined[]): void {
+    this.validateExpression(parsedPayload.every((v, i) => v === this.payload[i]), "payload");
+  }
 }
+
+export const BaseEncodables = [
+  PacketHeader,
+  PacketFooter,
+  Packet,
+  Number,
+  SizedString,
+  SizedArray
+].map<StaticEncodable>(t => <StaticEncodable>t);

@@ -16,7 +16,7 @@ export class BinaryReader {
   private bitOffset = 0;
 
   public constructor(
-    private readonly buffer: Buffer = []
+    public readonly buffer: Buffer = []
   ) { }
 
   public readInt(): int {
@@ -119,12 +119,20 @@ export class BinaryReader {
     return result;
   }
 
-  private peekByte(extraOffset = 0): byte {
+  public peekByte(extraOffset = 0): byte {
     const byte: Maybe<byte> = this.buffer[this.offset + extraOffset];
     if (byte === undefined)
       throw new MissingByteException;
 
     return byte;
+  }
+
+  public peekBytes(amount: number, extraOffset = 0): Buffer {
+    const bytes: Buffer = [];
+    for (let i = 0; i < amount; i++)
+      bytes.push(this.peekByte(extraOffset + i));
+
+    return bytes;
   }
 
   public seek(offset: number): void {

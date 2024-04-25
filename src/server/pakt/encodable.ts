@@ -7,7 +7,7 @@ export class InvalidEncodableException extends Log.Exception {
   }
 }
 
-export const enum EncodableKind {
+export enum EncodableKind {
   PacketHeader,
   PacketFooter,
   Packet,
@@ -15,6 +15,8 @@ export const enum EncodableKind {
   SizedString,
   SizedArray
 }
+
+export type StaticEncodable = typeof Encodable;
 
 export abstract class Encodable {
   public static readonly kind: EncodableKind;

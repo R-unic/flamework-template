@@ -1,8 +1,9 @@
 import { Size } from "shared/utility/numbers";
 import { isShort } from "shared/utility/numbers";
+import type { BinaryReader } from "shared/classes/binary-reader";
+
 import { Number } from "./number";
 import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
-import type { BinaryReader } from "shared/classes/binary-reader";
 
 export class PacketHeader extends Encodable {
   public static readonly kind = EncodableKind.PacketHeader;
@@ -12,29 +13,30 @@ export class PacketHeader extends Encodable {
    * @param payloadSize In bytes
    */
   public constructor(
-    public readonly payloadSize: byte
+    public readonly payloadSize: ushort
   ) { super(); }
 
 
   public static parse(reader: BinaryReader): PacketHeader {
-    const packetLength = reader.readByte();
-    const header = new PacketHeader(packetLength);
+    const kind = reader.readByte();
+    const payloadSize = Number.parse(reader);
+    const header = new PacketHeader(payloadSize);
     header.validate();
 
     return header;
   }
 
   public encode(): Buffer {
-    const packetLengthBytes = new Number(this.payloadSize, 1).encode();
+    const payloadSizeBytes = new Number(this.payloadSize, 2).encode();
     const header: Buffer = [
-      ...new Number(PacketHeader.kind, 1).encode(),
-      ...packetLengthBytes
+      PacketHeader.kind,
+      ...payloadSizeBytes
     ];
 
     return header;
   }
 
-  public validate(): void {
+  public validate(...args: unknown[]): void {
     this.validateExpression(isShort(this.payloadSize), "packetLength");
   }
 

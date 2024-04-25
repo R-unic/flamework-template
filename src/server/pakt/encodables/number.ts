@@ -1,6 +1,7 @@
 import { Size } from "shared/utility/numbers";
-import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
 import type { BinaryReader } from "shared/classes/binary-reader";
+
+import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
 
 function createBufferFromNumber(value: number, sizeInBytes: byte): Buffer {
   const buffer: Buffer = [];
@@ -23,12 +24,12 @@ export class Number<T extends number = number> extends Encodable {
   public static readonly kind = EncodableKind.Number;
 
   public constructor(
-    private readonly value: T,
-    private readonly sizeInBytes: byte
+    public readonly value: T,
+    public readonly sizeInBytes: byte
   ) { super(); }
 
   public static parse<T extends number = number>(reader: BinaryReader): T {
-    const kind = reader.readByte();
+    const _ = reader.readByte();
     const sizeInBytes = reader.readByte();
     const bytes = reader.readBytes(sizeInBytes);
     const value = createNumberFromBuffer<T>(bytes);
@@ -40,7 +41,7 @@ export class Number<T extends number = number> extends Encodable {
 
   public encode(): Buffer {
     const numberBytes: Buffer = [
-      ...createBufferFromNumber(Number.kind, 1),
+      Number.kind,
       ...createBufferFromNumber(this.sizeInBytes, 1),
       ...createBufferFromNumber(this.value, this.sizeInBytes)
     ];

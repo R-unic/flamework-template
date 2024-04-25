@@ -1,9 +1,10 @@
-import { flatten, slice } from "shared/utility/array";
-import { Number } from "./number";
-import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
-import { Encodables } from "../encodables";
+import { flatten } from "shared/utility/array";
 import type { BinaryReader } from "shared/classes/binary-reader";
+import repr from "shared/utility/repr";
 import Log from "shared/logger";
+
+import { Number } from "./number";
+import { Encodable, EncodableKind, InvalidEncodableException, type StaticEncodable } from "../encodable";
 
 const FillerBytes: Record<string, Buffer> = {
   ElementSeparator: [0xAF, 0xCB],
@@ -15,34 +16,35 @@ export class SizedArray extends Encodable {
   public static readonly kind = EncodableKind.SizedArray;
 
   public constructor(
-    private readonly value: Encodable[],
+    public readonly value: Encodable[],
     private readonly length: byte = value.size()
   ) { super(); }
 
-  public static parse<T extends defined = defined>(reader: BinaryReader): T[] {
+  public static parse<T extends defined = defined>(reader: BinaryReader, allEncodables: StaticEncodable[]): T[] {
+    const _ = reader.readByte();
     const value: T[] = [];
     const length = Number.parse(reader);
     for (let i = 0; i < length; i++) {
-      const kind = Number.parse<EncodableKind>(reader);
+      const kind = reader.peekByte();
       if (kind === EncodableKind.Packet)
-        throw new Log.Exception("InvalidArrayEncodable", "Attempt to parse an element of type Packet from SizedArray encodable")
+        throw new Log.Exception("InvalidArrayEncodable", "Attempt to parse an element of type Packet from SizedArray encodable");
+      else if (kind === EncodableKind.PacketHeader)
+        throw new Log.Exception("InvalidArrayEncodable", "Attempt to parse an element of type PacketHeader from SizedArray encodable");
+      else if (kind === EncodableKind.PacketFooter)
+        throw new Log.Exception("InvalidArrayEncodable", "Attempt to parse an element of type PacketFooter from SizedArray encodable");
 
-      const StaticEncodable = Encodables.find(encodable => encodable.kind === kind)!;
+      const StaticEncodable = allEncodables.find(encodable => encodable.kind === kind)!;
+      if (StaticEncodable === undefined)
+        throw new Log.Exception("FailedToFindEncodable", `Could not find encodable kind with index ${kind} (${EncodableKind[kind]})`)
+
       const parsedEncodable = StaticEncodable.parse(reader);
       value.push(<T>parsedEncodable);
 
       const fillerBytes = i === length - 1 ? FillerBytes.EndOfArray : FillerBytes.ElementSeparator;
       const parsedFillerBytes = reader.readBytes(fillerBytes.size());
-      if (fillerBytes !== parsedFillerBytes)
-        throw new Log.Exception("InvalidArrayEncodable", `Correct filler bytes is ${i === length - 1 ? "EndOfArray" : "ElementSeparator"}, got ${parsedFillerBytes}`);
-
+      if (!fillerBytes.every((byte, i) => byte === parsedFillerBytes[i]))
+        throw new Log.Exception("InvalidArrayEncodable", `Correct filler bytes is ${i === length - 1 ? "EndOfArray" : "ElementSeparator"} (${repr(fillerBytes)}), got ${repr(parsedFillerBytes)}`);
     }
-
-    // // validation
-    // this.validateExpression(isUShort(this.length), "length");
-    // this.validateExpression(this.value.size() === this.length, "value");
-    // for (const encodable of this.value)
-    //   encodable.validate();
 
     return value;
   }
@@ -58,11 +60,10 @@ export class SizedArray extends Encodable {
       return encodableBytes;
     }));
 
-    const paddedArrayBytes = slice(arrayBytes, 0, this.length);
     return [
-      ...new Number(SizedArray.kind, 1).encode(),
+      SizedArray.kind,
       ...lengthBytes,
-      ...paddedArrayBytes
+      ...arrayBytes
     ];
   }
 

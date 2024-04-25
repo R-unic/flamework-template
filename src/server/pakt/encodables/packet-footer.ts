@@ -1,10 +1,10 @@
 import { HttpService as HTTP } from "@rbxts/services";
 
 import { Size } from "shared/utility/numbers";
-import { SizedString } from "./sized-string";
-import { Number } from "./number";
-import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
 import type { BinaryReader } from "shared/classes/binary-reader";
+
+import { SizedString } from "./sized-string";
+import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
 
 const PAKT_SESSION_ID = HTTP.GenerateGUID(false);
 export const SESSION_ID_SIZE = PAKT_SESSION_ID.size() * Size.byte;
@@ -18,6 +18,7 @@ export class PacketFooter extends Encodable {
   ) { super(); }
 
   public static parse(reader: BinaryReader): PacketFooter {
+    const kind = reader.readByte();
     const sessionID = SizedString.parse(reader);
     const footer = new PacketFooter(sessionID);
     footer.validate();
@@ -29,7 +30,7 @@ export class PacketFooter extends Encodable {
     const sessionIDBytes = new SizedString(this.sessionID).encode();
 
     return [
-      ...new Number(PacketFooter.kind, 1).encode(),
+      PacketFooter.kind,
       ...sessionIDBytes
     ];
   }
