@@ -1,19 +1,14 @@
 import { BinaryReader } from "shared/classes/binary-reader";
 
 import { PacketHeader } from "./packet-header";
-import { PacketFooter, SESSION_ID_SIZE } from "./packet-footer";
+import { PacketFooter } from "./packet-footer";
 import { Number } from "./number";
 import { SizedString } from "./sized-string";
 import { SizedArray } from "./sized-array";
-import { Encodable, EncodableKind, InvalidEncodableException, type StaticEncodable } from "../encodable";
-
-type EncodableWrappedValue = Encodable & {
-  value: unknown;
-};
+import { Encodable, EncodableKind, InvalidEncodableException, type StaticEncodable, type EncodableWrappedValue } from "../encodable";
 
 export class Packet extends Encodable {
   public static readonly kind = EncodableKind.Packet;
-  public static readonly size = SESSION_ID_SIZE + PacketHeader.size + PacketFooter.size;
 
   public constructor(
     public readonly header: PacketHeader,
@@ -42,6 +37,10 @@ export class Packet extends Encodable {
       packet.push(byte);
 
     return packet;
+  }
+
+  public size(): number {
+    return 1 + this.header.size() + this.header.payloadSize + this.footer.size();
   }
 
   public validate(...args: unknown[]): void {

@@ -72,6 +72,10 @@ export class SizedArray extends Encodable {
     ];
   }
 
+  public size(): number {
+    return 1 + this.value.reduce((sum, encodable) => sum + encodable.size(), 0) + 1;
+  }
+
   public validate(): void {
 
   }

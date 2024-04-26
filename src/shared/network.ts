@@ -3,6 +3,9 @@ import type { GitHubInfo } from "./structs/github";
 import type { GamepassInfo } from "./structs/roblox-api";
 
 interface ServerEvents {
+  encoded: {
+    test(message: string): void;
+  };
   data: {
     initialize(): void;
     set(directory: string, value: unknown): void;

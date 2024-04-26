@@ -14,5 +14,6 @@ export class InitializationController implements OnStart {
     Events.data.initialize();
     Movement.start(); // remove if you don't want custom movement
     this.camera.set("Default"); // set to preferred camera
+    Events.encoded.test("abcdefg :3");
   }
 }

@@ -7,7 +7,6 @@ import { Encodable, EncodableKind, InvalidEncodableException } from "../encodabl
 
 export class PacketHeader extends Encodable {
   public static readonly kind = EncodableKind.PacketHeader;
-  public static readonly size = Size.short;
 
   /**
    * @param payloadSize In bytes
@@ -15,7 +14,6 @@ export class PacketHeader extends Encodable {
   public constructor(
     public readonly payloadSize: ushort
   ) { super(); }
-
 
   public static parse(reader: BinaryReader): PacketHeader {
     const kind = reader.readByte();
@@ -36,8 +34,12 @@ export class PacketHeader extends Encodable {
     return header;
   }
 
+  public size(): number {
+    return 1 + 2; // just a byte for the kind, and a short to represent payloadSize
+  }
+
   public validate(...args: unknown[]): void {
-    this.validateExpression(isShort(this.payloadSize), "packetLength");
+    this.validateExpression(isShort(this.payloadSize), "payloadSize");
   }
 
   protected validateExpression<T extends boolean>(expression: T, fieldName: string): void {

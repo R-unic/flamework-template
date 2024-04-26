@@ -18,6 +18,10 @@ export enum EncodableKind {
 
 export type StaticEncodable = typeof Encodable;
 
+export type EncodableWrappedValue<T extends unknown = unknown> = Encodable & {
+  value: T;
+};
+
 export abstract class Encodable {
   public static readonly kind: EncodableKind;
 
@@ -25,7 +29,12 @@ export abstract class Encodable {
 
   public abstract encode(): Buffer;
   public abstract validate(): void;
+  public abstract size(): number;
   protected abstract validateExpression<T extends boolean>(expression: T, fieldName: string): void;
+
+  public static(): StaticEncodable {
+    return Encodable;
+  }
 
   protected shift(byte: byte, offset: short, size: byte = 8) {
     return byte << (offset * size);

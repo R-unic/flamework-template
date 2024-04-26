@@ -11,7 +11,7 @@ export class SizedString extends Encodable {
 
   public constructor(
     public readonly value: string,
-    public readonly sizeInBytes: ushort = value.size()
+    private readonly sizeInBytes: ushort = value.size()
   ) { super(); }
 
   public static parse(reader: BinaryReader): string {
@@ -35,6 +35,10 @@ export class SizedString extends Encodable {
       ...lengthBytes,
       ...paddedStringBytes
     ];
+  }
+
+  public size(): number {
+    return 1 + 2 + this.sizeInBytes;
   }
 
   public validate(): void {

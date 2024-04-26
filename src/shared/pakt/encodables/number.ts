@@ -49,6 +49,10 @@ export class Number<T extends number = number> extends Encodable {
     return numberBytes;
   }
 
+  public size(): number {
+    return 1 + 1 + this.sizeInBytes;
+  }
+
   public validate(): void {
 
   }

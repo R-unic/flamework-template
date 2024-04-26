@@ -1,17 +1,15 @@
 import { HttpService as HTTP } from "@rbxts/services";
 
-import { Size } from "shared/utility/numbers";
 import type { BinaryReader } from "shared/classes/binary-reader";
 
 import { SizedString } from "./sized-string";
 import { Encodable, EncodableKind, InvalidEncodableException } from "../encodable";
 
 const PAKT_SESSION_ID = HTTP.GenerateGUID(false);
-export const SESSION_ID_SIZE = PAKT_SESSION_ID.size() * Size.byte;
+export const SESSION_ID_SIZE = PAKT_SESSION_ID.size();
 
 export class PacketFooter extends Encodable {
   public static readonly kind = EncodableKind.PacketFooter;
-  public static readonly size = SESSION_ID_SIZE;
 
   public constructor(
     public readonly sessionID = PAKT_SESSION_ID
@@ -33,6 +31,10 @@ export class PacketFooter extends Encodable {
       PacketFooter.kind,
       ...sessionIDBytes
     ];
+  }
+
+  public size(): number {
+    return 1 + SESSION_ID_SIZE;
   }
 
   public validate(): void {

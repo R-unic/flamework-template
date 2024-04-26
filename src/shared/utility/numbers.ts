@@ -1,6 +1,6 @@
 import Log from "shared/logger";
 
-const { floor, log, abs, clamp } = math;
+const { floor, ceil, log, abs, clamp } = math;
 
 export const isNaN = (n: number) => n !== n;
 
@@ -10,6 +10,19 @@ export namespace Size {
   export const int = 32;
   export const long = 64;
   export const bigint = 128;
+
+  export function inBytes(n: number): byte {
+    const positiveNum = abs(n);
+    let temp = positiveNum;
+    let bits = 0;
+
+    while (temp !== 0 && bits < 128) {
+      temp >>= 1; // Right shift by 1 bit
+      bits++;
+    }
+
+    return ceil(bits / 8);
+  }
 }
 
 export function isUnsigned(n: number): boolean {
