@@ -6,6 +6,7 @@ import { Number } from "./number";
 import { SizedString } from "./sized-string";
 import { SizedArray } from "./sized-array";
 import { Encodable, EncodableKind, InvalidEncodableException, type StaticEncodable, type EncodableWrappedValue } from "../encodable";
+import { Boolean } from "./boolean";
 
 export class Packet extends Encodable {
   public static readonly kind = EncodableKind.Packet;
@@ -65,6 +66,7 @@ export const BaseEncodables = [
   PacketFooter,
   Packet,
   Number,
+  Boolean,
   SizedString,
   SizedArray
 ].map<StaticEncodable>(t => <StaticEncodable>t);

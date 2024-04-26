@@ -12,6 +12,7 @@ export enum EncodableKind {
   PacketFooter,
   Packet,
   Number,
+  Boolean,
   SizedString,
   SizedArray
 }

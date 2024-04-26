@@ -4,7 +4,7 @@ import type { GamepassInfo } from "./structs/roblox-api";
 
 interface ServerEvents {
   encoded: {
-    test(message: string): void;
+    test(message: string, n: number, isCool: boolean): void;
   };
   data: {
     initialize(): void;

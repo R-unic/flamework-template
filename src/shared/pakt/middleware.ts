@@ -7,6 +7,7 @@ import { PacketHeader } from "./encodables/packet-header";
 import { PacketFooter } from "./encodables/packet-footer";
 import { Packet } from "./encodables/packet";
 import { SizedString } from "./encodables/sized-string";
+import { Boolean } from "./encodables/boolean";
 import { Number } from "./encodables/number";
 import type { EncodableWrappedValue } from "./encodable";
 
@@ -43,7 +44,7 @@ namespace PaktMiddleware {
           break;
         }
         case "boolean": {
-          // TODO: very soon!
+          encodedArg = new Boolean(<boolean>arg);
           break;
         }
 
