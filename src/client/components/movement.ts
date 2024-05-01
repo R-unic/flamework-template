@@ -49,7 +49,7 @@ interface Attributes {
 export class Movement extends InputInfluenced<Attributes, Model> implements OnStart, OnPhysics, LogStart {
   public friction = this.attributes.Movement_Friction;
 
-  private readonly root = (<Humanoid>this.instance.WaitForChild("Humanoid")).RootPart!;
+  private readonly root = <Part>this.instance.WaitForChild("HumanoidRootPart");
   private readonly moveDirections: MoveDirection[] = [];
   private velocity = new Vector3;
   private touchingGround = false;

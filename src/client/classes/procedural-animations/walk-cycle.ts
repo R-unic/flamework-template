@@ -24,12 +24,12 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
   }
 
   public update(dt: number): Vector3 {
-    const root = this.character.getRoot();
-    if (root === undefined)
+    const movement = this.character.getMovement();
+    if (movement === undefined)
       return this.spring.update(dt);
 
     const waveDamping = 700;
-    const velocity = root.AssemblyLinearVelocity;
+    const velocity = movement.getVelocity();
     const walkSpeed = flattenNumber(velocity.sub(new Vector3(0, velocity.Y, 0)).Magnitude, 0.04);
     this.sineWave.frequency = walkSpeed / 1.25;
     this.cosineWave.frequency = walkSpeed / 1.25;

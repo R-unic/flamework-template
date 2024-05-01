@@ -45,6 +45,7 @@ export class ControlPanelController implements OnStart {
       Iris.Window(["Control Panel"], { size: Iris.State(windowSize) });
 
       this.renderCameraTab();
+      // this.renderProceduralAnimationsTab();
       this.renderMovementTab(movement);
 
       Iris.End();

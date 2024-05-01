@@ -40,10 +40,10 @@ export class CharacterController {
   }
 
   public getMovement(): Maybe<Movement> {
-    return this.components.getComponent(this.get()!);
+    return this.components.getComponent(this.mustGet());
   }
 
   public async waitForMovement(): Promise<Movement> {
-    return this.components.waitForComponent(this.get()!);
+    return this.components.waitForComponent(this.mustGet());
   }
 }
