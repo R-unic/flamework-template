@@ -71,6 +71,12 @@ export class ControlPanelController implements OnStart {
     if (fov.numberChanged())
       currentCamera.FieldOfView = fov.state.number.get();
 
+    const lockedFirstPerson = Iris.Checkbox(["Locked First Person"], { isChecked: Iris.State(Player.CameraMode === Enum.CameraMode.LockFirstPerson) });
+    if (lockedFirstPerson.checked())
+      Player.CameraMode = Enum.CameraMode.LockFirstPerson;
+    if (lockedFirstPerson.unchecked())
+      Player.CameraMode = Enum.CameraMode.Classic;
+
     const cameraComponents = Object.keys(this.camera.cameras).sort();
     const componentIndex = Iris.State<keyof typeof this.camera.cameras>(this.camera.currentName);
     Iris.Combo(["Camera Component"], { index: componentIndex });
@@ -84,7 +90,7 @@ export class ControlPanelController implements OnStart {
     Iris.End();
   }
 
-  private renderProceduralAnimationsTab() {
+  private renderProceduralAnimationsTab(): void {
     Iris.Tree(["Procedural Animations"]);
     {
       Iris.Tree(["ProcedurallyAnimatedCamera"]);
