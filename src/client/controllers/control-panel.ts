@@ -8,12 +8,13 @@ import Iris from "@rbxts/iris";
 import { Player } from "shared/utility/client";
 import { DEVELOPERS } from "shared/constants";
 import type { ProcedurallyAnimatedCamera } from "client/components/cameras/procedurally-animated";
-
-import type { CameraController } from "./camera";
-import type { CharacterController } from "./character";
-import type { Movement } from "client/components/movement";
 import type Spring from "shared/classes/spring";
 import type Wave from "shared/classes/wave";
+
+import type { Movement } from "client/components/movement";
+import type { CameraController } from "./camera";
+import type { MouseController } from "./mouse";
+import type { CharacterController } from "./character";
 
 @Controller()
 export class ControlPanelController implements OnStart {
@@ -26,6 +27,7 @@ export class ControlPanelController implements OnStart {
   public constructor(
     private readonly components: Components,
     private readonly camera: CameraController,
+    private readonly mouse: MouseController,
     private readonly character: CharacterController
   ) { }
 
@@ -34,10 +36,16 @@ export class ControlPanelController implements OnStart {
     const movement = await this.components.waitForComponent<Movement>(this.character.mustGet());
     let open = false;
 
-    this.input.Bind("RightShift", () => {
-      if (!Runtime.IsStudio() && !DEVELOPERS.includes(Player.UserId)) return;
-      open = !open;
-    });
+    this.input
+      .Bind("RightShift", () => {
+        if (!Runtime.IsStudio() && !DEVELOPERS.includes(Player.UserId)) return;
+        open = !open;
+      })
+      .Bind("P", () => {
+        if (!Runtime.IsStudio() && !DEVELOPERS.includes(Player.UserId)) return;
+        this.mouse.behavior = this.mouse.behavior === Enum.MouseBehavior.Default ? Enum.MouseBehavior.LockCenter : Enum.MouseBehavior.Default;
+        Player.CameraMode = Player.CameraMode === Enum.CameraMode.LockFirstPerson ? Enum.CameraMode.Classic : Enum.CameraMode.LockFirstPerson;
+      });
 
     Iris.Init();
     Iris.UpdateGlobalConfig(Iris.TemplateConfig.colorDark);
