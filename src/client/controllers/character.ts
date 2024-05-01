@@ -27,8 +27,16 @@ export class CharacterController {
     return this.getHumanoid()?.RootPart;
   }
 
+  public mustGetRoot(): BasePart {
+    return this.mustGetHumanoid().RootPart!;
+  }
+
   public getHumanoid(): Maybe<Humanoid> {
     return this.get()?.Humanoid;
+  }
+
+  public mustGetHumanoid(): Humanoid {
+    return this.mustGet().Humanoid;
   }
 
   public getMovement(): Maybe<Movement> {
