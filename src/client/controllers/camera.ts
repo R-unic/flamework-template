@@ -7,6 +7,7 @@ import { FirstPersonCamera } from "client/components/cameras/first-person";
 import { AerialCamera } from "client/components/cameras/aerial";
 import { FixedCamera } from "client/components/cameras/fixed";
 import { FlyOnTheWallCamera } from "client/components/cameras/fly-on-the-wall";
+import { ProcedurallyAnimatedCamera } from "client/components/cameras/procedurally-animated";
 
 import type { CameraControllerComponent } from "client/base-components/camera-controller-component";
 
@@ -17,6 +18,7 @@ interface Cameras {
   readonly Aerial: AerialCamera;
   readonly Fixed: FixedCamera;
   readonly FlyOnTheWall: FlyOnTheWallCamera;
+  readonly ProcedurallyAnimated: ProcedurallyAnimatedCamera;
 }
 
 @Controller()
@@ -32,7 +34,8 @@ export class CameraController implements OnInit, OnRender, LogStart {
       FirstPerson: FirstPersonCamera.create(this),
       Aerial: AerialCamera.create(this),
       Fixed: FixedCamera.create(this),
-      FlyOnTheWall: FlyOnTheWallCamera.create(this)
+      FlyOnTheWall: FlyOnTheWallCamera.create(this),
+      ProcedurallyAnimated: ProcedurallyAnimatedCamera.create(this)
     };
   }
 

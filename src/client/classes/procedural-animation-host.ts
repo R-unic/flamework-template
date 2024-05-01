@@ -1,27 +1,29 @@
-import { BaseComponent } from "@flamework/components";
 import Object from "@rbxts/object-utils";
 
+import { combineCFrames } from "shared/utility/3D";
 import BreathingAnimation from "client/classes/procedural-animations/breathing";
 import WalkCycleAnimation from "client/classes/procedural-animations/walk-cycle";
 import MouseSwayAnimation from "client/classes/procedural-animations/mouse-sway";
 import LandingAnimation from "client/classes/procedural-animations/landing";
+import type ProceduralAnimation from "./procedural-animation";
 
 import type { CharacterController } from "client/controllers/character";
 
 const { min, rad } = math;
 
-export class ProceduralAnimations<A = {}, I extends Camera | Model = Camera | Model> extends BaseComponent<A, I> {
+export class ProceduralAnimationHost<I extends Camera | Model> implements ProceduralAnimation<CFrame> {
+  public readonly animations;
   public readonly cframeManipulators = {
     aim: new Instance("CFrameValue")
   };
 
-  private readonly connectedToCamera = this.instance.IsA("Camera");
-  public readonly animations;
+  private readonly connectedToCamera;
 
   public constructor(
+    private readonly instance: I,
     private readonly character: CharacterController
   ) {
-    super();
+    this.connectedToCamera = this.instance.IsA("Camera");
     this.animations = {
       breathing: new BreathingAnimation,
       walkCycle: new WalkCycleAnimation(this.character),
@@ -30,15 +32,15 @@ export class ProceduralAnimations<A = {}, I extends Camera | Model = Camera | Mo
     };
   }
 
-  protected startProceduralAnimations(): void {
+  public start(): void {
     for (const animation of Object.values(this.animations))
       animation.start();
   }
 
-  protected updateProceduralAnimations(dt: number): CFrame {
+  public update(dt: number): CFrame {
     dt = min(dt, 1);
     const offset = this.connectedToCamera ? this.getCameraOffset(dt) : this.getModelOffset(dt);
-    const finalManipulatorOffset = this.combineCFrames(Object.values(this.cframeManipulators).map(manipulator => manipulator.Value));
+    const finalManipulatorOffset = combineCFrames(Object.values(this.cframeManipulators).map(manipulator => manipulator.Value));
     return offset.mul(finalManipulatorOffset);
   }
 
@@ -63,7 +65,7 @@ export class ProceduralAnimations<A = {}, I extends Camera | Model = Camera | Mo
       );
     }
 
-    return this.combineCFrames(cameraOffsets);
+    return combineCFrames(cameraOffsets);
   }
 
   private getModelOffset(dt: number): CFrame {
@@ -91,10 +93,6 @@ export class ProceduralAnimations<A = {}, I extends Camera | Model = Camera | Mo
       );
     }
 
-    return this.combineCFrames(modelOffsets);
-  }
-
-  private combineCFrames(cframes: CFrame[]): CFrame {
-    return cframes.reduce((sum, cf) => sum.mul(cf), new CFrame);
+    return combineCFrames(modelOffsets);
   }
 }

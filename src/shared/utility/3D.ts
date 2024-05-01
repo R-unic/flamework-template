@@ -16,6 +16,10 @@ export function toRegion3({ CFrame, Size }: Part, areaShrink = 0): Region3 {
   );
 }
 
+export function combineCFrames(cframes: CFrame[]): CFrame {
+  return cframes.reduce((sum, cf) => sum.mul(cf), new CFrame);
+}
+
 export const STUDS_TO_METERS_CONSTANT = 3.571;
 export function studsToMeters(studs: number): number {
   return studs / STUDS_TO_METERS_CONSTANT;
