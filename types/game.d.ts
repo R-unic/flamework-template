@@ -1,5 +1,4 @@
 interface CharacterModel extends Model {
-  PrimaryPart: Part;
   Humanoid: Humanoid;
   Head: Part;
 }

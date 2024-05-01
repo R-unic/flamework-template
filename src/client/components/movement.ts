@@ -1,14 +1,13 @@
 import { Component, type Components } from "@flamework/components";
 import { Dependency, type OnPhysics, type OnStart } from "@flamework/core";
 import { UserInputService as InputService, Workspace as World } from "@rbxts/services";
+import { RaycastParamsBuilder } from "@rbxts/builders";
 
 import type { LogStart } from "shared/hooks";
 import { STUDS_TO_METERS_CONSTANT, studsToMeters } from "shared/utility/3D";
 import { InputInfluenced } from "client/base-components/input-influenced";
 import { flattenNumber, isNaN } from "shared/utility/numbers";
 import { Events } from "client/network";
-import { RaycastParamsBuilder } from "@rbxts/builders";
-import { CharacterController } from "client/controllers/character";
 
 type KeyName = ExtractKeys<typeof Enum.KeyCode, EnumItem>;
 
@@ -47,26 +46,21 @@ interface Attributes {
     Movement_GravitationalConstant: 3 // m/s, 9.81 is earth's constant
   }
 })
-export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart: BasePart; }> implements OnStart, OnPhysics, LogStart {
+export class Movement extends InputInfluenced<Attributes, Model> implements OnStart, OnPhysics, LogStart {
   public friction = this.attributes.Movement_Friction;
 
-  private readonly root = this.instance.PrimaryPart;
+  private readonly root = (<Humanoid>this.instance.WaitForChild("Humanoid")).RootPart!;
   private readonly moveDirections: MoveDirection[] = [];
   private velocity = new Vector3;
   private touchingGround = false;
   private spacebarDown = false;
   private canJump = true;
 
-  public static start() {
+  public static start(character: Model): void {
     Events.character.toggleDefaultMovement(false);
-    const character = Dependency<CharacterController>();
     const components = Dependency<Components>();
-    components.addComponent<Movement>(character.mustGet());
+    components.addComponent<Movement>(character);
   }
-
-  public constructor(
-    private readonly character: CharacterController
-  ) { super(); }
 
   public onStart(): void {
     this.disableElasticity();
@@ -99,8 +93,7 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
   }
 
   public onPhysics(dt: number): void {
-    const character = this.character.get();
-    if (character === undefined) return;
+    if (this.instance === undefined) return;
 
     const directionVector = this.getVectorFromDirections(this.moveDirections);
     this.touchingGround = this.isTouchingGround();
@@ -238,17 +231,15 @@ export class Movement extends InputInfluenced<Attributes, Model & { PrimaryPart:
   }
 
   private isTouchingGround(): boolean {
-    const character = this.character.get();
-    if (character === undefined) return false;
+    if (this.root === undefined) return false;
 
-    const [_, characterSize] = character.GetBoundingBox();
+    const [_, characterSize] = this.instance.GetBoundingBox();
     const distanceToGround = characterSize.Y / 2;
-    const root = this.character.getRoot()!;
     const raycastParams = new RaycastParamsBuilder()
-      .AddToFilter(character)
+      .AddToFilter(this.instance)
       .Build();
 
-    const result = World.Raycast(root.Position, root.CFrame.UpVector.mul(-5), raycastParams);
+    const result = World.Raycast(this.root.Position, this.root.CFrame.UpVector.mul(-5), raycastParams);
     return result !== undefined && (result.Distance - 0.3) <= distanceToGround;
   }
 }
