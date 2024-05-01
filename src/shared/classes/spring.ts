@@ -8,7 +8,7 @@ const { ceil, min, huge: INF } = math;
 */
 const MAX_SPRING_DELTA = 1 / 40;
 
-export class Spring {
+export default class Spring {
   static readonly iterations = 8;
   public target = new Vector3;
   public position = new Vector3;

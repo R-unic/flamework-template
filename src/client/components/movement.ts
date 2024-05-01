@@ -113,7 +113,7 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
   }
 
   public getVelocity(): Vector3 {
-    return this.root.AssemblyLinearVelocity;
+    return this.velocity;
   }
 
   public getSpeed(): number {
@@ -148,6 +148,10 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
     return this.moveDirections.size() > 0;
   }
 
+  private getRootVelocity(): Vector3 {
+    return this.root.AssemblyLinearVelocity;
+  }
+
   private updateGravity(): void {
     World.Gravity = this.getG() * 20;
   }
@@ -169,7 +173,7 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
       this.jump();
     });
 
-    const yVelocity = flattenNumber(this.getVelocity().Y);
+    const yVelocity = flattenNumber(this.getRootVelocity().Y);
     if (yVelocity !== 0) return;
 
     this.addForce(new Vector3(0, this.getJumpForce() * STUDS_TO_METERS_CONSTANT, 0));
@@ -180,7 +184,7 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
   }
 
   private addForce(force: Vector3): void {
-    this.setForce(this.getVelocity().add(force));
+    this.setForce(this.getRootVelocity().add(force));
   }
 
   private setForce(force: Vector3): void {

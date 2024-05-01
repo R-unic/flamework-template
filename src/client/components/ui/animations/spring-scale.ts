@@ -1,7 +1,7 @@
 import { OnRender, OnStart } from "@flamework/core";
 import { Component } from "@flamework/components";
 
-import { Spring } from "shared/classes/spring";
+import Spring from "shared/classes/spring";
 import BaseButtonAnimation from "client/base-components/base-button-animation";
 
 interface Attributes {

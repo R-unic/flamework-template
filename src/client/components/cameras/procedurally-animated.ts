@@ -10,7 +10,7 @@ import type { CharacterController } from "client/controllers/character";
 
 @Component({ tag: "ProcedurallyAnimatedCamera" })
 export class ProcedurallyAnimatedCamera extends CameraControllerComponent implements OnStart, OnRender {
-  private readonly proceduralAnimations;
+  public readonly animator;
 
   public static create(controller: CameraController): ProcedurallyAnimatedCamera {
     const components = Dependency<Components>();
@@ -26,16 +26,16 @@ export class ProcedurallyAnimatedCamera extends CameraControllerComponent implem
     private readonly camera: CameraController
   ) {
     super();
-    this.proceduralAnimations = new ProceduralAnimationHost(this.instance, character);
+    this.animator = new ProceduralAnimationHost(this.instance, character);
   }
 
   public onStart(): void {
-    this.proceduralAnimations.start();
+    this.animator.start();
   }
 
   public onRender(dt: number): void {
     if (this.camera.get() !== this) return;
-    const offset = this.proceduralAnimations.update(dt);
+    const offset = this.animator.update(dt);
     this.instance.CFrame = this.instance.CFrame.mul(offset);
   }
 }

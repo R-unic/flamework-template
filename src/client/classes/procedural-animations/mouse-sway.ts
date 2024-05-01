@@ -1,19 +1,19 @@
 import { UserInputService } from "@rbxts/services";
 
-import { Spring } from "shared/classes/spring";
+import { Player } from "shared/utility/client";
+import Spring from "shared/classes/spring";
 
 import type ProceduralAnimation from "../procedural-animation";
-import { Player } from "shared/utility/client";
 
 const { clamp } = math;
 
 export default class MouseSwayAnimation implements ProceduralAnimation {
+  public readonly spring = new Spring;
+  public damping = 1;
+
   private readonly mouse = Player.GetMouse();
-  private readonly spring = new Spring;
   private lastX = this.mouse.X;
   private lastY = this.mouse.Y;
-
-  public damping = 1
 
   public start(): void { }
 

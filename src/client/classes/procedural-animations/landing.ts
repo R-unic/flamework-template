@@ -1,4 +1,4 @@
-import { Spring } from "shared/classes/spring";
+import Spring from "shared/classes/spring";
 
 import type ProceduralAnimation from "../procedural-animation";
 

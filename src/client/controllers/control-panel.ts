@@ -7,10 +7,13 @@ import Iris from "@rbxts/iris";
 
 import { Player } from "shared/utility/client";
 import { DEVELOPERS } from "shared/constants";
+import type { ProcedurallyAnimatedCamera } from "client/components/cameras/procedurally-animated";
 
 import type { CameraController } from "./camera";
 import type { CharacterController } from "./character";
 import type { Movement } from "client/components/movement";
+import type Spring from "shared/classes/spring";
+import type Wave from "shared/classes/wave";
 
 @Controller()
 export class ControlPanelController implements OnStart {
@@ -45,7 +48,7 @@ export class ControlPanelController implements OnStart {
       Iris.Window(["Control Panel"], { size: Iris.State(windowSize) });
 
       this.renderCameraTab();
-      // this.renderProceduralAnimationsTab();
+      this.renderProceduralAnimationsTab();
       this.renderMovementTab(movement);
 
       Iris.End();
@@ -71,6 +74,60 @@ export class ControlPanelController implements OnStart {
       this.camera.set(componentIndex.get());
 
     Iris.End();
+  }
+
+  private renderProceduralAnimationsTab() {
+    Iris.Tree(["Procedural Animations"]);
+    {
+      Iris.Tree(["ProcedurallyAnimatedCamera"]);
+      {
+        const camera = this.camera.get<ProcedurallyAnimatedCamera>("ProcedurallyAnimated");
+        Iris.Tree(["Breathing"]);
+        {
+          const animation = camera.animator.animations.breathing;
+          const damping = Iris.SliderNum(["Damping", 0.1, 0.1, 10], { number: Iris.State(animation.damping) });
+          if (damping.numberChanged())
+            animation.damping = damping.state.number.get();
+
+          this.renderWaveSettings(animation.wave)
+        }
+        Iris.End();
+        Iris.Tree(["Landing"]);
+        {
+          const animation = camera.animator.animations.landing;
+          const damping = Iris.SliderNum(["Damping", 0.1, 0.1, 10], { number: Iris.State(animation.damping) });
+          if (damping.numberChanged())
+            animation.damping = damping.state.number.get();
+
+          this.renderSpringSettings(animation.spring);
+        }
+        Iris.End();
+        Iris.Tree(["Mouse Sway"]);
+        {
+          const animation = camera.animator.animations.mouseSway;
+          const damping = Iris.SliderNum(["Damping", 0.1, 0.1, 10], { number: Iris.State(animation.damping) });
+          if (damping.numberChanged())
+            animation.damping = damping.state.number.get();
+
+          this.renderSpringSettings(animation.spring);
+        }
+        Iris.End();
+        Iris.Tree(["Walk Cycle"]);
+        {
+          const animation = camera.animator.animations.walkCycle;
+          const minimumSpeed = Iris.SliderNum(["Minimum Walk Speed", 0.5, 0, 30], { number: Iris.State(animation.minimumSpeed) });
+          if (minimumSpeed.numberChanged())
+            animation.minimumSpeed = minimumSpeed.state.number.get();
+
+          this.renderSpringSettings(animation.spring);
+          this.renderWaveSettings(animation.sineWave);
+          this.renderWaveSettings(animation.cosineWave, "Cosine");
+        }
+        Iris.End();
+      }
+      Iris.End();
+    }
+    Iris.End()
   }
 
   private renderMovementTab(movement?: Movement): void {
@@ -113,6 +170,56 @@ export class ControlPanelController implements OnStart {
     if (gravitationalConstant.numberChanged())
       movement.attributes.Movement_GravitationalConstant = gravitationalConstant.state.number.get();
 
+    Iris.End();
+  }
+
+  private renderSpringSettings(spring: Spring, prefix?: string): void {
+    Iris.Tree([(prefix !== undefined ? prefix + " " : "") + "Spring"]);
+    {
+      const mass = Iris.SliderNum(["Spring Mass", 0.25, 0.25, 100], { number: Iris.State(spring.mass) });
+      if (mass.numberChanged())
+        spring.mass = mass.state.number.get();
+
+      const force = Iris.SliderNum(["Spring Force", 0.25, 0.25, 100], { number: Iris.State(spring.force) });
+      if (force.numberChanged())
+        spring.force = force.state.number.get();
+
+      const damping = Iris.SliderNum(["Spring Damping", 0.25, 0.25, 100], { number: Iris.State(spring.damping) });
+      if (damping.numberChanged())
+        spring.damping = damping.state.number.get();
+
+      const speed = Iris.SliderNum(["Spring Speed", 0.25, 0.25, 100], { number: Iris.State(spring.speed) });
+      if (mass.numberChanged())
+        spring.speed = speed.state.number.get();
+    }
+    Iris.End();
+  }
+
+  private renderWaveSettings(wave: Wave, prefix?: string): void {
+    Iris.Tree([(prefix ?? "Sine") + " " + "Wave"]);
+    {
+      const useSin = Iris.Checkbox(["Is Sine Wave?"], { isChecked: Iris.State(wave.waveFunction === math.sin) });
+      if (useSin.checked())
+        wave.waveFunction = math.sin;
+      if (useSin.unchecked())
+        wave.waveFunction = math.cos;
+
+      const amplitude = Iris.SliderNum(["Amplitude", 0.05, 0.1, 10], { number: Iris.State(wave.amplitude) });
+      if (amplitude.numberChanged())
+        wave.amplitude = amplitude.state.number.get();
+
+      const frequency = Iris.SliderNum(["Frequency", 0.05, 0, 10], { number: Iris.State(wave.frequency) });
+      if (frequency.numberChanged())
+        wave.frequency = frequency.state.number.get();
+
+      const phaseShift = Iris.SliderNum(["Phase Shift", 0.01, 0, 5], { number: Iris.State(wave.phaseShift) });
+      if (phaseShift.numberChanged())
+        wave.phaseShift = phaseShift.state.number.get();
+
+      const verticalShift = Iris.SliderNum(["Vertical Shift", 0.01, 0, 5], { number: Iris.State(wave.verticalShift) });
+      if (verticalShift.numberChanged())
+        wave.verticalShift = verticalShift.state.number.get();
+    }
     Iris.End();
   }
 }

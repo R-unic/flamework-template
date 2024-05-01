@@ -3,7 +3,7 @@ import Wave from "shared/classes/wave";
 import type ProceduralAnimation from "../procedural-animation";
 
 export default class BreathingAnimation implements ProceduralAnimation {
-  private readonly wave = new Wave;
+  public readonly wave = new Wave;
   public damping = 1;
 
   public start(): void { }

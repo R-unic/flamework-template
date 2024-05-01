@@ -1,4 +1,4 @@
-import { Spring } from "shared/classes/spring";
+import Spring from "shared/classes/spring";
 import { flattenNumber } from "shared/utility/numbers";
 import Wave from "shared/classes/wave";
 
@@ -12,7 +12,7 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
   public readonly spring = new Spring;
   public readonly sineWave = new Wave(...WAVE_PARAMETERS);
   public readonly cosineWave = new Wave(...WAVE_PARAMETERS);
-  public minimumSpeed = 0; // if u want
+  public minimumSpeed = 2; // if u want
 
   public constructor(
     private readonly character: CharacterController
@@ -29,7 +29,7 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
       return this.spring.update(dt);
 
     const waveDamping = 700;
-    const velocity = movement.getVelocity();
+    const velocity = movement.getVelocity().mul(60);
     const walkSpeed = flattenNumber(velocity.sub(new Vector3(0, velocity.Y, 0)).Magnitude, 0.04);
     this.sineWave.frequency = walkSpeed / 1.25;
     this.cosineWave.frequency = walkSpeed / 1.25;
@@ -37,7 +37,7 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
     const doNotApplyWave = walkSpeed === 0 || walkSpeed < this.minimumSpeed;
     const x = doNotApplyWave ? 0 : this.sineWave.update(1, waveDamping);
     const y = doNotApplyWave ? 0 : this.cosineWave.update(1, waveDamping);
-    const force = new Vector3(x, y, x) // x * (aimed ? 1 : 3), only for 1st coord
+    const force = new Vector3(x, y, x); // x * (aimed ? 1 : 3), only for 1st coord
     // .div(aimed ? 5 : 1)
     // .mul(sprinting ? 1.4 : 1);
 
