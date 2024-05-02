@@ -115,6 +115,10 @@ export class ControlPanelController implements OnStart {
         Iris.Tree(["Walk Cycle"]);
         {
           const animation = camera.animator.animations.walkCycle;
+          const damping = Iris.SliderNum(["Damping", 0.1, 0.1, 10], { number: Iris.State(animation.damping) });
+          if (damping.numberChanged())
+            animation.damping = damping.state.number.get();
+
           const minimumSpeed = Iris.SliderNum(["Minimum Walk Speed", 0.5, 0, 30], { number: Iris.State(animation.minimumSpeed) });
           if (minimumSpeed.numberChanged())
             animation.minimumSpeed = minimumSpeed.state.number.get();

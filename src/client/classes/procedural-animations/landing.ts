@@ -4,11 +4,11 @@ import type ProceduralAnimation from "../procedural-animation";
 
 import type { CharacterController } from "client/controllers/character";
 
-const { clamp, abs } = math;
+const { clamp } = math;
 
 export default class LandingAnimation implements ProceduralAnimation {
-  public readonly spring = new Spring(2, 40, 4, 4);
-  public damping = 1;
+  public readonly spring = new Spring(15, 80, 3.5, 4);
+  public damping = 1.5;
 
   public constructor(
     private readonly character: CharacterController
@@ -21,9 +21,9 @@ export default class LandingAnimation implements ProceduralAnimation {
     return this.spring.update(dt);
   }
 
-  private shoveLandingSpring(fallingVelocity: Vector3) {
-    const velocity = clamp(-abs(fallingVelocity.Y), -80, 0);
+  private shoveLandingSpring(fallingVelocity: Vector3): void {
+    const velocity = clamp(fallingVelocity.Y / 4, -6, 0.25);
     this.spring.shove(new Vector3(0, velocity, 0));
-    task.delay(0.11, () => this.spring.shove(new Vector3(0, -velocity, 0)));
+    task.delay(0.115, () => this.spring.shove(new Vector3(0, -velocity, 0)));
   }
 }

@@ -13,6 +13,7 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
   public readonly spring = new Spring;
   public readonly sineWave = new Wave(...WAVE_PARAMETERS);
   public readonly cosineWave = new Wave(...WAVE_PARAMETERS);
+  public damping = 1.5;
   public minimumSpeed = 1; // if u want
 
   public constructor(
@@ -29,7 +30,7 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
     if (movement === undefined)
       return this.spring.update(dt);
 
-    const waveDamping = 700;
+    const waveDamping = 900;
     const velocity = movement.getVelocity().mul(60);
     const walkSpeed = velocity.sub(new Vector3(0, velocity.Y, 0)).Magnitude;
     this.sineWave.frequency = round(walkSpeed) / 1.25;
@@ -43,6 +44,6 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
     // .mul(sprinting ? 1.4 : 1);
 
     this.spring.shove(force);
-    return this.spring.update(dt);
+    return this.spring.update(dt).div(this.damping);
   }
 }
