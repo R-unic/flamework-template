@@ -36,6 +36,7 @@ It aims to be decently simple and lightweight but still provide as many reusable
 - Tons of utility functions and classes (comma format, abbreviation, repr, array shuffle/flatten/reverse, springs, sin/cos waves, bitfields, etc.)
 - Included logger
 - Custom lifecycle hooks:
+  - OnCharacterAdd/OnCharacterRemove
   - OnPlayerJoin/OnPlayerLeave
   - OnDataUpdate
   - LogStart (logs when a singleton/component is started)
