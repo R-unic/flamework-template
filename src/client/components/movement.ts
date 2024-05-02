@@ -4,10 +4,11 @@ import { UserInputService as InputService, Workspace as World } from "@rbxts/ser
 import { RaycastParamsBuilder } from "@rbxts/builders";
 
 import type { LogStart } from "shared/hooks";
-import { STUDS_TO_METERS_CONSTANT, studsToMeters } from "shared/utility/3D";
-import { InputInfluenced } from "client/base-components/input-influenced";
-import { flattenNumber, isNaN } from "shared/utility/numbers";
 import { Events } from "client/network";
+import { STUDS_TO_METERS_CONSTANT, studsToMeters } from "shared/utility/3D";
+import { isNaN } from "shared/utility/numbers";
+
+import { InputInfluenced } from "client/base-components/input-influenced";
 
 type KeyName = ExtractKeys<typeof Enum.KeyCode, EnumItem>;
 
@@ -29,6 +30,15 @@ interface Attributes {
   Movement_GravitationalConstant: number;
 }
 
+const NO_JUMP_STATES: Enum.HumanoidStateType[] = [
+  Enum.HumanoidStateType.FallingDown,
+  Enum.HumanoidStateType.Freefall,
+  Enum.HumanoidStateType.Jumping,
+  Enum.HumanoidStateType.Flying,
+  Enum.HumanoidStateType.GettingUp,
+  Enum.HumanoidStateType.Dead
+];
+
 /**
  * This works great for singleplayer!
  * Unfortunately in multiplayer movement appears laggy.
@@ -41,7 +51,7 @@ interface Attributes {
     Movement_Friction: 0.175,
     Movement_AirFriction: 0.01,
     Movement_CanMoveMidair: true,
-    Movement_JumpCooldown: 0.25,
+    Movement_JumpCooldown: 0.4,
     Movement_JumpForce: 6,
     Movement_GravitationalConstant: 3 // m/s, 9.81 is earth's constant
   }
@@ -50,6 +60,7 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
   public friction = this.attributes.Movement_Friction;
 
   private readonly root = <Part>this.instance.WaitForChild("HumanoidRootPart");
+  private readonly humanoid = <Humanoid>this.instance.WaitForChild("Humanoid");
   private readonly moveDirections: MoveDirection[] = [];
   private velocity = new Vector3;
   private touchingGround = false;
@@ -161,7 +172,7 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
       .filter((i): i is BasePart => i.IsA("BasePart"));
 
     for (const part of characterParts)
-      part.CustomPhysicalProperties = new PhysicalProperties(0.7, 0.3, 1, 0, 0);
+      part.CustomPhysicalProperties = new PhysicalProperties(0.7, 0.3, 0, 0, 0);
   }
 
   private jump(): void {
@@ -173,9 +184,9 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
       this.jump();
     });
 
-    const yVelocity = flattenNumber(this.getRootVelocity().Y);
-    if (yVelocity !== 0) return;
+    if (NO_JUMP_STATES.includes(this.humanoid.GetState())) return;
 
+    this.humanoid.SetStateEnabled(Enum.HumanoidStateType.Jumping, true);
     this.addForce(new Vector3(0, this.getJumpForce() * STUDS_TO_METERS_CONSTANT, 0));
   }
 
