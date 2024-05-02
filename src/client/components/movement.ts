@@ -103,11 +103,11 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
 
     const speed = studsToMeters(this.getSpeed());
     const dontApplyForce = (!this.canMoveMidair() && !this.touchingGround) || isNaN(directionVector.X);
-    const desiredForce = directionVector.mul(studsToMeters(this.getAcceleration() * dt * 60)).Unit.mul(speed);
+    const desiredForce = directionVector.Unit.mul(speed);
     const force = dontApplyForce ? new Vector3 : desiredForce.sub(this.velocity);
     this.velocity = this.velocity
       .mul(this.isMoving() ? 1 : 1 - this.friction)
-      .add(force);
+      .add(force.mul(studsToMeters(this.getAcceleration() * dt * 60)));
 
     this.root.CFrame = this.root.CFrame.add(this.velocity);
   }

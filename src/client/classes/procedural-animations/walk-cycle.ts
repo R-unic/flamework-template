@@ -1,10 +1,11 @@
 import Spring from "shared/classes/spring";
-import { flattenNumber } from "shared/utility/numbers";
 import Wave from "shared/classes/wave";
 
 import type ProceduralAnimation from "../procedural-animation";
 
 import type { CharacterController } from "client/controllers/character";
+
+const { round, cos } = math;
 
 const WAVE_PARAMETERS = <const>[1.5, 16, -1, 0];
 
@@ -12,7 +13,7 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
   public readonly spring = new Spring;
   public readonly sineWave = new Wave(...WAVE_PARAMETERS);
   public readonly cosineWave = new Wave(...WAVE_PARAMETERS);
-  public minimumSpeed = 2; // if u want
+  public minimumSpeed = 1; // if u want
 
   public constructor(
     private readonly character: CharacterController
@@ -20,7 +21,7 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
 
   public start(): void {
     this.cosineWave.phaseShift = 1;
-    this.cosineWave.waveFunction = math.cos;
+    this.cosineWave.waveFunction = cos;
   }
 
   public update(dt: number): Vector3 {
@@ -30,9 +31,9 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
 
     const waveDamping = 700;
     const velocity = movement.getVelocity().mul(60);
-    const walkSpeed = flattenNumber(velocity.sub(new Vector3(0, velocity.Y, 0)).Magnitude, 0.04);
-    this.sineWave.frequency = walkSpeed / 1.25;
-    this.cosineWave.frequency = walkSpeed / 1.25;
+    const walkSpeed = velocity.sub(new Vector3(0, velocity.Y, 0)).Magnitude;
+    this.sineWave.frequency = round(walkSpeed) / 1.25;
+    this.cosineWave.frequency = round(walkSpeed) / 1.25;
 
     const doNotApplyWave = walkSpeed === 0 || walkSpeed < this.minimumSpeed;
     const x = doNotApplyWave ? 0 : this.sineWave.update(1, waveDamping);

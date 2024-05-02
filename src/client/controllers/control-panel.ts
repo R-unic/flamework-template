@@ -87,7 +87,7 @@ export class ControlPanelController implements OnStart {
   private renderProceduralAnimationsTab(): void {
     Iris.Tree(["Procedural Animations"]);
     {
-      Iris.Tree(["ProcedurallyAnimatedCamera"]);
+      Iris.Tree(["First Person Animated Camera"]);
       {
         const camera = this.camera.get<FirstPersonAnimatedCamera>("FirstPersonAnimated");
         Iris.Tree(["Landing"]);
