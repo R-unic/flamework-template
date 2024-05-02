@@ -7,7 +7,7 @@ import Iris from "@rbxts/iris";
 
 import { Player } from "shared/utility/client";
 import { DEVELOPERS } from "shared/constants";
-import type { ProcedurallyAnimatedCamera } from "client/components/cameras/procedurally-animated";
+import type { FirstPersonAnimatedCamera } from "client/components/cameras/first-person-animated";
 import type Spring from "shared/classes/spring";
 import type Wave from "shared/classes/wave";
 
@@ -71,12 +71,6 @@ export class ControlPanelController implements OnStart {
     if (fov.numberChanged())
       currentCamera.FieldOfView = fov.state.number.get();
 
-    const lockedFirstPerson = Iris.Checkbox(["Locked First Person"], { isChecked: Iris.State(Player.CameraMode === Enum.CameraMode.LockFirstPerson) });
-    if (lockedFirstPerson.checked())
-      Player.CameraMode = Enum.CameraMode.LockFirstPerson;
-    if (lockedFirstPerson.unchecked())
-      Player.CameraMode = Enum.CameraMode.Classic;
-
     const cameraComponents = Object.keys(this.camera.cameras).sort();
     const componentIndex = Iris.State<keyof typeof this.camera.cameras>(this.camera.currentName);
     Iris.Combo(["Camera Component"], { index: componentIndex });
@@ -95,17 +89,7 @@ export class ControlPanelController implements OnStart {
     {
       Iris.Tree(["ProcedurallyAnimatedCamera"]);
       {
-        const camera = this.camera.get<ProcedurallyAnimatedCamera>("ProcedurallyAnimated");
-        Iris.Tree(["Breathing"]);
-        {
-          const animation = camera.animator.animations.breathing;
-          const damping = Iris.SliderNum(["Damping", 0.1, 0.1, 10], { number: Iris.State(animation.damping) });
-          if (damping.numberChanged())
-            animation.damping = damping.state.number.get();
-
-          this.renderWaveSettings(animation.wave)
-        }
-        Iris.End();
+        const camera = this.camera.get<FirstPersonAnimatedCamera>("FirstPersonAnimated");
         Iris.Tree(["Landing"]);
         {
           const animation = camera.animator.animations.landing;
@@ -123,7 +107,9 @@ export class ControlPanelController implements OnStart {
           if (damping.numberChanged())
             animation.damping = damping.state.number.get();
 
-          this.renderSpringSettings(animation.spring);
+          const limit = Iris.SliderNum(["Limit", 0.05, 0.05, 5], { number: Iris.State(animation.limit) });
+          if (limit.numberChanged())
+            animation.limit = limit.state.number.get();
         }
         Iris.End();
         Iris.Tree(["Walk Cycle"]);

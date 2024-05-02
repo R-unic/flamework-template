@@ -53,6 +53,10 @@ export function isUInt(n: number): n is uint {
   return isUnsigned(n) && n <= 0xFFFFFFFF;
 }
 
+export function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * t;
+}
+
 export function doubleSidedLimit(n: number, limit: number) {
   return clamp(n, -limit, limit);
 }

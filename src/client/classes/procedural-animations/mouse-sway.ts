@@ -1,15 +1,15 @@
 import { UserInputService } from "@rbxts/services";
 
 import { Player } from "shared/utility/client";
-import Spring from "shared/classes/spring";
 
 import type ProceduralAnimation from "../procedural-animation";
 
 const { clamp } = math;
 
 export default class MouseSwayAnimation implements ProceduralAnimation {
-  public readonly spring = new Spring;
   public damping = 1;
+  public limit = 1;
+  public angle = 0;
 
   private readonly mouse = Player.GetMouse();
   private lastX = this.mouse.X;
@@ -18,19 +18,16 @@ export default class MouseSwayAnimation implements ProceduralAnimation {
   public start(): void { }
 
   public update(dt: number): Vector3 {
-    const { X, Y } = this.getDelta().div(300);
-    const limit = 0.05 / (this.damping / 1.35);
-    const swayForce = new Vector3(
-      clamp(X, -limit, limit),
-      clamp(Y, -limit, limit)
+    const { X, Y } = this.getDelta().div(1500).div(this.damping);
+    return new Vector3(
+      clamp(X, -this.limit, this.limit),
+      clamp(Y, -this.limit, this.limit),
+      0
     );
-
-    this.spring.shove(swayForce);
-    return this.spring.update(dt).div(this.damping);
   }
 
   private getDelta(): Vector2 {
-    if (Player.CameraMode === Enum.CameraMode.LockFirstPerson)
+    if (UserInputService.MouseBehavior === Enum.MouseBehavior.LockCenter)
       return UserInputService.GetMouseDelta();
 
     const delta = new Vector2(
