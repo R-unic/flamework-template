@@ -8,6 +8,10 @@ It aims to be decently simple and lightweight but still provide as many reusable
 - Frontend:
   - Custom movement system (optional)
   - Custom mouse controller
+  - Procedural animation system for cameras or models with these animations included:
+    - Landing
+    - Mouse sway
+    - Walk cycle
   - `CharacterController` for easily retrieving character, root, & humanoid
   - Custom camera controller to switch between cams on the fly with these cam components included:
     - Default (default roblox cam)
@@ -15,6 +19,7 @@ It aims to be decently simple and lightweight but still provide as many reusable
     - Aerial
     - Fixed
     - FlyOnTheWall
+    - FirstPersonAnimated (uses procedural animation system)
   - UI:
     - Customizable control panel made with Iris
       - Movement and camera system mods already included
