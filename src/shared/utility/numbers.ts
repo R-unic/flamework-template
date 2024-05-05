@@ -61,6 +61,8 @@ export function doubleSidedLimit(n: number, limit: number) {
   return clamp(n, -limit, limit);
 }
 
+export const isEven = (n: number) => n % 2 === 0;
+
 /**
  * Returns 0 if the number is close enough to 0 by `epsilon`
  * @param n
