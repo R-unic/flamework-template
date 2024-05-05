@@ -47,6 +47,23 @@
 		]
 	},
 
+	"Singleton": {
+		"prefix":[ "singleton", "ston"],
+		"description": "Create a singleton",
+		"body": [
+			"import type { OnStart } from \"@flamework/core\";",
+			"",
+			"import { Singleton } from \"shared/dependencies\";",
+			"",
+			"@Singleton()",
+			"export class ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g} implements OnStart {",
+				"\tpublic onStart(): void {",
+					"\t\t$0",
+				"\t}",
+			"}",
+		]
+	},
+
 	"UI Component": {
 		"prefix":[ "uicomponent" ],
 		"description": "Create a UI component",
