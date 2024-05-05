@@ -174,6 +174,26 @@ export class ControlPanelController implements OnStart {
     if (gravitationalConstant.numberChanged())
       movement.attributes.Movement_GravitationalConstant = gravitationalConstant.state.number.get();
 
+    const restrictive = Iris.Checkbox(["Restrictive?"], { isChecked: Iris.State(movement.isRestrictive()) });
+    if (restrictive.checked())
+      movement.attributes.Movement_Restrictive = true;
+    if (restrictive.unchecked())
+      movement.attributes.Movement_Restrictive = false;
+
+    const maxEdgeHeight = Iris.SliderNum(["Restrictive Max Edge Height", 0.01, 0, 5], { number: Iris.State(movement.getRestrictiveMaxEdgeHeight()) });
+    if (maxEdgeHeight.numberChanged())
+      movement.attributes.Movement_RestrictiveMaxEdgeHeight = maxEdgeHeight.state.number.get();
+
+    const rotational = Iris.Checkbox(["Rotational?"], { isChecked: Iris.State(movement.isRotational()) });
+    if (rotational.checked())
+      movement.attributes.Movement_Rotational = true;
+    if (rotational.unchecked())
+      movement.attributes.Movement_Rotational = false;
+
+    const rotationSpeed = Iris.SliderNum(["Rotation Speed", 0.01, 0, 5], { number: Iris.State(movement.getRotationSpeed()) });
+    if (rotationSpeed.numberChanged())
+      movement.attributes.Movement_RotationSpeed = rotationSpeed.state.number.get();
+
     Iris.End();
   }
 
