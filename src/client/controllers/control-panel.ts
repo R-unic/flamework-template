@@ -166,7 +166,7 @@ export class ControlPanelController implements OnStart {
     if (jumpCooldown.numberChanged())
       movement.attributes.Movement_JumpCooldown = jumpCooldown.state.number.get();
 
-    const jumpForce = Iris.SliderNum(["Jump Force", 0.25, 0, 30], { number: Iris.State(movement.getJumpForce()) });
+    const jumpForce = Iris.SliderNum(["Jump Force", 1, 0, 100], { number: Iris.State(movement.getJumpForce()) });
     if (jumpForce.numberChanged())
       movement.attributes.Movement_JumpForce = jumpForce.state.number.get();
 

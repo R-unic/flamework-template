@@ -17,6 +17,9 @@ interface ServerEvents {
 }
 
 interface ClientEvents {
+  character: {
+    toggleCustomMovement(on: boolean): void;
+  };
   data: {
     updated(directory: string, value: unknown): void;
   };
