@@ -74,6 +74,8 @@ export class MouseController implements OnInit, OnRender {
   }
 
   public onRender(dt: number): void {
+    if (this.behavior === Enum.MouseBehavior.Default) return;
+
     UIS.MouseBehavior = this.behavior;
   }
 
