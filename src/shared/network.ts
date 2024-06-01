@@ -35,7 +35,7 @@ interface ServerFunctions {
     getInfo(): GitHubInfo;
   };
   roblox: {
-    getGamepasses(amount?: number): GamepassInfo[];
+    getGamepasses(): GamepassInfo[];
   };
 }
 

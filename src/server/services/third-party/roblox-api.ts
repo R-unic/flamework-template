@@ -26,22 +26,28 @@ function didFail(body: object): body is ErrorBody {
 
 @Service()
 export class RobloxService implements OnInit, LogStart {
-  private readonly gamepassesEndpoint = `https://games.roproxy.com/v1/games/${game.GameId}/game-passes?sortOrder=Asc&limit=`;
+  private readonly gamepassesEndpoint = `https://games.roproxy.com/v1/games/${game.GameId}/game-passes?sortOrder=Asc&limit=100`;
+  private cache?: GamepassInfo[];
 
   public onInit(): void {
-    Functions.roblox.getGamepasses.setCallback((_, amount) => this.getGamepasses(amount));
+    Functions.roblox.getGamepasses.setCallback(() => this.getGamepasses());
   }
 
-  public async getGamepasses(amount = 100): Promise<GamepassInfo[]> {
+  public async getGamepasses(): Promise<GamepassInfo[]> {
     try {
-      const json = HTTP.GetAsync(this.gamepassesEndpoint + tostring(amount));
-      const body = <object>HTTP.JSONDecode(json);
-      if (didFail(body)) {
-        const [err] = body.errors;
-        throw new HttpException(`Failed to fetch game gamepass info: ${err.userFacingMessage} - ${err.message}`);
-      }
+      if (this.cache === undefined) {
+        const json = HTTP.GetAsync(this.gamepassesEndpoint);
+        const body = <object>HTTP.JSONDecode(json);
+        if (didFail(body)) {
+          const [err] = body.errors;
+          throw new HttpException(`Failed to fetch game gamepass info: ${err.userFacingMessage} - ${err.message}`);
+        }
 
-      return (<SuccessBody<GamepassInfo>>body).data;
+        const gamepasses = (<SuccessBody<GamepassInfo>>body).data;
+        this.cache = gamepasses;
+        return gamepasses;
+      } else
+        return this.cache;
     } catch (err) {
       throw new HttpException(<string>err);
     }
