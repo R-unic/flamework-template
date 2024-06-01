@@ -10,6 +10,8 @@ interface ServerEvents {
     initialize(): void;
     set(directory: string, value: unknown): void;
     increment(directory: string, amount?: number): void;
+    decrement(directory: string, amount?: number): void;
+    addToArray(directory: string, value: defined): void;
   };
   character: {
     toggleDefaultMovement(on: boolean): void;
@@ -27,7 +29,7 @@ interface ClientEvents {
 
 interface ServerFunctions {
   data: {
-    get(directory: string): unknown;
+    get(directory?: string, defaultValue?: unknown): unknown;
   };
   github: {
     getInfo(): GitHubInfo;
