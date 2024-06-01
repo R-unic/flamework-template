@@ -6,15 +6,15 @@ import { Events } from "client/network";
 import { Movement } from "client/components/movement";
 import type { CameraController } from "./camera";
 
-@Controller()
+@Controller({ loadOrder: 1000 })
 export class InitializationController implements OnStart, OnCharacterAdd {
   public constructor(
     private readonly camera: CameraController
   ) { }
 
   public onStart(): void {
-    Events.data.initialize();
     this.camera.set("Default"); // set to preferred camera
+    Events.data.initialize();
   }
 
   public onCharacterAdd(character: CharacterModel): void {
