@@ -1,9 +1,7 @@
 /**
- * Compact method of storing and manipulating individual bits within
- * a data structure
+ * Compact method of storing and manipulating individual bits within a data structure
  *
- * Used for efficient storage of boolean flags
- * or integer values.
+ * Used for efficient storage of boolean flags or integer values.
  *
  * Useful for networking or performance-heavy applications
  */
