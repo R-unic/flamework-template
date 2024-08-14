@@ -6,6 +6,7 @@ import { Action, Axis } from "@rbxts/gamejoy/out/Actions";
 import Signal from "@rbxts/signal";
 
 import { Player } from "shared/utility/client";
+import { atom } from "@rbxts/charm";
 
 const { abs } = math;
 
@@ -14,19 +15,13 @@ const MOUSE_RAY_DISTANCE = 1000;
 /** Mouse controller that emulates cross-platform actions */
 @Controller()
 export class MouseController implements OnInit, OnRender {
-  public readonly lmbUp = new Signal<() => void>;
-  public readonly rmbUp = new Signal<() => void>;
-  public readonly mmbUp = new Signal<() => void>;
-  public readonly lmbDown = new Signal<() => void>;
-  public readonly rmbDown = new Signal<() => void>;
-  public readonly mmbDown = new Signal<() => void>;
   public readonly scrolled = new Signal<(delta: number) => void>;
 
-  public isLmbDown = false;
-  public isRmbDown = false;
-  public isMmbDown = false;
-  public iconEnabled = true;
-  public behavior: Enum.MouseBehavior = Enum.MouseBehavior.Default;
+  public isLmbDown = atom(false);
+  public isRmbDown = atom(false);
+  public isMmbDown = atom(false);
+  public iconEnabled = atom(true);
+  public behavior = atom(<Enum.MouseBehavior>Enum.MouseBehavior.Default);
 
   private readonly playerMouse = Player.GetMouse();
   private readonly clickAction = new Action("MouseButton1");
@@ -47,23 +42,12 @@ export class MouseController implements OnInit, OnRender {
   private delta = new Vector2;
 
   public onInit(): void {
-    // Mouse controls
-    const lmbDown = () => {
-      this.isLmbDown = true;
-      this.lmbDown.Fire();
-    };
-    const lmbUp = () => {
-      this.isLmbDown = false;
-      this.lmbUp.Fire();
-    };
-    const rmbDown = () => {
-      this.isRmbDown = true;
-      this.rmbDown.Fire();
-    };
-    const rmbUp = () => {
-      this.isRmbDown = false;
-      this.rmbUp.Fire();
-    };
+    const lmbDown = () => this.isLmbDown(true);
+    const lmbUp = () => this.isLmbDown(false);
+    const rmbDown = () => this.isRmbDown(true);
+    const rmbUp = () => this.isRmbDown(false);
+    const mmbDown = () => this.isMmbDown(true);
+    const mmbUp = () => this.isMmbDown(false);
 
     this.input
       .Bind(this.clickAction, lmbDown)
@@ -88,27 +72,22 @@ export class MouseController implements OnInit, OnRender {
 
     this.input
       .Bind(this.scrollAction, () => this.scrolled.Fire(-this.scrollAction.Position.Z))
-      .Bind(this.middleClickAction, () => {
-        this.isMmbDown = true;
-        this.mmbDown.Fire();
-      })
-      .BindEvent("onMmbRelease", this.middleClickAction.Released, () => {
-        this.isMmbDown = false;
-        this.mmbUp.Fire();
-      });
+      .Bind(this.middleClickAction, mmbDown)
+      .BindEvent("onMmbRelease", this.middleClickAction.Released, mmbUp);
 
     // Touch controls
     UserInput.TouchPinch.Connect((_, scale) => this.scrolled.Fire((scale < 1 ? 1 : -1) * abs(scale - 2)));
-    UserInput.TouchStarted.Connect(() => this.isLmbDown = true);
-    UserInput.TouchEnded.Connect(() => this.isLmbDown = false);
+    UserInput.TouchStarted.Connect(lmbDown);
+    UserInput.TouchEnded.Connect(lmbUp);
     UserInput.InputChanged.Connect(input => this.lastInput = input.UserInputType);
   }
 
   public onRender(dt: number): void {
-    if (UserInput.MouseBehavior !== this.behavior && this.behavior !== Enum.MouseBehavior.Default)
-      UserInput.MouseBehavior = this.behavior;
+    const behavior = this.behavior();
+    if (UserInput.MouseBehavior !== behavior && behavior !== Enum.MouseBehavior.Default)
+      UserInput.MouseBehavior = behavior;
 
-    UserInput.MouseIconEnabled = this.iconEnabled;
+    UserInput.MouseIconEnabled = this.iconEnabled();
     switch (this.lastInput) {
       case Enum.UserInputType.MouseMovement: {
         this.delta = UserInput.GetMouseDelta();

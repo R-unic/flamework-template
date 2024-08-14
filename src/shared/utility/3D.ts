@@ -17,7 +17,7 @@ export function toRegion3({ CFrame, Size }: Part, areaShrink = 0): Region3 {
   );
 }
 
-export function createRayVisualizer(position: Vector3, direction: Vector3, decayTime = 3, transparency = 0.7, color = new Color3(1, 0, 0)): void {
+export function createRayVisualizer(position: Vector3, direction: Vector3, lifetime = 3, transparency = 0.7, color = new Color3(1, 0, 0)): void {
   const raySize = direction.Magnitude;
   const visual = new Instance("Part", World);
   visual.Color = color;
@@ -26,7 +26,7 @@ export function createRayVisualizer(position: Vector3, direction: Vector3, decay
   visual.CanCollide = false;
   visual.Size = new Vector3(0.5, 0.5, raySize);
   visual.CFrame = CFrame.lookAlong(position.add(direction.mul(raySize / 2)), direction);
-  task.delay(decayTime, () => visual.Destroy());
+  task.delay(lifetime, () => visual.Destroy());
 }
 
 export function combineCFrames(cframes: CFrame[]): CFrame {

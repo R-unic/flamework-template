@@ -45,8 +45,8 @@ export class ControlPanelController implements OnStart {
       .Bind("P", () => {
         if (!isDeveloper(Player)) return;
         mouseUnlocked = !mouseUnlocked;
-        this.mouse.iconEnabled = mouseUnlocked;
-        this.mouse.behavior = mouseUnlocked ? Enum.MouseBehavior.Default : Enum.MouseBehavior.LockCenter;
+        this.mouse.iconEnabled(mouseUnlocked);
+        this.mouse.behavior(mouseUnlocked ? Enum.MouseBehavior.Default : Enum.MouseBehavior.LockCenter);
         Player.CameraMode = mouseUnlocked ? Enum.CameraMode.Classic : Enum.CameraMode.LockFirstPerson;
       });
 
