@@ -4,7 +4,7 @@ import { RunService as Runtime } from "@rbxts/services";
 import { flatten } from "./utility/array";
 import { getInstancePath } from "./utility/instances";
 import { getName } from "./utility/meta";
-import repr from "./utility/repr";
+import repr from "./libraries/repr";
 
 type LogFunctionName = ExtractKeys<typeof Log, Callback>;
 
