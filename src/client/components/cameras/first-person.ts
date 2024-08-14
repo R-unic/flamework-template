@@ -35,7 +35,7 @@ export class FirstPersonCamera extends CameraControllerComponent {
   public override toggle(on: boolean): void {
     super.toggle(on);
     this.onRender(0);
-    this.mouse.behavior = on ? Enum.MouseBehavior.LockCenter : this.mouse.behavior;
+    this.mouse.behavior(on ? Enum.MouseBehavior.LockCenter : this.mouse.behavior);
     Player.CameraMode = on ? Enum.CameraMode.LockFirstPerson : Player.CameraMode;
   }
 }

@@ -1,6 +1,5 @@
 import { Networking } from "@flamework/networking";
 import type { GitHubInfo } from "./structs/github";
-import type { GamepassInfo } from "./structs/roblox-api";
 
 interface ServerEvents {
   encoded: {
@@ -29,13 +28,10 @@ interface ClientEvents {
 
 interface ServerFunctions {
   data: {
-    get(directory?: string, defaultValue?: unknown): unknown;
+    get(directory: string, defaultValue?: unknown): unknown;
   };
   github: {
     getInfo(): GitHubInfo;
-  };
-  roblox: {
-    getGamepasses(): GamepassInfo[];
   };
 }
 
