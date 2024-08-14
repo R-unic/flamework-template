@@ -1,57 +1,9 @@
 import Log from "shared/logger";
 
-const { floor, ceil, log, abs, clamp } = math;
+const { floor, log, abs, clamp } = math;
 
 export const isNaN = (n: number) => n !== n;
-
-export namespace Size {
-  export const byte = 8;
-  export const short = 16;
-  export const int = 32;
-  export const long = 64;
-  export const bigint = 128;
-
-  export function inBytes(n: number): byte {
-    const positiveNum = abs(n);
-    let temp = positiveNum;
-    let bits = 0;
-
-    while (temp !== 0 && bits < 128) {
-      temp >>= 1; // Right shift by 1 bit
-      bits++;
-    }
-
-    return ceil(bits / 8);
-  }
-}
-
-export function isUnsigned(n: number): boolean {
-  return n >= 0;
-}
-
-export function isByte(n: number): n is byte {
-  return isUnsigned(n) && n <= 0XFF;
-}
-
-export function isSByte(n: number): n is sbyte {
-  return n >= -0x80 && n <= 0X7F;
-}
-
-export function isShort(n: number): n is short {
-  return n >= -0x8000 && n <= 0x7FFF;
-}
-
-export function isUShort(n: number): n is ushort {
-  return isUnsigned(n) && n <= 0xFFFF;
-}
-
-export function isInt(n: number): n is int {
-  return n >= -0x80000000 && n <= 0x7FFFFFFF;
-}
-
-export function isUInt(n: number): n is uint {
-  return isUnsigned(n) && n <= 0xFFFFFFFF;
-}
+export const isEven = (n: number) => n % 2 === 0;
 
 export function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -60,8 +12,6 @@ export function lerp(a: number, b: number, t: number): number {
 export function doubleSidedLimit(n: number, limit: number) {
   return clamp(n, -limit, limit);
 }
-
-export const isEven = (n: number) => n % 2 === 0;
 
 /**
  * Returns 0 if the number is close enough to 0 by `epsilon`
@@ -121,4 +71,27 @@ export function parseSuffixedNumber(suffixed: string): number {
   }
 
   return tonumber(numberPart)!;
+}
+
+export function roundDecimal(n: number, decimals = 0): number {
+  const mult = 10 ** decimals;
+  return floor(n * mult + 0.5) / mult;
+}
+
+export function sumOfInversePositions(n: number): number {
+  let sum = 0;
+  for (let i = 1; i <= n; i++)
+    sum += 1 / i;
+
+  return sum;
+}
+
+// Calculate the probability for each position
+export function calculateProbabilities(length: number): number[] {
+  const probabilities: number[] = [];
+  const sum = sumOfInversePositions(length);
+  for (let i = 1; i <= length; i++)
+    probabilities.push((1 / i) / sum);
+
+  return probabilities;
 }

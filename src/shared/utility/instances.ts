@@ -43,3 +43,16 @@ export async function getInstancePath(instance: Instance): Promise<string> {
 
   return path;
 }
+
+/**
+ * Note: Only gets instances from paths acquired using Instance.GetFullName()
+ */
+export function getInstanceFromPath<I extends Instance = Instance>(path: string | string[], root: Instance = game): Maybe<I> {
+  const pieces = typeOf(path) === "string" ? (<string>path).split(".") : <string[]>path;
+  let result: Maybe<Instance> = root;
+
+  for (const piece of pieces)
+    result = result?.FindFirstChild(piece);
+
+  return <I>result;
+}
