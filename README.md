@@ -76,9 +76,8 @@ game:GetService("DataStoreService"):GetDataStore("EnvironmentInfo"):SetAsync("DI
 ```
 
 ### Creator/Developer Permissions
-If you created the game, you need to replace the user ID given to [`CREATOR_ID`](https://github.com/R-unic/flamework-template/blob/master/src/shared/constants.ts#L1) with your own.
-Otherwise you need to add your user ID to the [`DEVELOPERS`](https://github.com/R-unic/flamework-template/blob/master/src/shared/constants.ts#L2) array.
-This is relatively important because this is what a handful of systems use to detect whether or not the player has developer permissions.
+Add your user ID to the [`DevID`](https://github.com/R-unic/flamework-template/blob/master/src/shared/constants.ts#L4) enum.
+This is fairly important because this is what a few systems use to detect whether or not the player has developer permissions.
 
 ### Automatically Index Children
 This is taken directly from the Roblox TS website because I think it's worth knowing about. What if you wanted to access something you're currently storing inside of the Workspace service in Studio? Well, Roblox TS would have no clue of that thing existing inside of there. Luckily, you can solve this issue extremely easily.
