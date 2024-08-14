@@ -13,7 +13,7 @@ It aims to be decently simple and lightweight but still provide as many reusable
     - Mouse sway
     - Walk cycle
   - `CharacterController` for easily retrieving character, root, & humanoid
-  - Custom camera controller to switch between cams on the fly with these cam components included:
+  - Custom camera controller to switch between cams on the fly with these camera components included (but optional):
     - Default (default roblox cam)
     - FirstPerson (default roblox cam locked to 1P)
     - Aerial
@@ -22,7 +22,8 @@ It aims to be decently simple and lightweight but still provide as many reusable
     - FirstPersonAnimated (uses procedural animation system)
   - UI:
     - Customizable control panel made with Iris
-      - Movement and camera system mods already included
+      - Performance stats, movement system, and camera system mods already included
+      - For common classes rendered in your control panel, use the `WithControlPanelSettings` class to define a `renderControlPanelSettings` method that renders the class' settings in control panel
     - Animation components (Gradient, Rotation, Transparency, Scale, SpringScale)
     - Effect controller (such as fading black in/out)
 - Backend:
@@ -30,9 +31,8 @@ It aims to be decently simple and lightweight but still provide as many reusable
   - Graceful Firebase API instead of DataStoreService
   - Discord webhook logger
   - Product/gamepass transaction handler
-  - Roblox API service
   - GitHub info service
-  - Scheduling service (execute a fn on a loop with a cooldown, e.x. `scheduling.every.second.Connect(...)`)
+  - Scheduling service (run forever, execute a fn on a loop with a cooldown, e.x. `scheduling.every.second.Connect(...)`)
 - Tons of utility functions and classes (comma format, abbreviation, repr, array shuffle/flatten/reverse, springs, sin/cos waves, bitfields, etc.)
 - Included logger
 - Custom lifecycle hooks:
