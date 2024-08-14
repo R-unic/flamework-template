@@ -5,11 +5,13 @@ import { RaycastParamsBuilder } from "@rbxts/builders";
 
 import type { LogStart } from "shared/hooks";
 import { Events } from "client/network";
-import { STUDS_TO_METERS_CONSTANT, studsToMeters } from "shared/utility/3D";
+import { metersToStuds, studsToMeters } from "shared/utility/3D";
 import { isNaN } from "shared/utility/numbers";
+import { removeDuplicates } from "shared/utility/array";
+import type { WithControlPanelSettings } from "shared/structs/control-panel";
 
 import { InputInfluenced } from "client/base-components/input-influenced";
-import { removeDuplicates } from "shared/utility/array";
+import Iris from "@rbxts/iris";
 
 type KeyName = ExtractKeys<typeof Enum.KeyCode, EnumItem>;
 
@@ -65,7 +67,7 @@ const NO_JUMP_STATES: Enum.HumanoidStateType[] = [
     Movement_RotationSpeed: 1,
   }
 })
-export class Movement extends InputInfluenced<Attributes, Model> implements OnStart, OnPhysics, LogStart {
+export class Movement extends InputInfluenced<Attributes, Model> implements OnStart, OnPhysics, LogStart, WithControlPanelSettings {
   public friction = this.attributes.Movement_Friction;
 
   private readonly root = <Part>this.instance.WaitForChild("HumanoidRootPart");
@@ -123,55 +125,11 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
     if (this.instance === undefined) return;
     if (!this.canMove) return;
 
-    const directionVector = this.getVectorFromDirections(this.moveDirections);
-    this.touchingGround = this.isTouchingGround();
-    this.friction = this.touchingGround ?
-      this.attributes.Movement_Friction
-      : this.getAirFriction();
-
-    const speed = studsToMeters(this.getSpeed());
-    const dontApplyAirForce = !this.canMoveMidair() && !this.touchingGround;
-    const desiredForce = directionVector.mul(speed);
-    const dontApplyForce = dontApplyAirForce || isNaN(directionVector.X) || isNaN(desiredForce.X);
-    const force = dontApplyForce ? new Vector3 : desiredForce.sub(this.velocity);
-    this.velocity = this.applyFriction(this.velocity)
-      .add(this.applyAcceleration(force, dt));
-
-    if (this.isRotational()) {
-      const rotationSpeed = studsToMeters(this.getRotationSpeed());
-      const angularMovementDirections = this.getAngularMovementDirections();
-      let angularDirection = new Vector3;
-      for (const direction of angularMovementDirections)
-        angularDirection = angularDirection.add(new Vector3(direction === MoveDirection.Left ? -1 : 1, 0, 0).mul(-1));
-
-      const dontApplyAngularForce = dontApplyAirForce || isNaN(angularDirection.X);
-      const desiredAngularForce = angularDirection.mul(rotationSpeed);
-      const angularForce = dontApplyAngularForce ? new Vector3 : desiredAngularForce;
-      this.angularVelocity = this.applyFriction(this.angularVelocity)
-        .add(this.applyAcceleration(angularForce, dt));
-    }
-
-    if (this.isRestrictive()) {
-      const rayParams = new RaycastParamsBuilder()
-        .SetIgnoreWater(true)
-        .AddToFilter(this.instance)
-        .Build();
-
-      const characterSize = this.instance.GetBoundingBox()[1];
-      const distanceToGround = characterSize.Y / 2;
-      const distanceAhead = 1;
-      const down = new Vector3(0, -1, 0);
-      const forward = directionVector;
-      const edgeRaySize = distanceToGround + this.getRestrictiveMaxEdgeHeight();
-      const wallRaySize = 0.5;
-      const position = this.root.Position.add(forward.mul(distanceAhead));
-      const edgeResult = World.Raycast(position, down.mul(edgeRaySize), rayParams);
-      const wallResult = World.Raycast(this.root.Position, forward.mul(wallRaySize), rayParams);
-      if (edgeResult?.Instance === undefined)
-        this.velocity = new Vector3;
-      if (wallResult?.Instance !== undefined && wallResult.Instance.CanCollide)
-        this.velocity = new Vector3;
-    }
+    this.updateVelocity(dt);
+    if (this.isRotational())
+      this.updateRotational(dt);
+    if (this.isRestrictive())
+      this.updateRestrictive();
 
     const { X: turn } = this.angularVelocity;
     this.root.CFrame = this.root.CFrame
@@ -179,6 +137,68 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
       .mul(CFrame.Angles(0, turn / 1.75, 0));
 
     this.angularVelocity = new Vector3;
+  }
+
+  public renderControlPanelSettings(): void {
+    Iris.Tree(["Movement"]);
+
+    const speed = Iris.SliderNum(["Speed", 0.05, 0.05, 30], { number: Iris.State(this.getSpeed()) });
+    if (speed.numberChanged())
+      this.attributes.Movement_Speed = speed.state.number.get();
+
+    const acceleration = Iris.SliderNum(["Acceleration", 0.01, 0, 3], { number: Iris.State(this.getAcceleration()) });
+    if (acceleration.numberChanged())
+      this.attributes.Movement_Acceleration = acceleration.state.number.get();
+
+    const friction = Iris.SliderNum(["Friction", 0.01, 0, 1], { number: Iris.State(this.friction) });
+    if (friction.numberChanged())
+      this.attributes.Movement_Friction = friction.state.number.get();
+
+    const airFriction = Iris.SliderNum(["Air Friction", 0.01, 0, 1], { number: Iris.State(this.getAirFriction()) });
+    if (airFriction.numberChanged())
+      this.attributes.Movement_AirFriction = airFriction.state.number.get();
+
+    Iris.Separator();
+
+    const canMoveMidair = Iris.Checkbox(["Can Move Midair?"], { isChecked: Iris.State(this.canMoveMidair()) });
+    if (canMoveMidair.checked())
+      this.attributes.Movement_CanMoveMidair = true;
+    if (canMoveMidair.unchecked())
+      this.attributes.Movement_CanMoveMidair = false;
+
+    const jumpCooldown = Iris.SliderNum(["Jump Cooldown", 0.01, 0, 5], { number: Iris.State(this.getJumpCooldown()) });
+    if (jumpCooldown.numberChanged())
+      this.attributes.Movement_JumpCooldown = jumpCooldown.state.number.get();
+
+    const jumpForce = Iris.SliderNum(["Jump Force", 1, 0, 100], { number: Iris.State(this.getJumpForce()) });
+    if (jumpForce.numberChanged())
+      this.attributes.Movement_JumpForce = jumpForce.state.number.get();
+
+    const gravitationalConstant = Iris.SliderNum(["Gravitational Constant (G)", 0.025, 0.1, 20], { number: Iris.State(this.getG()) });
+    if (gravitationalConstant.numberChanged())
+      this.attributes.Movement_GravitationalConstant = gravitationalConstant.state.number.get();
+
+    const restrictive = Iris.Checkbox(["Restrictive?"], { isChecked: Iris.State(this.isRestrictive()) });
+    if (restrictive.checked())
+      this.attributes.Movement_Restrictive = true;
+    if (restrictive.unchecked())
+      this.attributes.Movement_Restrictive = false;
+
+    const maxEdgeHeight = Iris.SliderNum(["Restrictive Max Edge Height", 0.01, 0, 5], { number: Iris.State(this.getRestrictiveMaxEdgeHeight()) });
+    if (maxEdgeHeight.numberChanged())
+      this.attributes.Movement_RestrictiveMaxEdgeHeight = maxEdgeHeight.state.number.get();
+
+    const rotational = Iris.Checkbox(["Rotational?"], { isChecked: Iris.State(this.isRotational()) });
+    if (rotational.checked())
+      this.attributes.Movement_Rotational = true;
+    if (rotational.unchecked())
+      this.attributes.Movement_Rotational = false;
+
+    const rotationSpeed = Iris.SliderNum(["Rotation Speed", 0.01, 0, 5], { number: Iris.State(this.getRotationSpeed()) });
+    if (rotationSpeed.numberChanged())
+      this.attributes.Movement_RotationSpeed = rotationSpeed.state.number.get();
+
+    Iris.End();
   }
 
   public getVelocity(): Vector3 {
@@ -233,6 +253,60 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
     return (this.isRotational() ? this.moveDirections.filter(v => !this.getAngularMovementDirections().includes(v)) : this.moveDirections).size() > 0;
   }
 
+  private updateVelocity(dt: number): void {
+    const directionVector = this.getVectorFromDirections(this.moveDirections);
+    this.touchingGround = this.isTouchingGround();
+    this.friction = this.touchingGround ?
+      this.attributes.Movement_Friction
+      : this.getAirFriction();
+
+    const speed = studsToMeters(this.getSpeed());
+    const dontApplyAirForce = !this.canMoveMidair() && !this.touchingGround;
+    const desiredForce = directionVector.mul(speed);
+    const dontApplyForce = dontApplyAirForce || isNaN(directionVector.X) || isNaN(desiredForce.X);
+    const force = dontApplyForce ? new Vector3 : desiredForce.sub(this.velocity);
+    this.velocity = this.applyFriction(this.velocity)
+      .add(this.applyAcceleration(force, dt));
+  }
+
+  private updateRotational(dt: number): void {
+    const dontApplyAirForce = !this.canMoveMidair() && !this.touchingGround;
+    const rotationSpeed = studsToMeters(this.getRotationSpeed());
+    const angularMovementDirections = this.getAngularMovementDirections();
+    let angularDirection = new Vector3;
+    for (const direction of angularMovementDirections)
+      angularDirection = angularDirection.add(new Vector3(direction === MoveDirection.Left ? -1 : 1, 0, 0).mul(-1));
+
+    const dontApplyAngularForce = dontApplyAirForce || isNaN(angularDirection.X);
+    const desiredAngularForce = angularDirection.mul(rotationSpeed);
+    const angularForce = dontApplyAngularForce ? new Vector3 : desiredAngularForce;
+    this.angularVelocity = this.applyFriction(this.angularVelocity)
+      .add(this.applyAcceleration(angularForce, dt));
+  }
+
+  private updateRestrictive(): void {
+    const directionVector = this.getVectorFromDirections(this.moveDirections);
+    const rayParams = new RaycastParamsBuilder()
+      .SetIgnoreWater(true)
+      .AddToFilter(this.instance)
+      .Build();
+
+    const characterSize = this.instance.GetBoundingBox()[1];
+    const distanceToGround = characterSize.Y / 2;
+    const distanceAhead = 1;
+    const down = new Vector3(0, -1, 0);
+    const forward = directionVector;
+    const edgeRaySize = distanceToGround + this.getRestrictiveMaxEdgeHeight();
+    const wallRaySize = 0.5;
+    const position = this.root.Position.add(forward.mul(distanceAhead));
+    const edgeResult = World.Raycast(position, down.mul(edgeRaySize), rayParams);
+    const wallResult = World.Raycast(this.root.Position, forward.mul(wallRaySize), rayParams);
+    if (edgeResult?.Instance === undefined)
+      this.velocity = new Vector3;
+    if (wallResult?.Instance !== undefined && wallResult.Instance.CanCollide)
+      this.velocity = new Vector3;
+  }
+
   private getAngularMovementDirections(): MoveDirection[] {
     return removeDuplicates(this.moveDirections.filter(dir => [MoveDirection.Left, MoveDirection.Right].includes(dir)));
   }
@@ -273,7 +347,7 @@ export class Movement extends InputInfluenced<Attributes, Model> implements OnSt
     if (NO_JUMP_STATES.includes(this.humanoid.GetState())) return;
 
     this.humanoid.SetStateEnabled(Enum.HumanoidStateType.Jumping, true);
-    this.addForce(new Vector3(0, this.getJumpForce() * STUDS_TO_METERS_CONSTANT, 0));
+    this.addForce(new Vector3(0, metersToStuds(this.getJumpForce()), 0));
   }
 
   private applyMovementDirection(direction: MoveDirection): void {

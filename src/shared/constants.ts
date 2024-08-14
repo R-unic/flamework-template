@@ -1,2 +1,13 @@
-export const CREATOR_ID = game.CreatorType === Enum.CreatorType.User ? game.CreatorId : 44966864; // add your user ID here if you're the creator
-export const DEVELOPERS = [CREATOR_ID]; // add extra developer user IDs here
+import { RunService as Runtime } from "@rbxts/services";
+import Object from "@rbxts/object-utils";
+
+enum DevID {
+  Runic = 44966864
+}
+
+export const CREATOR_ID = DevID.Runic; // add your user ID here
+export const DEVELOPERS = new Set(Object.values(DevID)); // add extra developer user IDs here
+
+export function isDeveloper(player: Player): boolean {
+  return Runtime.IsStudio() || DEVELOPERS.has(player.UserId);
+}

@@ -1,4 +1,7 @@
+import Iris from "@rbxts/iris";
+
 import { isNaN } from "shared/utility/numbers";
+import type { WithControlPanelSettings } from "shared/structs/control-panel";
 
 const { ceil, min, huge: INF } = math;
 
@@ -8,18 +11,28 @@ const { ceil, min, huge: INF } = math;
 */
 const MAX_SPRING_DELTA = 1 / 40;
 
-export default class Spring {
+export default class Spring implements WithControlPanelSettings {
   static readonly iterations = 8;
-  public target = new Vector3;
-  public position = new Vector3;
-  public velocity = new Vector3;
+
+  public defaultPosition: Vector3;
+  public target: Vector3;
+  public position: Vector3;
+  public velocity: Vector3;
+  private lastPosition: Vector3;
 
   public constructor(
     public mass = 5,
     public force = 50,
     public damping = 4,
-    public speed = 4
-  ) { }
+    public speed = 4,
+    defaultPosition = new Vector3(0, 0, 0)
+  ) {
+    this.defaultPosition = defaultPosition;
+    this.target = defaultPosition;
+    this.position = defaultPosition;
+    this.velocity = new Vector3();
+    this.lastPosition = defaultPosition;
+  }
 
   /**
    * Shove the spring off equilibrium
@@ -35,18 +48,26 @@ export default class Spring {
   }
 
   /**
+   * Reset the spring to its default position
+   */
+  public resetTarget(): void {
+    this.target = this.defaultPosition;
+  }
+
+  /**
    * Update the spring
    *
    * @param dt Delta time
-   * @returns New value
+   * @returns The difference between the current and last positions
    */
   public update(dt: number): Vector3 {
     if (dt > MAX_SPRING_DELTA) {
       const iter = ceil(dt / MAX_SPRING_DELTA);
-      for (let i = 0; i < iter; i++)
+      for (let i = 0; i < iter; i++) {
         this.update(dt / iter);
+      }
 
-      return this.position;
+      return this.position.sub(this.lastPosition);
     }
 
     const scaledDt: number = (min(dt, 1) * this.speed) / Spring.iterations;
@@ -60,6 +81,25 @@ export default class Spring {
       this.velocity = this.velocity.add(acceleration.mul(scaledDt));
       this.position = this.position.add(this.velocity.mul(scaledDt));
     }
-    return this.position;
+
+    const positionDifference = this.position.sub(this.lastPosition);
+    this.lastPosition = this.position;
+    return positionDifference;
+  }
+
+  public renderControlPanelSettings(prefix?: string): void {
+    Iris.SeparatorText([(prefix !== undefined ? prefix + " " : "") + "Spring"]);
+
+    const mass = Iris.SliderNum(["Spring Mass", 0.25, 0.25, 100], { number: Iris.State(this.mass) });
+    if (mass.numberChanged()) this.mass = mass.state.number.get();
+
+    const force = Iris.SliderNum(["Spring Force", 0.25, 0.25, 100], { number: Iris.State(this.force) });
+    if (force.numberChanged()) this.force = force.state.number.get();
+
+    const damping = Iris.SliderNum(["Spring Damping", 0.25, 0.25, 100], { number: Iris.State(this.damping) });
+    if (damping.numberChanged()) this.damping = damping.state.number.get();
+
+    const speed = Iris.SliderNum(["Spring Speed", 0.25, 0.25, 100], { number: Iris.State(this.speed) });
+    if (speed.numberChanged()) this.speed = speed.state.number.get();
   }
 }
