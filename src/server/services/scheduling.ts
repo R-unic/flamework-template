@@ -8,7 +8,7 @@ import Signal from "@rbxts/signal";
 @Service()
 export class SchedulingService implements OnTick {
   private counter = 0;
-  public every = {
+  public every = <const>{
     second: new Signal
   };
 
@@ -22,6 +22,14 @@ export class SchedulingService implements OnTick {
           signal.Fire();
         }
       });
+  }
+
+  /** Note: Your callback should **always** yield! */
+  public runForever(callback: Callback): void {
+    task.spawn(() => {
+      while (true)
+        callback();
+    });
   }
 
   private getIncrement(unit: keyof typeof this.every): number {
