@@ -72,7 +72,7 @@ To get your `DISCORD_WEBHOOK` value: Create a Discord webhook on Discord and rep
 
 You can easily set this value by running this in your Roblox command bar:
 ```lua
-game:GetService("DataStoreService"):GetDataStore("EnvironmentInfo"):SetAsync("DISCORD_WEBHOOK", "https://hooks.hyra.io/api/webhooks/1234567890/tHiSisAfaKEdIsCOrdwEbHOoKTOkeN")
+game:GetService("DataStoreService"):GetDataStore("OtherInfo"):SetAsync("DISCORD_WEBHOOK", "https://hooks.hyra.io/api/webhooks/1234567890/tHiSisAfaKEdIsCOrdwEbHOoKTOkeN")
 ```
 
 ### Creator/Developer Permissions
