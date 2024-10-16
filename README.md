@@ -5,14 +5,13 @@ It aims to be decently simple and lightweight but still provide as many reusable
 
 ## Features
 - Frontend:
-  - Custom movement system (optional)
   - Custom mouse controller
   - Procedural animation system for cameras or models with these animations included:
     - Landing
     - Mouse sway
     - Walk cycle
   - `CharacterController` for easily retrieving character, root, & humanoid
-  - Custom camera controller to switch between cams on the fly with these camera components included (but optional):
+  - Custom camera controller to switch between cameras on the fly with these camera components included (but optional):
     - Default (default roblox cam)
     - FirstPerson (default roblox cam locked to 1P)
     - Aerial
@@ -28,12 +27,11 @@ It aims to be decently simple and lightweight but still provide as many reusable
 - Backend:
   - Cmdr for custom commands
   - Graceful Firebase API instead of DataStoreService
-  - Discord webhook logger
   - Product/gamepass transaction handler
   - GitHub info service
   - Scheduling service (run forever, execute a fn on a loop with a cooldown, e.x. `scheduling.every.second.Connect(...)`)
-- Tons of utility functions and classes (comma format, abbreviation, repr, array shuffle/flatten/reverse, springs, sin/cos waves, bitfields, etc.)
-- Included logger
+- Tons of utility functions and classes (comma format, abbreviation, repr, array shuffle/flatten/reverse, springs, sin/cos waves, bitfields, string builder, etc.)
+- Included logger (not very good tbh)
 - Custom lifecycle hooks:
   - OnCharacterAdd/OnCharacterRemove
   - OnPlayerJoin/OnPlayerLeave
@@ -63,16 +61,7 @@ To get `FIREBASE_AUTH` you need to first click the settings icon next to "Projec
 You can easily set these values by running this in your Roblox command bar:
 ```lua
 game:GetService("DataStoreService"):GetDataStore("EnvironmentInfo"):SetAsync("FIREBASE_URL", "https://database-name-default-rtdb.firebaseio.com/")
-game:GetService("DataStoreService"):GetDataStore("EnvironmentInfo"):SetAsync("FIREBASE_AUTH", "tHiSisAfaKEFiRebAsEAuTHkeY")
-```
-
-### Discord Webhook
-There is a service to log messages to Discord via a webhook. However, it needs a `DISCORD_WEBHOOK` value inside of a DataStore named `OtherInfo`.
-To get your `DISCORD_WEBHOOK` value: Create a Discord webhook on Discord and replace "discord.com" with "hooks.hyra.io"
-
-You can easily set this value by running this in your Roblox command bar:
-```lua
-game:GetService("DataStoreService"):GetDataStore("OtherInfo"):SetAsync("DISCORD_WEBHOOK", "https://hooks.hyra.io/api/webhooks/1234567890/tHiSisAfaKEdIsCOrdwEbHOoKTOkeN")
+game:GetService("DataStoreService"):GetDataStore("EnvironmentInfo"):SetAsync("FIREBASE_AUTH", "tHiSisAveRYrEaLFiRebAsEAuTHkeY")
 ```
 
 ### Creator/Developer Permissions
