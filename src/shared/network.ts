@@ -2,9 +2,6 @@ import { Networking } from "@flamework/networking";
 import type { GitHubInfo } from "./structs/github";
 
 interface ServerEvents {
-  encoded: {
-    test(message: string, n: number, isCool: boolean): void;
-  };
   data: {
     initialize(): void;
     set(directory: string, value: unknown): void;
@@ -18,9 +15,6 @@ interface ServerEvents {
 }
 
 interface ClientEvents {
-  character: {
-    toggleCustomMovement(on: boolean): void;
-  };
   data: {
     loaded(): void;
     updated(directory: string, value: unknown): void;
