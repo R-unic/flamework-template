@@ -11,7 +11,6 @@ import { Player } from "shared/utility/client";
 import { isDeveloper } from "shared/constants";
 import { roundDecimal } from "shared/utility/numbers";
 
-import type { Movement } from "client/components/movement";
 import type { MouseController } from "./mouse";
 import type { CameraController } from "./camera";
 
@@ -61,9 +60,6 @@ export class ControlPanelController implements OnStart {
       {
         this.renderStatsTab();
         this.renderCameraTab();
-
-        const [movement] = this.components.getAllComponents<Movement>();
-        movement?.renderControlPanelSettings();
       }
       Iris.End();
     });

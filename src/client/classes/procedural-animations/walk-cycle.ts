@@ -14,7 +14,7 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
   public readonly sineWave = new Wave(...WAVE_PARAMETERS);
   public readonly cosineWave = new Wave(...WAVE_PARAMETERS);
   public damping = 1.5;
-  public minimumSpeed = 1; // if u want
+  public minimumSpeed = 1; // if you want
 
   public constructor(
     private readonly character: CharacterController
@@ -26,13 +26,13 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
   }
 
   public update(dt: number): Vector3 {
-    const movement = this.character.getMovement();
-    if (movement === undefined)
+    const root = this.character.getRoot();
+    if (root === undefined)
       return this.spring.update(dt);
 
     const waveDamping = 900;
-    const velocity = movement.getVelocity().mul(60);
-    const walkSpeed = velocity.sub(new Vector3(0, velocity.Y, 0)).Magnitude;
+    const velocity = root.AssemblyLinearVelocity.mul(60);
+    const walkSpeed = velocity.mul(new Vector3(1, 0, 1)).Magnitude;
     this.sineWave.frequency = round(walkSpeed) / 1.25;
     this.cosineWave.frequency = round(walkSpeed) / 1.25;
 

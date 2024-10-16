@@ -3,8 +3,6 @@ import type { Components } from "@flamework/components";
 
 import { Player } from "shared/utility/client";
 
-import type { Movement } from "client/components/movement";
-
 @Controller()
 export class CharacterController {
   public constructor(
@@ -37,13 +35,5 @@ export class CharacterController {
 
   public mustGetHumanoid(): Humanoid {
     return this.mustGet().Humanoid;
-  }
-
-  public getMovement(): Maybe<Movement> {
-    return this.components.getComponent(this.mustGet());
-  }
-
-  public async waitForMovement(): Promise<Movement> {
-    return this.components.waitForComponent(this.mustGet());
   }
 }
