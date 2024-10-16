@@ -22,6 +22,7 @@ interface ClientEvents {
     toggleCustomMovement(on: boolean): void;
   };
   data: {
+    loaded(): void;
     updated(directory: string, value: unknown): void;
   };
 }

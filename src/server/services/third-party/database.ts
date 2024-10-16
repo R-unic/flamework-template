@@ -76,7 +76,7 @@ export class DatabaseService implements OnInit, OnStart, OnPlayerJoin, OnPlayerL
 	}
 
 	public set<T>(player: Player, directory: string, value: T): void {
-		let data: Record<string, unknown> = this.getCached(player);
+		let data = <Record<string, unknown>><unknown>this.getCached(player); // stupid hack
 		const pieces = directory.split("/");
 		const lastPiece = pieces.pop()!;
 
@@ -136,10 +136,11 @@ export class DatabaseService implements OnInit, OnStart, OnPlayerJoin, OnPlayerL
 	private async setup(player: Player): Promise<void> {
 		await this.initializeAll(player);
 		this.loaded.Fire(player);
+		Events.data.loaded(player);
 		Log.info(`Initialized ${player}'s data`);
 	}
 
-	private async initializeAll(player: Player, data: Record<string, unknown> = INITIAL_DATA): Promise<void> {
+	private async initializeAll(player: Player, data: Record<string, unknown> = <Record<string, unknown>><unknown>INITIAL_DATA): Promise<void> {
 		for (const [key, value] of Object.entries(data)) {
 			if (typeOf(key) === "number") continue;
 
