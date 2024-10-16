@@ -1,9 +1,6 @@
 export default class StringBuilder {
   private buf: buffer;
 
-  /**
-   * @param tabSize The amount of spaces a "tab" character will take up
-   */
   public constructor(initial?: string) {
     this.buf = initial !== undefined ? buffer.fromstring(initial) : buffer.create(0);
   }

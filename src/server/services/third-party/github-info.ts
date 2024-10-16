@@ -3,19 +3,12 @@ import { HttpService as HTTP } from "@rbxts/services";
 import { $package } from "rbxts-transform-debug";
 
 import type { LogStart } from "shared/hooks";
-import type { GitHubCommitResponse, GitHubInfo, GitHubTag } from "shared/structs/github";
 import { Functions } from "server/network";
-import Log from "shared/logger";
-
-class GitHubFetchException extends Log.Exception {
-  public constructor(message: string) {
-    super("GitHubFetch", message);
-  }
-}
+import type { GitHubCommitResponse, GitHubInfo, GitHubTag } from "shared/structs/github";
 
 @Service()
 export class GitHubInfoService implements OnInit, LogStart {
-  // Put your repo name here! e.g. R-unic/tabletop-lounge
+  // Set your repository link in your package.json or this will not work
   private readonly repository: string;
   private readonly baseURL = "https://api.github.com/repos";
 
@@ -28,7 +21,7 @@ export class GitHubInfoService implements OnInit, LogStart {
 
   public onInit(): void {
     if (this.repository === undefined)
-      throw new GitHubFetchException("No repository URL was provided in package.json");
+      error("Issue fetching data from GitHub: No repository URL was provided in package.json");
 
     const repeatTryGet = (): GitHubInfo => {
       const [success, info] = pcall(() => this.retrieve());

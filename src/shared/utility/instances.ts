@@ -1,4 +1,6 @@
-import { ReplicatedFirst, RunService as Runtime, MarketplaceService as Market } from "@rbxts/services";
+import { Workspace as World, SoundService as Sound, ReplicatedFirst, RunService as Runtime, MarketplaceService as Market } from "@rbxts/services";
+
+import type { PlaySoundOptions } from "shared/structs/audio";
 
 export const Assets = ReplicatedFirst.Assets;
 
@@ -10,25 +12,65 @@ export interface DevProductInfo {
   readonly Name: string;
 }
 
-export function getDevProducts(): DevProductInfo[] {
-  return getPageContents(Market.GetDeveloperProductsAsync());
+export async function getDevProducts(): Promise<DevProductInfo[]> {
+  return await getPageContents(Market.GetDeveloperProductsAsync());
 }
 
-export function getPageContents<T extends defined>(pages: Pages<T>): T[] {
-  const contents: T[] = [];
-  while (!pages.IsFinished) {
-    const page = pages.GetCurrentPage();
-    for (const item of page)
-      contents.push(item);
+export async function getPageContents<T extends defined>(pages: Pages<T>): Promise<T[]> {
+  return new Promise((resolve, reject) => {
+    const contents: T[] = [];
+    try {
+      while (task.wait()) {
+        const page = pages.GetCurrentPage();
+        for (const item of page)
+          contents.push(item);
 
-    pages.AdvanceToNextPageAsync();
-  }
+        if (pages.IsFinished) break;
+        pages.AdvanceToNextPageAsync();
+      }
+    } catch (err) {
+      reject(err);
+    }
 
-  return contents;
+    resolve(contents);
+  });
+}
+
+export function getDescendantsOfType<T extends keyof Instances, I extends Instances[T] = Instances[T]>(instance: Instance, className: T): I[] {
+  return instance.GetDescendants().filter((child): child is I => child.IsA(className));
+}
+
+export function getChildrenOfType<T extends keyof Instances, I extends Instances[T] = Instances[T]>(instance: Instance, className: T): I[] {
+  return instance.GetChildren().filter((child): child is I => child.IsA(className));
+}
+
+export function playTemporarySound(soundTemplate: Sound, { parent, createContainerPart, position }: Partial<PlaySoundOptions> = {}, beforePlay?: (sound: Sound) => void): Sound {
+  const sound = soundTemplate.Clone();
+  if (createContainerPart) {
+    if (parent === undefined) {
+      const ignore = new Instance("Folder");
+      ignore.Name = "Ignore";
+      ignore.Parent = World;
+    }
+
+    const container = new Instance("Part", parent ?? World.FindFirstChild("Ignore"));
+    container.Transparency = 1;
+    container.Anchored = true;
+    container.CanCollide = false;
+    container.Size = Vector3.one;
+    container.Position = position!;
+    sound.Parent = container;
+  } else
+    sound.Parent = parent ?? Sound;
+
+  sound.Ended.Once(() => sound.Destroy());
+  beforePlay?.(sound);
+  sound.Play();
+  return sound;
 }
 
 export function getCharacterParts(character: Model): BasePart[] {
-  return character.GetDescendants().filter((i): i is BasePart => i.IsA("BasePart"));
+  return getDescendantsOfType(character, "BasePart");
 }
 
 export async function getInstancePath(instance: Instance): Promise<string> {
