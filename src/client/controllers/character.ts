@@ -1,13 +1,13 @@
 import { Controller } from "@flamework/core";
-import type { Components } from "@flamework/components";
 
 import { Player } from "shared/utility/client";
 
 @Controller()
 export class CharacterController {
-  public constructor(
-    private readonly components: Components
-  ) { }
+  public isAlive(): boolean {
+    const humanoid = this.getHumanoid();
+    return humanoid !== undefined && humanoid.Health > 0;
+  }
 
   public get(): Maybe<CharacterModel> {
     return <Maybe<CharacterModel>>Player.Character;
@@ -21,19 +21,19 @@ export class CharacterController {
     return this.get() ?? this.waitFor();
   }
 
-  public getRoot(): Maybe<BasePart> {
-    return this.getHumanoid()?.RootPart;
+  public getRoot(): Maybe<CharacterModel["HumanoidRootPart"]> {
+    return <Maybe<CharacterModel["HumanoidRootPart"]>>this.get()?.FindFirstChild("HumanoidRootPart");
   }
 
-  public mustGetRoot(): BasePart {
-    return this.mustGetHumanoid().RootPart!;
+  public mustGetRoot(): CharacterModel["HumanoidRootPart"] {
+    return <CharacterModel["HumanoidRootPart"]>this.mustGet().WaitForChild("HumanoidRootPart");
   }
 
-  public getHumanoid(): Maybe<Humanoid> {
-    return this.get()?.Humanoid;
+  public getHumanoid(): Maybe<CharacterModel["Humanoid"]> {
+    return <Maybe<CharacterModel["Humanoid"]>>this.get()?.FindFirstChild("Humanoid");
   }
 
-  public mustGetHumanoid(): Humanoid {
-    return this.mustGet().Humanoid;
+  public mustGetHumanoid(): CharacterModel["Humanoid"] {
+    return <CharacterModel["Humanoid"]>this.mustGet().WaitForChild("Humanoid");
   }
 }
