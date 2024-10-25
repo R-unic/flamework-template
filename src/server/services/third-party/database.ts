@@ -5,10 +5,11 @@ import Signal from "@rbxts/signal";
 
 import type { LogStart } from "shared/hooks";
 import type { OnPlayerJoin, OnPlayerLeave } from "server/hooks";
-import { Events, Functions } from "server/network";
+import { Events } from "server/network";
 import { type PlayerData, INITIAL_DATA } from "shared/data-models/player-data";
 import Firebase from "server/firebase";
 import Log from "shared/logger";
+import { Serializers } from "shared/network";
 
 @Service({ loadOrder: 0 })
 export class DatabaseService implements OnInit, OnStart, OnPlayerJoin, OnPlayerLeave, LogStart {
@@ -29,10 +30,7 @@ export class DatabaseService implements OnInit, OnStart, OnPlayerJoin, OnPlayerL
 	}
 
 	public onStart(): void {
-		Events.data.initialize.connect((player) => this.setup(player));
-		Events.data.set.connect((player, directory, value) => this.set(player, directory, value));
-		Events.data.increment.connect((player, directory, amount) => this.increment(player, directory, amount))
-		Functions.data.get.setCallback((player, directory) => this.get(player, directory));
+		Events.data.initialize.connect(player => this.setup(player));
 	}
 
 	public onPlayerJoin(player: Player): void {
@@ -129,14 +127,21 @@ export class DatabaseService implements OnInit, OnStart, OnPlayerJoin, OnPlayerL
 	private update(player: Player, fullDirectory: string, value: unknown): void {
 		task.spawn(() => {
 			this.updated.Fire(player, fullDirectory, value);
-			Events.data.updated(player, fullDirectory, value);
+			const packet = Serializers.data.updated.serialize({
+				directory: fullDirectory,
+				value
+			});
+			Events.data.updated(player, packet);
 		});
 	}
 
 	private async setup(player: Player): Promise<void> {
 		await this.initializeAll(player);
 		this.loaded.Fire(player);
-		Events.data.loaded(player);
+
+		const data = this.get(player, "", INITIAL_DATA);
+		const packet = Serializers.data.loaded.serialize({ data });
+		Events.data.loaded(player, packet);
 		Log.info(`Initialized ${player}'s data`);
 	}
 

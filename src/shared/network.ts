@@ -1,15 +1,13 @@
 import { Networking } from "@flamework/networking";
+import { createBinarySerializer } from "@rbxts/flamework-binary-serializer";
+import { DataUpdatePacket, PlayerDataPacket } from "./structs/packets";
 
-import type { GitHubInfo } from "./structs/github";
+type SerializedCallback = (packet: SerializedPacket) => void;
 
 interface ServerEvents {
   data: {
     initialize(): void;
-    set(directory: string, value: unknown): void;
-    increment(directory: string, amount?: number): void;
-    decrement(directory: string, amount?: number): void;
-    addToArray(directory: string, value: defined): void;
-  };
+  }
   character: {
     toggleDefaultMovement(on: boolean): void;
   };
@@ -17,29 +15,21 @@ interface ServerEvents {
 
 interface ClientEvents {
   data: {
-    loaded(): void;
-    updated(directory: string, value: unknown): void;
+    loaded: SerializedCallback;
+    updated: SerializedCallback;
   };
 }
 
-interface ServerFunctions {
-  data: {
-    get(directory: string, defaultValue?: unknown): unknown;
-  };
-  github: {
-    getInfo(): GitHubInfo;
-  };
-}
+interface ServerFunctions { }
 
 interface ClientFunctions { }
 
-type SerializeEvents<Events extends {}> = {
-  [K in keyof Events]: Events[K] extends Callback ?
-  (packet: SerializedPacket) => void
-  : Events[K] extends {} ?
-  SerializeEvents<Events[K]>
-  : Events[K];
+export const Serializers = {
+  data: {
+    loaded: createBinarySerializer<PlayerDataPacket>(),
+    updated: createBinarySerializer<DataUpdatePacket>()
+  }
 };
 
-export const GlobalEvents = Networking.createEvent<SerializeEvents<ServerEvents>, SerializeEvents<ClientEvents>>();
+export const GlobalEvents = Networking.createEvent<ServerEvents, ClientEvents>();
 export const GlobalFunctions = Networking.createFunction<ServerFunctions, ClientFunctions>();
