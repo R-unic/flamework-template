@@ -3,7 +3,7 @@ import { Component } from "@flamework/components";
 import { TweenInfoBuilder } from "@rbxts/builders";
 import { endsWith } from "@rbxts/string-utils";
 
-import { PlayerGui } from "shared/utility/client";
+import { PlayerGui } from "client/utility";
 import { getChildrenOfType } from "shared/utility/instances";
 import { tween } from "shared/utility/ui";
 

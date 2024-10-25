@@ -1,4 +1,4 @@
-import { Workspace as World, SoundService as Sound, ReplicatedFirst, RunService as Runtime, MarketplaceService as Market } from "@rbxts/services";
+import { Workspace as World, SoundService as Sound, ReplicatedFirst, RunService as Runtime, MarketplaceService as Market, Players } from "@rbxts/services";
 
 import type { PlaySoundOptions } from "shared/structs/audio";
 
@@ -73,15 +73,13 @@ export function getCharacterParts(character: Model): BasePart[] {
   return getDescendantsOfType(character, "BasePart");
 }
 
-export async function getInstancePath(instance: Instance): Promise<string> {
+export function getInstancePath(instance: Instance): string {
   let path = instance.GetFullName()
     .gsub("Workspace", "World")[0]
     .gsub("PlayerGui", "UI")[0];
 
-  if (Runtime.IsClient()) {
-    const { Player } = await import("./client");
-    path = path.gsub(`Players.${Player.Name}.`, "")[0];
-  }
+  if (Runtime.IsClient())
+    path = path.gsub(`Players.${Players.LocalPlayer.Name}.`, "")[0];
 
   return path;
 }

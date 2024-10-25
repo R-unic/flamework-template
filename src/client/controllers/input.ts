@@ -1,11 +1,18 @@
-import { Controller, type OnInit } from "@flamework/core";
+import { Controller } from "@flamework/core";
 
-import { InputInfluenced } from "client/classes/input-influenced";
+import { OnInput, OnInputRelease } from "client/decorators";
 
 @Controller()
-export class InputController extends InputInfluenced implements OnInit {
-  public onInit(): void {
-    // put all input bindings for your game here
-    this.input.Bind("F", () => print("interact"));
+export class InputController {
+  @OnInput("C", "crouch")
+  public crouch(): void {
+    // code for crouching
+    print("crouched")
+  }
+
+  @OnInputRelease("crouch")
+  public stand(): void {
+    // code for standing
+    print("stood")
   }
 }

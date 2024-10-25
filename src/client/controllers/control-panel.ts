@@ -6,7 +6,7 @@ import type { WindowCreation } from "@rbxts/iris/out/widgetsTypes/Window";
 import Object from "@rbxts/object-utils";
 import Iris from "@rbxts/iris";
 
-import { Player } from "shared/utility/client";
+import { Player } from "client/utility";
 import { isDeveloper } from "shared/constants";
 import { roundDecimal } from "shared/utility/numbers";
 

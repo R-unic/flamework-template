@@ -3,7 +3,7 @@ import { Component, BaseComponent } from "@flamework/components";
 import { $git } from "rbxts-transform-debug";
 
 import type { LogStart } from "shared/hooks";
-import { PlayerGui } from "shared/utility/client";
+import { PlayerGui } from "client/utility";
 
 @Component({
   tag: "VersionLabel",

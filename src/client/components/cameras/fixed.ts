@@ -2,7 +2,7 @@ import { Dependency } from "@flamework/core";
 import { Component, type Components } from "@flamework/components";
 import { Workspace as World } from "@rbxts/services";
 
-import { Player } from "shared/utility/client";
+import { Player } from "client/utility";
 import { CameraControllerComponent } from "client/base-components/camera-controller-component";
 import type { CameraController } from "client/controllers/camera";
 

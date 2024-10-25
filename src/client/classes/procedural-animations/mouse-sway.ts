@@ -1,6 +1,6 @@
 import { UserInputService } from "@rbxts/services";
 
-import { Player } from "shared/utility/client";
+import { Player } from "client/utility";
 
 import type ProceduralAnimation from "../procedural-animation";
 

@@ -1,7 +1,7 @@
 import type { OnStart } from "@flamework/core";
 import { Component } from "@flamework/components";
 
-import { PlayerGui } from "shared/utility/client";
+import { PlayerGui } from "client/utility";
 
 import DestroyableComponent from "shared/base-components/destroyable";
 

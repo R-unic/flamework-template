@@ -3,7 +3,7 @@ import { Component } from "@flamework/components";
 import { TweenInfoBuilder } from "@rbxts/builders";
 import Signal from "@rbxts/signal";
 
-import { PlayerGui } from "shared/utility/client";
+import { PlayerGui } from "client/utility";
 import { tween } from "shared/utility/ui";
 
 import DestroyableComponent from "shared/base-components/destroyable";

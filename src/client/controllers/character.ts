@@ -1,6 +1,6 @@
 import { Controller } from "@flamework/core";
 
-import { Player } from "shared/utility/client";
+import { Player } from "client/utility";
 
 @Controller()
 export class CharacterController {

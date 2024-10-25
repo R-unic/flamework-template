@@ -2,11 +2,12 @@ import { Controller, type OnInit, type OnRender } from "@flamework/core";
 import { UserInputService as UserInput, Workspace as World } from "@rbxts/services";
 import { RaycastParamsBuilder } from "@rbxts/builders";
 import { Context as InputContext } from "@rbxts/gamejoy";
-import { Action, Axis } from "@rbxts/gamejoy/out/Actions";
+import { Axis } from "@rbxts/gamejoy/out/Actions";
+import Charm, { atom } from "@rbxts/charm";
 import Signal from "@rbxts/signal";
 
-import { Player } from "shared/utility/client";
-import { atom } from "@rbxts/charm";
+import { OnInput, OnAxisInput, OnInputRelease } from "client/decorators";
+import { Player } from "client/utility";
 
 const { abs } = math;
 
@@ -16,22 +17,15 @@ const MOUSE_RAY_DISTANCE = 1000;
 @Controller()
 export class MouseController implements OnInit, OnRender {
   public readonly scrolled = new Signal<(delta: number) => void>;
-
-  public isLmbDown = atom(false);
-  public isRmbDown = atom(false);
-  public isMmbDown = atom(false);
-  public iconEnabled = atom(true);
-  public behavior = atom(<Enum.MouseBehavior>Enum.MouseBehavior.Default);
+  public readonly isLmbDown = atom(false);
+  public readonly isRmbDown = atom(false);
+  public readonly isMmbDown = atom(false);
+  public readonly iconEnabled = atom(true);
+  public readonly behavior = atom<Enum.MouseBehavior>(Enum.MouseBehavior.Default);
 
   private readonly playerMouse = Player.GetMouse();
-  private readonly clickAction = new Action("MouseButton1");
-  private readonly rightClickAction = new Action("MouseButton2");
-  private readonly L2Axis = new Axis("ButtonL2");
-  private readonly R2Axis = new Axis("ButtonR2");
-  private readonly RThumbstickAxis = new Axis("Thumbstick2");
+  private readonly rightThumbstickAxis = new Axis("Thumbstick2");
   private readonly thumbstickDeadzone = 0.1;
-  private readonly middleClickAction = new Action("MouseButton3");
-  private readonly scrollAction = new Axis("MouseWheel");
   private readonly input = new InputContext({
     ActionGhosting: 0,
     Process: false,
@@ -42,44 +36,69 @@ export class MouseController implements OnInit, OnRender {
   private delta = new Vector2;
 
   public onInit(): void {
-    const lmbDown = () => this.isLmbDown(true);
-    const lmbUp = () => this.isLmbDown(false);
-    const rmbDown = () => this.isRmbDown(true);
-    const rmbUp = () => this.isRmbDown(false);
-    const mmbDown = () => this.isMmbDown(true);
-    const mmbUp = () => this.isMmbDown(false);
-
     this.input
-      .Bind(this.clickAction, lmbDown)
-      .BindEvent("onLmbRelease", this.clickAction.Released, lmbUp)
-      .Bind(this.R2Axis, () => {
-        if (this.R2Axis.Delta.Z < 0) return lmbUp();
-        if (this.R2Axis.Delta.Z < 0.05) return;
-        lmbDown();
-      })
-      .BindEvent("onR2Release", this.R2Axis.Released, lmbUp);
-
-    this.input
-      .Bind(this.rightClickAction, rmbDown)
-      .BindEvent("onRmbRelease", this.rightClickAction.Released, rmbUp)
-      .Bind(this.L2Axis, () => {
-        if (this.L2Axis.Delta.Z < 0) return rmbUp();
-        if (this.L2Axis.Delta.Z < 0.05) return;
-        rmbDown();
-      })
-      .BindEvent("onL2Release", this.L2Axis.Released, rmbUp)
-      .Bind(this.RThumbstickAxis, () => { /* this is only so that the Position property computes */ });
-
-    this.input
-      .Bind(this.scrollAction, () => this.scrolled.Fire(-this.scrollAction.Position.Z))
-      .Bind(this.middleClickAction, mmbDown)
-      .BindEvent("onMmbRelease", this.middleClickAction.Released, mmbUp);
+      .Bind(this.rightThumbstickAxis, () => { /* this is only so that the Position property computes */ });
 
     // Touch controls
     UserInput.TouchPinch.Connect((_, scale) => this.scrolled.Fire((scale < 1 ? 1 : -1) * abs(scale - 2)));
-    UserInput.TouchStarted.Connect(lmbDown);
-    UserInput.TouchEnded.Connect(lmbUp);
+    UserInput.TouchStarted.Connect(() => this.lmbDown());
+    UserInput.TouchEnded.Connect(() => this.lmbUp());
     UserInput.InputChanged.Connect(input => this.lastInput = input.UserInputType);
+  }
+
+  @OnAxisInput("MouseWheel")
+  public onScroll(axis: Axis<"MouseWheel">): void {
+    this.scrolled.Fire(-axis.Position.Z);
+  }
+
+  @OnAxisInput("ButtonR2", "axisR2")
+  public onR2AxisChange(axis: Axis<"ButtonR2">): void {
+    this.triggerAxesChange(axis, this.isLmbDown);
+  }
+
+  @OnAxisInput("ButtonL2", "axisL2")
+  public onL2AxisChange(axis: Axis<"ButtonL2">): void {
+    this.triggerAxesChange(axis, this.isLmbDown);
+  }
+
+  @OnInputRelease("axisR2")
+  public onR2Release(): void {
+    this.rmbUp();
+  }
+
+  @OnInputRelease("axisL2")
+  public onL2Release(): void {
+    this.lmbUp();
+  }
+
+  @OnInputRelease("mmb")
+  public mmbUp(): void {
+    return this.isMmbDown(false);
+  }
+
+  @OnInput("MouseButton3", "mmb")
+  public mmbDown(): void {
+    return this.isMmbDown(true);
+  }
+
+  @OnInputRelease("rmb")
+  public rmbUp(): void {
+    return this.isRmbDown(false);
+  }
+
+  @OnInput("MouseButton2", "rmb")
+  public rmbDown(): void {
+    return this.isRmbDown(true);
+  }
+
+  @OnInputRelease("lmb")
+  public lmbUp(): void {
+    return this.isLmbDown(false);
+  }
+
+  @OnInput("MouseButton1", "lmb")
+  public lmbDown(): void {
+    return this.isLmbDown(true);
   }
 
   public onRender(dt: number): void {
@@ -94,7 +113,7 @@ export class MouseController implements OnInit, OnRender {
         break;
       }
       case Enum.UserInputType.Gamepad1: {
-        const { X, Y } = this.RThumbstickAxis.Position;
+        const { X, Y } = this.rightThumbstickAxis.Position;
         this.delta = new Vector2(
           this.applyThumbstickDeadzone(X),
           this.applyThumbstickDeadzone(-Y)
@@ -129,6 +148,12 @@ export class MouseController implements OnInit, OnRender {
 
   public setIcon(icon: string): void {
     UserInput.MouseIcon = icon;
+  }
+
+  private triggerAxesChange(axis: Axis<"ButtonL2" | "ButtonR2">, isDown: Charm.Atom<boolean>): void {
+    if (axis.Delta.Z < 0) return isDown(false);
+    if (axis.Delta.Z < 0.05) return;
+    isDown(true);
   }
 
   private applyThumbstickDeadzone(coord: number): number {
