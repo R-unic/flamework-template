@@ -3,7 +3,6 @@ import { Context } from "@rbxts/gamejoy";
 import { Action, Axis, Union } from "@rbxts/gamejoy/out/Actions";
 import { BaseAction } from "@rbxts/gamejoy/out/Class/BaseAction";
 import type { ActionLike, ActionOptions, AxisActionEntry, RawActionEntry } from "@rbxts/gamejoy/out/Definitions/Types";
-import Object from "@rbxts/object-utils";
 
 import Log from "shared/logger";
 
@@ -20,7 +19,6 @@ export const OnInput = Modding.createDecorator<[binding: RawActionEntry | RawAct
     if (action instanceof Union && options !== undefined)
       Log.warning(`Action options given to @OnInput decorator on "${descriptor.property}" method were ignored because it is a union action`);
 
-    print(actionName)
     if (actionName !== undefined)
       actions[actionName] = action;
 
