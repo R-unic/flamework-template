@@ -1,7 +1,7 @@
 import { OnInit, Service } from "@flamework/core";
 import { MarketplaceService as Market, Players } from "@rbxts/services";
 
-import { DatabaseService } from "./third-party/database";
+import { DataService } from "./third-party/data";
 import Log from "shared/logger";
 
 type RewardHandler = (player: Player) => void;
@@ -16,7 +16,7 @@ export class TransactionsService implements OnInit {
   }
 
   public constructor(
-    private readonly db: DatabaseService
+    private readonly data: DataService
   ) { }
 
   public onInit(): void {
@@ -26,8 +26,8 @@ export class TransactionsService implements OnInit {
       const playerExists = player !== undefined;
       let purchaseRecorded: Maybe<boolean> = true;
       if (playerExists) {
-        const purchaseHistory = this.db.get<string[]>(player, "purchaseHistory", []);
-        const alreadyPurchased = purchaseHistory.includes(productKey);
+        const data = this.data.get(player);
+        const alreadyPurchased = data.purchaseHistory.includes(productKey);
         if (alreadyPurchased)
           return Enum.ProductPurchaseDecision.PurchaseGranted;
       } else

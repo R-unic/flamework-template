@@ -3,6 +3,7 @@ import { endsWith, slice } from "@rbxts/string-utils";
 import Object from "@rbxts/object-utils";
 
 import Log from "shared/logger";
+import { GlobalData, PlayerData } from "shared/data-models/player-data";
 
 const env = Data.GetDataStore("EnvironmentInfo");
 
@@ -29,13 +30,14 @@ export default class Firebase {
     }
   }
 
-  public async set(path?: string, value?: unknown, headers: Record<string, string> = { "X-HTTP-Method-Override": "PUT" }): Promise<void> {
+  public async set<T = PlayerData>(path?: string, value?: unknown, headers: Record<string, string> = { "X-HTTP-Method-Override": "PUT" }): Promise<T> {
     const valueIsObject = typeOf(value) === "table" && value !== undefined;
     const valueIsEmptyArray = valueIsObject && "size" in <object>value && (<Array<defined>>value).size() === 0;
     const valueIsEmptyObject = valueIsObject && Object.entries(value!).size() === 0;
     if (valueIsEmptyArray || valueIsEmptyObject)
-      return await this.delete(path);
+      return <T>await this.delete(path);
 
+    const newData = this.get<T>();
     return new Promise((resolve, reject) => {
       try {
         HTTP.PostAsync(
@@ -44,7 +46,7 @@ export default class Firebase {
           "ApplicationJson",
           false, headers
         );
-        resolve();
+        resolve(newData);
       } catch (error) {
         reject(`[Firebase]: ${error}`);
       }
@@ -62,8 +64,8 @@ export default class Firebase {
     });
   }
 
-  public async delete(path?: string): Promise<void> {
-    await this.set(path, undefined, { "X-HTTP-Method-Override": "DELETE" });
+  public async delete(path?: string): Promise<PlayerData | GlobalData> {
+    return await this.set(path, undefined, { "X-HTTP-Method-Override": "DELETE" });
   }
 
   public async reset(): Promise<void> {
@@ -76,7 +78,7 @@ export default class Firebase {
     return result;
   }
 
-  public async addToArray<T extends defined>(path: string, value: T, maxArraySize?: number): Promise<void> {
+  public async addToArray<T extends defined>(path: string, value: T, maxArraySize?: number): Promise<PlayerData | GlobalData> {
     const data = await this.get<T[]>(path, []);
     if (maxArraySize !== undefined)
       if (data.size() >= maxArraySize) {
@@ -86,7 +88,7 @@ export default class Firebase {
       }
 
     data.push(value);
-    await this.set(path, data);
+    return await this.set(path, data);
   }
 
   private getEndpoint(path?: string): string {

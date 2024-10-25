@@ -1,31 +1,32 @@
 import { Service, Modding, type OnStart } from "@flamework/core";
-import Object from "@rbxts/object-utils";
 
-import type { OnDataUpdate } from "server/hooks";
-import { getDirectoryForPlayer, INITIAL_DATA } from "shared/data-models/player-data";
+import type { OnDataLoad, OnDataUpdate } from "server/hooks";
 
-import type { DatabaseService } from "server/services/third-party/database";
+import type { DataService } from "server/services/third-party/data";
 
-@Service({ loadOrder: -1000 })
+@Service({ loadOrder: 1000 })
 export class DataUpdateService implements OnStart {
   public constructor(
-    private readonly database: DatabaseService
+    private readonly database: DataService
   ) { }
 
   public async onStart(): Promise<void> {
+    const dataLoadListeners = new Set<OnDataLoad>;
     const dataUpdateListeners = new Set<OnDataUpdate>;
+    Modding.onListenerAdded<OnDataLoad>(object => dataLoadListeners.add(object));
+    Modding.onListenerRemoved<OnDataLoad>(object => dataLoadListeners.delete(object));
     Modding.onListenerAdded<OnDataUpdate>(object => dataUpdateListeners.add(object));
     Modding.onListenerRemoved<OnDataUpdate>(object => dataUpdateListeners.delete(object));
 
-    this.database.loaded.Connect(player => {
-      const data = this.database.get(player, "", INITIAL_DATA);
-      for (const key of Object.keys(INITIAL_DATA))
-        for (const listener of dataUpdateListeners)
-          listener.onDataUpdate(player, getDirectoryForPlayer(player, key), data[key]);
-    });
-    this.database.updated.Connect((player, directory, value) => {
+    this.database.loaded.Connect((player, data) => {
+      for (const listener of dataLoadListeners)
+        listener.onDataLoad(player, data);
       for (const listener of dataUpdateListeners)
-        listener.onDataUpdate(player, directory, value);
+        listener.onDataUpdate(player, data);
+    });
+    this.database.updated.Connect((player, data) => {
+      for (const listener of dataUpdateListeners)
+        listener.onDataUpdate(player, data);
     });
   }
 }

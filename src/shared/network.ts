@@ -25,10 +25,7 @@ interface ServerFunctions { }
 interface ClientFunctions { }
 
 export const Serializers = {
-  data: {
-    loaded: createBinarySerializer<PlayerDataPacket>(),
-    updated: createBinarySerializer<DataUpdatePacket>()
-  }
+  playerData: createBinarySerializer<PlayerDataPacket>()
 };
 
 export const GlobalEvents = Networking.createEvent<ServerEvents, ClientEvents>();

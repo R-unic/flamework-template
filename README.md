@@ -35,7 +35,7 @@ It aims to be decently simple and lightweight but still provide as many reusable
 - Custom lifecycle hooks:
   - OnCharacterAdd/OnCharacterRemove
   - OnPlayerJoin/OnPlayerLeave
-  - OnDataUpdate
+  - OnDataLoad/OnDataUpdate
   - LogStart (logs when a singleton/component is started)
 
 ## Usage
