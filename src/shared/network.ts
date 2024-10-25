@@ -1,10 +1,8 @@
 import { Networking } from "@flamework/networking";
+
 import type { GitHubInfo } from "./structs/github";
 
 interface ServerEvents {
-  encoded: {
-    test(message: string, n: number, isCool: boolean): void;
-  };
   data: {
     initialize(): void;
     set(directory: string, value: unknown): void;
@@ -18,9 +16,6 @@ interface ServerEvents {
 }
 
 interface ClientEvents {
-  character: {
-    toggleCustomMovement(on: boolean): void;
-  };
   data: {
     loaded(): void;
     updated(directory: string, value: unknown): void;
@@ -38,5 +33,13 @@ interface ServerFunctions {
 
 interface ClientFunctions { }
 
-export const GlobalEvents = Networking.createEvent<ServerEvents, ClientEvents>();
+type SerializeEvents<Events extends {}> = {
+  [K in keyof Events]: Events[K] extends Callback ?
+  (packet: SerializedPacket) => void
+  : Events[K] extends {} ?
+  SerializeEvents<Events[K]>
+  : Events[K];
+};
+
+export const GlobalEvents = Networking.createEvent<SerializeEvents<ServerEvents>, SerializeEvents<ClientEvents>>();
 export const GlobalFunctions = Networking.createFunction<ServerFunctions, ClientFunctions>();
