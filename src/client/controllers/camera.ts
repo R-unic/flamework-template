@@ -10,9 +10,10 @@ import { FlyOnTheWallCamera } from "client/components/cameras/fly-on-the-wall";
 import { FirstPersonAnimatedCamera } from "client/components/cameras/first-person-animated";
 
 import type { CameraControllerComponent } from "client/base-components/camera-controller-component";
+import Lazy from "shared/classes/lazy";
 
 // add new camera components here
-interface Cameras {
+export interface Cameras {
   readonly Default: DefaultCamera;
   readonly FirstPerson: FirstPersonCamera;
   readonly Aerial: AerialCamera;
@@ -24,19 +25,19 @@ interface Cameras {
 @Controller()
 export class CameraController implements OnInit, OnRender, LogStart {
   public readonly cameraStorage = new Instance("Actor", World);
-  public cameras!: Cameras;
-  public currentName!: keyof typeof this.cameras;
+  public readonly cameras = new Lazy<Cameras>(() => ({
+    Default: DefaultCamera.create(this),
+    FirstPerson: FirstPersonCamera.create(this),
+    Aerial: AerialCamera.create(this),
+    Fixed: FixedCamera.create(this),
+    FlyOnTheWall: FlyOnTheWallCamera.create(this),
+    FirstPersonAnimated: FirstPersonAnimatedCamera.create(this)
+  }));
+
+  public currentName!: keyof Cameras;
 
   public onInit(): void {
     this.cameraStorage.Name = "Cameras";
-    this.cameras = {
-      Default: DefaultCamera.create(this),
-      FirstPerson: FirstPersonCamera.create(this),
-      Aerial: AerialCamera.create(this),
-      Fixed: FixedCamera.create(this),
-      FlyOnTheWall: FlyOnTheWallCamera.create(this),
-      FirstPersonAnimated: FirstPersonAnimatedCamera.create(this)
-    };
   }
 
   public onRender(dt: number): void {
@@ -47,13 +48,13 @@ export class CameraController implements OnInit, OnRender, LogStart {
     }
   }
 
-  public set(cameraName: keyof typeof this.cameras): void {
+  public set(cameraName: keyof Cameras): void {
     this.currentName = cameraName;
-    for (const [otherCameraName] of pairs(this.cameras))
+    for (const [otherCameraName] of pairs(this.cameras.getValue()))
       this.get(otherCameraName).toggle(cameraName === otherCameraName);
   }
 
-  public get<T extends CameraControllerComponent>(cameraName: keyof typeof this.cameras = this.currentName): T {
-    return <T>this.cameras[cameraName];
+  public get<T extends CameraControllerComponent>(cameraName: keyof Cameras = this.currentName): T {
+    return <T>this.cameras.getValue()[cameraName];
   }
 }

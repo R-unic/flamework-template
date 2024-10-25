@@ -45,6 +45,7 @@
     "@rbxts/signal": "^1.1.1",
     "@rbxts/strict-map": "^1.0.2",
     "@rbxts/string-utils": "^1.0.3",
+    "@rbxts/t": "^3.1.1",
     "@rbxts/timer": "^0.0.9",
     "node": "^18.20.1"
   }

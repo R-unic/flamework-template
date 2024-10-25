@@ -1,4 +1,3 @@
-import type { Components } from "@flamework/components";
 import { Controller, type OnStart } from "@flamework/core";
 import { Stats } from "@rbxts/services";
 import { Context as InputContext } from "@rbxts/gamejoy";
@@ -12,7 +11,7 @@ import { isDeveloper } from "shared/constants";
 import { roundDecimal } from "shared/utility/numbers";
 
 import type { MouseController } from "./mouse";
-import type { CameraController } from "./camera";
+import type { CameraController, Cameras } from "./camera";
 
 @Controller()
 export class ControlPanelController implements OnStart {
@@ -26,7 +25,6 @@ export class ControlPanelController implements OnStart {
   private highestHeartbeatTime = 0;
 
   public constructor(
-    private readonly components: Components,
     private readonly mouse: MouseController,
     private readonly camera: CameraController
   ) { }
@@ -96,7 +94,7 @@ export class ControlPanelController implements OnStart {
       currentCamera.FieldOfView = fov.state.number.get();
 
     const cameraComponents = Object.keys(this.camera.cameras).sort();
-    const componentIndex = Iris.State<keyof typeof this.camera.cameras>(this.camera.currentName);
+    const componentIndex = Iris.State<keyof Cameras>(this.camera.currentName);
     Iris.Combo(["Camera Component"], { index: componentIndex });
     for (const component of cameraComponents)
       Iris.Selectable([component, component], { index: componentIndex });

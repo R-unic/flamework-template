@@ -1,6 +1,7 @@
 import { Networking } from "@flamework/networking";
 import { createBinarySerializer } from "@rbxts/flamework-binary-serializer";
-import { DataUpdatePacket, PlayerDataPacket } from "./structs/packets";
+
+import type { PlayerDataPacket } from "./structs/packets";
 
 type SerializedCallback = (packet: SerializedPacket) => void;
 
