@@ -36,8 +36,7 @@ export class MouseController implements OnInit, OnRender {
   private delta = new Vector2;
 
   public onInit(): void {
-    this.input
-      .Bind(this.rightThumbstickAxis, () => { /* this is only so that the Position property computes */ });
+    this.input.Bind(this.rightThumbstickAxis, () => { /* this is only so that the Position property computes */ });
 
     // Touch controls
     UserInput.TouchPinch.Connect((_, scale) => this.scrolled.Fire((scale < 1 ? 1 : -1) * abs(scale - 2)));

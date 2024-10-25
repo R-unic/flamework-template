@@ -2,6 +2,7 @@ import { Controller } from "@flamework/core";
 
 import { OnInput, OnInputRelease } from "client/decorators";
 
+/** Handles all game input */
 @Controller()
 export class InputController {
   @OnInput("C", "crouch")

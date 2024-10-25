@@ -18,8 +18,9 @@ export const OnInput = Modding.createDecorator<[binding: RawActionEntry | RawAct
       : new Union(<RawActionEntry[]>rawAction);
 
     if (action instanceof Union && options !== undefined)
-      Log.warning(`Action options on @OnInput decorator attached to ${descriptor.property} were ignored because it is a union action`);
+      Log.warning(`Action options given to @OnInput decorator on "${descriptor.property}" method were ignored because it is a union action`);
 
+    print(actionName)
     if (actionName !== undefined)
       actions[actionName] = action;
 
@@ -47,14 +48,19 @@ export const OnAxisInput = Modding.createDecorator<[binding: AxisActionEntry, ac
 /** **Note:** You need to provide an action name to the OnInput decorator to use this decorator, with which you will use the same action name. */
 export const OnInputRelease = Modding.createDecorator<[actionName: string]>(
   "Method",
-  (descriptor, [actionName]) => {
-    const [_, action] = Object.entries(actions).find(([name]) => name === actionName)!;
+  (descriptor, [actionName]) => task.spawn(() => {
+    let action = actions[actionName];
+    if (action === undefined) {
+      task.wait(0.1)
+      action = actions[actionName]
+    }
+
     if (action === undefined)
-      throw Log.fatal(`Failed to bind method ${descriptor.property} using @OnInputRelease decorator: Released event does not exist on binded action`);
+      throw Log.fatal(`Failed to bind method "${descriptor.property}" using @OnInputRelease decorator: No input action "${actionName}" exists`);
 
     inputContext.BindEvent(actionName, action.Released, () => {
       const object = <Record<string, Callback>><unknown>descriptor.object;
       object[descriptor.property](object, action);
     });
-  }
+  })
 );
