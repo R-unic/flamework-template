@@ -1,4 +1,5 @@
 import { Modding } from "@flamework/core";
+import { RunService as Runtime } from "@rbxts/services";
 
 /** Only allow the function to be executed once every `waitTime` seconds */
 export const Debounce = Modding.createDecorator<[waitTime: number]>(
@@ -24,17 +25,29 @@ export const Memoize = Modding.createDecorator<[]>(
     const object = <Record<string, Callback>><unknown>descriptor.object;
     const originalMethod = object[descriptor.property];
     const memoizationCache: Record<string, Record<string, unknown>> = table.clone({});
-    const objectKey = tostring(object);
-    const functionKey = tostring(originalMethod);
-    memoizationCache[objectKey] ??= {};
+    const key = tostring(originalMethod);
 
     object[descriptor.property] = function (...args: unknown[]) {
-      if (memoizationCache[objectKey][functionKey] === undefined) {
+      if (memoizationCache[key] === undefined) {
         const result = originalMethod(...args);
-        memoizationCache[objectKey][functionKey] = result;
+        memoizationCache[key] = result;
       }
 
-      return memoizationCache[objectKey][functionKey];
+      return memoizationCache[key];
+    };
+  }
+);
+
+/** Only allows the function to be executed in studio */
+export const StudioOnly = Modding.createDecorator<[]>(
+  "Method",
+  descriptor => {
+    const object = <Record<string, Callback>><unknown>descriptor.object;
+    const originalMethod = object[descriptor.property];
+
+    object[descriptor.property] = function (...args: unknown[]) {
+      if (Runtime.IsStudio())
+        originalMethod(...args);
     };
   }
 );

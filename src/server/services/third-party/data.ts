@@ -1,6 +1,4 @@
 import { Service, type OnInit, type OnStart } from "@flamework/core";
-import { Players } from "@rbxts/services";
-import Object from "@rbxts/object-utils";
 import Signal from "@rbxts/signal";
 
 import type { LogStart } from "shared/hooks";
