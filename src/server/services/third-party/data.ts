@@ -68,6 +68,9 @@ export class DataService implements OnInit, OnStart, OnPlayerJoin, OnPlayerLeave
 	}
 
 	public async getDatabase(): Promise<Record<string, PlayerData>> {
+		if (this.firebase === undefined)
+			this.firebaseCreated.Wait();
+
 		return await this.firebase.get("playerData", {});
 	}
 
