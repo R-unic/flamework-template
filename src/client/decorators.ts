@@ -1,3 +1,4 @@
+import { Dependency, Flamework, Reflect } from "@flamework/core";
 import { Modding } from "@flamework/core/out/modding";
 import { Context } from "@rbxts/gamejoy";
 import { Action, Axis, Union } from "@rbxts/gamejoy/out/Actions";
@@ -6,7 +7,7 @@ import type { ActionLike, ActionOptions, AxisActionEntry, RawActionEntry } from 
 
 import Log from "shared/logger";
 
-const inputContext = new Context();
+const inputContext = new Context;
 const actions: Record<string, BaseAction> = {};
 
 export const OnInput = Modding.createDecorator<[binding: RawActionEntry | RawActionEntry[], actionName?: string, options?: ActionOptions]>(
@@ -22,9 +23,9 @@ export const OnInput = Modding.createDecorator<[binding: RawActionEntry | RawAct
     if (actionName !== undefined)
       actions[actionName] = action;
 
+    const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
     inputContext.Bind(<ActionLike<RawActionEntry>>action, () => {
-      const object = <Record<string, Callback>><unknown>descriptor.object;
-      object[descriptor.property](object, action);
+      task.spawn(object[descriptor.property], object, action);
     });
   }
 );
@@ -36,9 +37,9 @@ export const OnAxisInput = Modding.createDecorator<[binding: AxisActionEntry, ac
     if (actionName !== undefined)
       actions[actionName] = axis;
 
+    const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
     inputContext.Bind(axis, () => {
-      const object = <Record<string, Callback>><unknown>descriptor.object;
-      object[descriptor.property](object, axis);
+      task.spawn(object[descriptor.property], object, axis);
     });
   }
 );
@@ -50,15 +51,15 @@ export const OnInputRelease = Modding.createDecorator<[actionName: string]>(
     let action = actions[actionName];
     if (action === undefined) {
       task.wait(0.1)
-      action = actions[actionName]
+      action = actions[actionName];
     }
 
     if (action === undefined)
       throw Log.fatal(`Failed to bind method "${descriptor.property}" using @OnInputRelease decorator: No input action "${actionName}" exists`);
 
+    const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
     inputContext.BindEvent(actionName, action.Released, () => {
-      const object = <Record<string, Callback>><unknown>descriptor.object;
-      object[descriptor.property](object, action);
+      task.spawn(object[descriptor.property], object, action);
     });
   })
 );

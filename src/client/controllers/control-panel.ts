@@ -1,11 +1,11 @@
 import { Controller, type OnStart } from "@flamework/core";
 import { Stats } from "@rbxts/services";
-import { Context as InputContext } from "@rbxts/gamejoy";
 import type { Widget } from "@rbxts/iris/out/IrisDeclaration";
 import type { WindowCreation } from "@rbxts/iris/out/widgetsTypes/Window";
 import Object from "@rbxts/object-utils";
 import Iris from "@rbxts/iris";
 
+import { OnInput } from "client/decorators";
 import { Player } from "client/utility";
 import { isDeveloper } from "shared/constants";
 import { roundDecimal } from "shared/utility/numbers";
@@ -13,16 +13,12 @@ import { roundDecimal } from "shared/utility/numbers";
 import type { MouseController } from "./mouse";
 import type { CameraController, Cameras } from "./camera";
 
-@Controller()
+@Controller({ loadOrder: 1 })
 export class ControlPanelController implements OnStart {
-  private readonly input = new InputContext({
-    ActionGhosting: 0,
-    Process: false,
-    RunSynchronously: true
-  });
-
+  private mouseUnlocked = false;
   private highestNetworkSend = 0;
   private highestHeartbeatTime = 0;
+  private window!: Widget<WindowCreation>;
 
   public constructor(
     private readonly mouse: MouseController,
@@ -31,27 +27,12 @@ export class ControlPanelController implements OnStart {
 
   public async onStart(): Promise<void> {
     const windowSize = new Vector2(300, 400);
-    let window: Widget<WindowCreation>;
-    let mouseUnlocked = false;
-
-    this.input
-      .Bind("Comma", () => {
-        if (!isDeveloper(Player)) return;
-        window.state.isOpened.set(!window.state.isOpened.get());
-      })
-      .Bind("P", () => {
-        if (!isDeveloper(Player)) return;
-        mouseUnlocked = !mouseUnlocked;
-        this.mouse.iconEnabled(mouseUnlocked);
-        this.mouse.behavior(mouseUnlocked ? Enum.MouseBehavior.Default : Enum.MouseBehavior.LockCenter);
-        Player.CameraMode = mouseUnlocked ? Enum.CameraMode.Classic : Enum.CameraMode.LockFirstPerson;
-      });
 
     Iris.Init();
     Iris.UpdateGlobalConfig(Iris.TemplateConfig.colorDark);
     Iris.UpdateGlobalConfig(Iris.TemplateConfig.sizeClear);
     Iris.Connect(() => {
-      window = Iris.Window(["Control Panel"], {
+      this.window = Iris.Window(["Control Panel"], {
         size: Iris.State(windowSize),
         isOpened: Iris.State(false)
       });
@@ -61,6 +42,21 @@ export class ControlPanelController implements OnStart {
       }
       Iris.End();
     });
+  }
+
+  @OnInput("Comma")
+  private open(): void {
+    if (!isDeveloper(Player)) return;
+    this.window.state.isOpened.set(!this.window.state.isOpened.get());
+  }
+
+  @OnInput("P")
+  private unlockMouse(): void {
+    if (!isDeveloper(Player)) return;
+    this.mouseUnlocked = !this.mouseUnlocked;
+    this.mouse.iconEnabled(this.mouseUnlocked);
+    this.mouse.behavior(this.mouseUnlocked ? Enum.MouseBehavior.Default : Enum.MouseBehavior.LockCenter);
+    Player.CameraMode = this.mouseUnlocked ? Enum.CameraMode.Classic : Enum.CameraMode.LockFirstPerson;
   }
 
   private renderStatsTab(): void {

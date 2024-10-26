@@ -14,7 +14,7 @@ const { abs } = math;
 const MOUSE_RAY_DISTANCE = 1000;
 
 /** Mouse controller that emulates cross-platform actions */
-@Controller()
+@Controller({ loadOrder: 0 })
 export class MouseController implements OnInit, OnRender {
   public readonly scrolled = new Signal<(delta: number) => void>;
   public readonly isLmbDown = atom(false);
@@ -26,78 +26,18 @@ export class MouseController implements OnInit, OnRender {
   private readonly playerMouse = Player.GetMouse();
   private readonly rightThumbstickAxis = new Axis("Thumbstick2");
   private readonly thumbstickDeadzone = 0.1;
-  private readonly input = new InputContext({
-    ActionGhosting: 0,
-    Process: false,
-    RunSynchronously: false
-  });
 
   private lastInput?: Enum.UserInputType;
   private delta = new Vector2;
 
   public onInit(): void {
-    this.input.Bind(this.rightThumbstickAxis, () => { /* this is only so that the Position property computes */ });
+    new InputContext().Bind(this.rightThumbstickAxis, () => { /* this is only so that the Position property computes */ });
 
     // Touch controls
     UserInput.TouchPinch.Connect((_, scale) => this.scrolled.Fire((scale < 1 ? 1 : -1) * abs(scale - 2)));
     UserInput.TouchStarted.Connect(() => this.lmbDown());
     UserInput.TouchEnded.Connect(() => this.lmbUp());
     UserInput.InputChanged.Connect(input => this.lastInput = input.UserInputType);
-  }
-
-  @OnAxisInput("MouseWheel")
-  public onScroll(axis: Axis<"MouseWheel">): void {
-    this.scrolled.Fire(-axis.Position.Z);
-  }
-
-  @OnAxisInput("ButtonR2", "axisR2")
-  public onR2AxisChange(axis: Axis<"ButtonR2">): void {
-    this.triggerAxesChange(axis, this.isLmbDown);
-  }
-
-  @OnAxisInput("ButtonL2", "axisL2")
-  public onL2AxisChange(axis: Axis<"ButtonL2">): void {
-    this.triggerAxesChange(axis, this.isLmbDown);
-  }
-
-  @OnInputRelease("axisR2")
-  public onR2Release(): void {
-    this.rmbUp();
-  }
-
-  @OnInputRelease("axisL2")
-  public onL2Release(): void {
-    this.lmbUp();
-  }
-
-  @OnInputRelease("mmb")
-  public mmbUp(): void {
-    return this.isMmbDown(false);
-  }
-
-  @OnInput("MouseButton3", "mmb")
-  public mmbDown(): void {
-    return this.isMmbDown(true);
-  }
-
-  @OnInputRelease("rmb")
-  public rmbUp(): void {
-    return this.isRmbDown(false);
-  }
-
-  @OnInput("MouseButton2", "rmb")
-  public rmbDown(): void {
-    return this.isRmbDown(true);
-  }
-
-  @OnInputRelease("lmb")
-  public lmbUp(): void {
-    return this.isLmbDown(false);
-  }
-
-  @OnInput("MouseButton1", "lmb")
-  public lmbDown(): void {
-    return this.isLmbDown(true);
   }
 
   public onRender(dt: number): void {
@@ -147,6 +87,61 @@ export class MouseController implements OnInit, OnRender {
 
   public setIcon(icon: string): void {
     UserInput.MouseIcon = icon;
+  }
+
+  @OnAxisInput("MouseWheel")
+  private onScroll(axis: Axis<"MouseWheel">): void {
+    this.scrolled.Fire(-axis.Position.Z);
+  }
+
+  @OnAxisInput("ButtonR2", "axisR2")
+  private onR2AxisChange(axis: Axis<"ButtonR2">): void {
+    this.triggerAxesChange(axis, this.isLmbDown);
+  }
+
+  @OnAxisInput("ButtonL2", "axisL2")
+  private onL2AxisChange(axis: Axis<"ButtonL2">): void {
+    this.triggerAxesChange(axis, this.isLmbDown);
+  }
+
+  @OnInputRelease("axisR2")
+  private onR2Release(): void {
+    this.rmbUp();
+  }
+
+  @OnInputRelease("axisL2")
+  private onL2Release(): void {
+    this.lmbUp();
+  }
+
+  @OnInputRelease("mmb")
+  private mmbUp(): void {
+    return this.isMmbDown(false);
+  }
+
+  @OnInput("MouseButton3", "mmb")
+  private mmbDown(): void {
+    return this.isMmbDown(true);
+  }
+
+  @OnInputRelease("rmb")
+  private rmbUp(): void {
+    return this.isRmbDown(false);
+  }
+
+  @OnInput("MouseButton2", "rmb")
+  private rmbDown(): void {
+    return this.isRmbDown(true);
+  }
+
+  @OnInputRelease("lmb")
+  private lmbUp(): void {
+    return this.isLmbDown(false);
+  }
+
+  @OnInput("MouseButton1", "lmb")
+  private lmbDown(): void {
+    return this.isLmbDown(true);
   }
 
   private triggerAxesChange(axis: Axis<"ButtonL2" | "ButtonR2">, isDown: Charm.Atom<boolean>): void {
