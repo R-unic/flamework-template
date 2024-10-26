@@ -5,10 +5,10 @@ import { roundDecimal } from "./utility/numbers";
 import { FlameworkIgnited } from "./constants";
 import Log from "./logger";
 
-/** Only allow the function to be executed once every `waitTime` seconds */
-export const Debounce = Modding.createDecorator<[waitTime: number]>(
+/** Only allow the function to be executed once every `length` seconds */
+export const Cooldown = Modding.createDecorator<[length: number]>(
   "Method",
-  (descriptor, [waitTime]) => {
+  (descriptor, [length]) => {
     FlameworkIgnited.Once(() => {
       let canCall = true;
       const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
@@ -16,7 +16,7 @@ export const Debounce = Modding.createDecorator<[waitTime: number]>(
       object[descriptor.property] = function (...args: unknown[]) {
         if (!canCall) return;
         canCall = false;
-        task.delay(waitTime, () => canCall = true);
+        task.delay(length, () => canCall = true);
 
         return originalMethod(...args);
       };
