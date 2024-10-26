@@ -5,7 +5,7 @@ import { roundDecimal } from "./utility/numbers";
 import { FlameworkIgnited } from "./constants";
 import Log from "./logger";
 
-/** Only allow the function to be executed once every `length` seconds */
+/** Only allows the function to be executed once every `length` seconds */
 export const Cooldown = Modding.createDecorator<[length: number]>(
   "Method",
   (descriptor, [length]) => {

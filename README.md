@@ -28,9 +28,17 @@ It aims to be decently simple and lightweight but still provide as many reusable
   - Cmdr for custom commands
   - Graceful Firebase API instead of DataStoreService
   - Product/gamepass transaction handler
-  - GitHub info service
   - Scheduling service (run forever, execute a fn on a loop with a cooldown, e.x. `scheduling.every.second.Connect(...)`)
 - Tons of utility functions and classes (comma format, abbreviation, repr, array shuffle/flatten/reverse, springs, sin/cos waves, bitfields, string builder, etc.)
+- Tons of utility decorators
+  - Method decorators
+    - `@Cooldown(length: number)` - Only allows the function to be executed once every `length` seconds
+    - `@Memoize()` - Cache the first result the function returns and return the cached result from then on out
+    - `@StudioOnly()` - Only allows the function to be executed in studio
+    - `@LogBenchmark(formatter)` - Logs how long the function took to execute, use `formatter` callback to customize message
+    - `@OnInput(binding: RawActionEntry | RawActionEntry[], actionName?: string, options?: ActionOptions)` - Binds an input to the function, with an optional action name to bind a function to the input's release
+    - `@OnInput(binding: AxisActionEntry, actionName?: string)` - Binds an axis input to the function, with an optional action name to bind a function to the input's release
+    - `@OnInputRelease(actionName: string)` - Binds an input releasing to the function given the same action name provided to `@OnInput`
 - Included logger (not very good tbh)
 - Custom lifecycle hooks:
   - OnCharacterAdd/OnCharacterRemove
