@@ -1,5 +1,6 @@
 import { RunService as Runtime } from "@rbxts/services";
 import Object from "@rbxts/object-utils";
+import Signal from "@rbxts/signal";
 
 enum DevID {
   Runic = 44966864
@@ -11,3 +12,5 @@ export const DEVELOPERS = new Set(Object.values(DevID)); // add extra developer 
 export function isDeveloper(player: Player): boolean {
   return Runtime.IsStudio() || DEVELOPERS.has(player.UserId);
 }
+
+export const FlameworkIgnited = new Signal;

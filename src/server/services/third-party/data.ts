@@ -31,16 +31,16 @@ export class DataService implements OnInit, OnStart, OnPlayerJoin, OnPlayerLeave
 		Events.data.initialize.connect(player => this.setup(player));
 	}
 
-	public onPlayerJoin(player: Player): void {
+	public async onPlayerJoin(player: Player): Promise<void> {
 		if (this.firebase === undefined)
 			this.firebaseCreated.Wait();
 
-		this.firebase.get<PlayerData>(`playerData/${player.UserId}`, table.clone(INITIAL_DATA))
-			.then(data => this.playerData[tostring(player.UserId)] = data);
+		const data = await this.firebase.get<PlayerData>(`playerData/${player.UserId}`, table.clone(INITIAL_DATA))
+		this.playerData[tostring(player.UserId)] = data;
 	}
 
-	public onPlayerLeave(player: Player): void {
-		this.firebase.set(`playerData/${player.UserId}`, this.get(player));
+	public async onPlayerLeave(player: Player): Promise<void> {
+		await this.firebase.set(`playerData/${player.UserId}`, this.get(player));
 	}
 
 	public async getGlobal<T>(directory: string, defaultValue?: T): Promise<T> {
