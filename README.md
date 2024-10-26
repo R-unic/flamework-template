@@ -37,7 +37,7 @@ It aims to be decently simple and lightweight but still provide as many reusable
     - `@StudioOnly()` - Only allows the function to be executed in studio
     - `@LogBenchmark(formatter)` - Logs how long the function took to execute, use `formatter` callback to customize message
     - `@OnInput(binding: RawActionEntry | RawActionEntry[], actionName?: string, options?: ActionOptions)` - Binds an input to the function, with an optional action name to bind a function to the input's release
-    - `@OnInput(binding: AxisActionEntry, actionName?: string)` - Binds an axis input to the function, with an optional action name to bind a function to the input's release
+    - `@OnAxisInput(binding: AxisActionEntry, actionName?: string)` - Binds an axis input to the function, with an optional action name to bind a function to the input's release
     - `@OnInputRelease(actionName: string)` - Binds an input releasing to the function given the same action name provided to `@OnInput`
 - Included logger (not very good tbh)
 - Custom lifecycle hooks:
