@@ -5,6 +5,28 @@ import { roundDecimal } from "./utility/numbers";
 import Log from "./logger";
 
 /** Only allows the function to be executed once every `length` seconds */
+export const ValidateReturn = Modding.createDecorator<[validator: (returnValue: unknown) => boolean, whenInvalid?: (returnValue: unknown) => void, warnNotError?: boolean]>(
+  "Method",
+  (descriptor, [validator, whenInvalid, warnNotError]) => {
+    // FlameworkIgnited.Once(() => {
+    const object = <Record<string, Callback>><unknown>descriptor.constructor!;
+    const originalMethod = object[descriptor.property];
+    warnNotError ??= false;
+    whenInvalid ??= value => Log[warnNotError ? "warning" : "fatal"](`Invalid return value ${value} returned by ${tostring(descriptor.constructor)}.${descriptor.property}()`);
+
+    object[descriptor.property] = function (...args: unknown[]) {
+      const value = originalMethod(...args);
+      const isValid = validator(value);
+      if (!isValid)
+        whenInvalid!(value);
+
+      return value;
+    };
+    // });
+  }
+);
+
+/** Only allows the function to be executed once every `length` seconds */
 export const Retry = Modding.createDecorator<[times: number, delay?: number, retryCondition?: (fn: Callback) => boolean]>(
   "Method",
   (descriptor, [times, delay, retryCondition]) => {
