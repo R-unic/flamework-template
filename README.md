@@ -6,6 +6,7 @@ It aims to be decently simple and lightweight but still provide as many reusable
 ## Features
 - Frontend:
   - Custom mouse controller
+  - `ReplicaController` which stores a copy of the local player's data
   - Procedural animation system for cameras or models with these animations included:
     - Landing
     - Mouse sway
@@ -37,14 +38,18 @@ It aims to be decently simple and lightweight but still provide as many reusable
     - `@StudioOnly()` - Only allows the function to be executed in studio
     - `@LogBenchmark(formatter)` - Logs how long the function took to execute, use `formatter` callback to customize message
     - `@OnInput(binding: RawActionEntry | RawActionEntry[], actionName?: string, options?: ActionOptions)` - Binds an input to the function, with an optional action name to bind a function to the input's release
-    - `@OnInput(binding: AxisActionEntry, actionName?: string)` - Binds an axis input to the function, with an optional action name to bind a function to the input's release
+    - `@OnAxisInput(binding: AxisActionEntry, actionName?: string)` - Binds an axis input to the function, with an optional action name to bind a function to the input's release
     - `@OnInputRelease(actionName: string)` - Binds an input releasing to the function given the same action name provided to `@OnInput`
-- Included logger (not very good tbh)
+    - `@Retry(times: number, delay?: number, retryCondition?: (fn: () => void) => boolean` - Retries the function every time `retryCondition` returns true, `times` times, with `delay` seconds in between
+    - `ValidateReturn(validator: (returnValue: unknown) => boolean, whenInvalid?: (returnValue: unknown) => void)` - Calls `whenInvalid` when `validator` returns false
+- Included logger (not very good tbh, probably use `@rbxts/log` w/ `@rbxts/zircon`)
 - Custom lifecycle hooks:
   - OnCharacterAdd/OnCharacterRemove
   - OnPlayerJoin/OnPlayerLeave
   - OnDataLoad/OnDataUpdate
   - LogStart (logs when a singleton/component is started)
+- `@rbxts/flamework-binary-serializer` is included with serializers created & exported in `shared/network.ts`
+  - This package serializes tables and instances into buffers (list of bytes) which reduces the size of the data massively. It is useful for optimizing networking.
 
 ## Usage
 

@@ -4,7 +4,7 @@ import { RunService as Runtime } from "@rbxts/services";
 import { roundDecimal } from "./utility/numbers";
 import Log from "./logger";
 
-/** Only allows the function to be executed once every `length` seconds */
+/** Calls `whenInvalid` when `validator` returns false */
 export const ValidateReturn = Modding.createDecorator<[validator: (returnValue: unknown) => boolean, whenInvalid?: (returnValue: unknown) => void, warnNotError?: boolean]>(
   "Method",
   (descriptor, [validator, whenInvalid, warnNotError]) => {
@@ -26,8 +26,8 @@ export const ValidateReturn = Modding.createDecorator<[validator: (returnValue: 
   }
 );
 
-/** Only allows the function to be executed once every `length` seconds */
-export const Retry = Modding.createDecorator<[times: number, delay?: number, retryCondition?: (fn: Callback) => boolean]>(
+/** Retries the function every time `retryCondition` returns true, `times` times, with `delay` seconds in between */
+export const Retry = Modding.createDecorator<[times: number, delay?: number, retryCondition?: (fn: () => void) => boolean]>(
   "Method",
   (descriptor, [times, delay, retryCondition]) => {
     // FlameworkIgnited.Once(() => {
