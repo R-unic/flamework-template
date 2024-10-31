@@ -1,3 +1,5 @@
+declare const newproxy: (addMetatable: boolean) => symbol;
+
 interface SerializedPacket {
   buffer: buffer;
   blobs: defined[];

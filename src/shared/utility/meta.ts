@@ -1,5 +1,12 @@
 import { Reflect } from "@flamework/core";
 
+export function createSymbol(name: string): symbol {
+  const symbol = newproxy(true);
+  const mt = <Record<string, unknown>>getmetatable(<never>symbol);
+  mt.__tostring = () => name;
+  return symbol;
+}
+
 /**
  * Generates a [mapping] decorator, and map, for the given object type and constructor arguments
  */
