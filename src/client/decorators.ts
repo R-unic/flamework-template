@@ -8,64 +8,70 @@ import { FlameworkIgnited } from "shared/constants";
 import Log from "shared/logger";
 
 const inputContext = new Context;
-const actions: Record<string, BaseAction> = {};
+const processedContext = new Context({ Process: true });
+export const inputActions: Record<string, BaseAction> = {};
 
-export const OnInput = Modding.createDecorator<[binding: RawActionEntry | RawActionEntry[], actionName?: string, options?: ActionOptions]>(
+export const OnInput = Modding.createDecorator<[binding: (RawActionEntry | BaseAction) | (RawActionEntry | BaseAction)[], actionName?: string, process?: boolean, options?: ActionOptions]>(
   "Method",
-  (descriptor, [rawAction, actionName, options]) => {
+  (descriptor, [rawAction, actionName, process, options]) => {
     const action: BaseAction = typeOf(rawAction) === "string" ?
       new Action(<RawActionEntry>rawAction, options)
-      : new Union(<RawActionEntry[]>rawAction);
+      : rawAction instanceof BaseAction ?
+        rawAction
+        : new Union(<RawActionEntry[]>rawAction);
 
     if (action instanceof Union && options !== undefined)
       Log.warning(`Action options given to @OnInput decorator on "${descriptor.property}" method were ignored because it is a union action`);
 
     if (actionName !== undefined)
-      actions[actionName] = action;
+      inputActions[actionName] = action;
 
     FlameworkIgnited.Once(() => {
       const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
-      inputContext.Bind(<ActionLike<RawActionEntry>>action, () => {
-        task.spawn(object[descriptor.property], object, action);
-      })
+      const context = process ? processedContext : inputContext;
+      context.Bind(<ActionLike<RawActionEntry>>action, () =>
+        void task.spawn(object[descriptor.property], object, action)
+      );
     });
   }
 );
 
-export const OnAxisInput = Modding.createDecorator<[binding: AxisActionEntry, actionName?: string]>(
+export const OnAxisInput = Modding.createDecorator<[binding: AxisActionEntry, actionName?: string, process?: boolean]>(
   "Method",
-  (descriptor, [rawAction, actionName]) => {
+  (descriptor, [rawAction, actionName, process]) => {
     const axis = new Axis(rawAction);
     if (actionName !== undefined)
-      actions[actionName] = axis;
+      inputActions[actionName] = axis;
 
     FlameworkIgnited.Once(() => {
       const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
-      inputContext.Bind(axis, () => {
-        task.spawn(object[descriptor.property], object, axis);
-      });
+      const context = process ? processedContext : inputContext;
+      context.Bind(axis, () =>
+        void task.spawn(object[descriptor.property], object, axis)
+      );
     });
   }
 );
 
 /** **Note:** You need to provide an action name to the OnInput decorator to use this decorator, with which you will use the same action name. */
-export const OnInputRelease = Modding.createDecorator<[actionName: string]>(
+export const OnInputRelease = Modding.createDecorator<[actionName: string, process?: boolean]>(
   "Method",
-  (descriptor, [actionName]) => task.spawn(() => {
+  (descriptor, [actionName, process]) => task.spawn(() => {
     FlameworkIgnited.Once(() => {
-      let action = actions[actionName];
+      let action = inputActions[actionName];
       if (action === undefined) {
-        task.wait(0.1)
-        action = actions[actionName];
+        task.wait(0.1);
+        action = inputActions[actionName];
       }
 
       if (action === undefined)
         throw Log.fatal(`Failed to bind method "${descriptor.property}" using @OnInputRelease decorator: No input action "${actionName}" exists`);
 
       const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
-      inputContext.BindEvent(actionName, action.Released, () => {
-        task.spawn(object[descriptor.property], object, action);
-      });
+      const context = process ? processedContext : inputContext;
+      context.BindEvent(actionName, action.Released, () =>
+        void task.spawn(object[descriptor.property], object, action)
+      );
     });
   })
 );

@@ -4,6 +4,21 @@ import { RunService as Runtime } from "@rbxts/services";
 import { roundDecimal } from "./utility/numbers";
 import Log from "./logger";
 
+/**
+ * Wraps the function in a `task.spawn()`
+ *
+ * **Note:** Voids the return value
+ * */
+export const SpawnTask = Modding.createDecorator(
+  "Method",
+  descriptor => {
+    const object = <Record<string, Callback>><unknown>descriptor.constructor!;
+    const originalMethod = object[descriptor.property];
+    object[descriptor.property] = (...args: unknown[]) => task.spawn(originalMethod, ...args);
+  }
+);
+
+
 /** Calls `whenInvalid` when `validator` returns false */
 export const ValidateReturn = Modding.createDecorator<[validator: (returnValue: unknown) => boolean, whenInvalid?: (returnValue: unknown) => void, warnNotError?: boolean]>(
   "Method",

@@ -5,6 +5,7 @@ import type { LogStart } from "shared/hooks";
 import type { OnPlayerJoin, OnPlayerLeave } from "server/hooks";
 import { Events } from "server/network";
 import { Serializers } from "shared/network";
+import { SpawnTask } from "shared/decorators";
 import { type PlayerData, type GlobalData, INITIAL_DATA } from "shared/data-models/player-data";
 import Firebase from "server/firebase";
 import Log from "shared/logger";
@@ -19,12 +20,11 @@ export class DataService implements OnInit, OnStart, OnPlayerJoin, OnPlayerLeave
 
 	private firebase!: Firebase;
 
-	public onInit(): void {
-		task.spawn(async () => {
-			this.firebase = new Firebase;
-			this.firebaseCreated.Fire();
-			this.playerData = await this.getDatabase();
-		});
+	@SpawnTask()
+	public async onInit(): Promise<void> {
+		this.firebase = new Firebase;
+		this.firebaseCreated.Fire();
+		this.playerData = await this.getDatabase();
 	}
 
 	public onStart(): void {
@@ -74,11 +74,10 @@ export class DataService implements OnInit, OnStart, OnPlayerJoin, OnPlayerLeave
 		return await this.firebase.get("playerData", {});
 	}
 
+	@SpawnTask()
 	private update(player: Player, data: PlayerData): void {
-		task.spawn(() => {
-			this.updated.Fire(player, data);
-			Events.data.updated(player, Serializers.playerData.serialize({ data }));
-		});
+		this.updated.Fire(player, data);
+		Events.data.updated(player, Serializers.playerData.serialize({ data }));
 	}
 
 	private async setup(player: Player): Promise<void> {

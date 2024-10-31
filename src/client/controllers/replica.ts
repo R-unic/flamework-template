@@ -14,6 +14,6 @@ export class ReplicaController implements OnStart, OnDataUpdate, LogStart {
   }
 
   public onDataUpdate(data: PlayerData): void {
-    (<{ data: PlayerData }>this).data = data;
+    (<Writable<ReplicaController>>this).data = data;
   }
 }

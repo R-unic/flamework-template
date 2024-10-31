@@ -1,6 +1,7 @@
 import { Service, OnTick } from "@flamework/core";
 import Object from "@rbxts/object-utils";
 import Signal from "@rbxts/signal";
+import { SpawnTask } from "shared/decorators";
 
 /**
  * Used for executing a function in a loop without creating a new thread
@@ -25,11 +26,10 @@ export class SchedulingService implements OnTick {
   }
 
   /** Note: Your callback should **always** yield! */
+  @SpawnTask()
   public runForever(callback: Callback): void {
-    task.spawn(() => {
-      while (true)
-        callback();
-    });
+    while (true)
+      callback();
   }
 
   private getIncrement(unit: keyof typeof this.every): number {
