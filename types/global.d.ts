@@ -5,6 +5,8 @@ interface SerializedPacket {
   blobs: defined[];
 }
 
+type EnumObject<T extends string | number = string | number> = Record<string, T> & Record<T, string>;
+
 type Maybe<T> = T | undefined;
 
 type If<Value extends boolean, TrueResult, FalseResult = null> = Value extends true

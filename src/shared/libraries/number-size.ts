@@ -1,13 +1,21 @@
 const { ceil, abs } = math;
 
 namespace Size {
-  export const byte = 8;
-  export const short = 16;
-  export const int = 32;
-  export const long = 64;
-  export const bigint = 128;
+  export function of(_type: "byte" | "short" | "int" | "long" | "bigint"): number {
+    switch (_type) {
+      case "byte": return 8;
+      case "short": return 16;
+      case "int": return 32;
+      case "long": return 64;
+      case "bigint": return 128;
+    }
+  }
 
   export function inBytes(n: number): number {
+    return ceil(inBits(n) / 8);
+  }
+
+  export function inBits(n: number): number {
     const positiveNum = abs(n);
     let temp = positiveNum;
     let bits = 0;
@@ -17,7 +25,7 @@ namespace Size {
       bits++;
     }
 
-    return ceil(bits / 8);
+    return bits;
   }
 
   export function isUnsigned(n: number): boolean {
