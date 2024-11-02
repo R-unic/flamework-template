@@ -42,6 +42,7 @@ It aims to be decently simple and lightweight but still provide as many reusable
     - `@OnInputRelease(actionName: string)` - Binds an input releasing to the function given the same action name provided to `@OnInput`
     - `@Retry(times: number, delay?: number, retryCondition?: (fn: () => void) => boolean` - Retries the function every time `retryCondition` returns true, `times` times, with `delay` seconds in between
     - `@ValidateReturn(validator: (returnValue: unknown) => boolean, whenInvalid?: (returnValue: unknown) => void)` - Calls `whenInvalid` when `validator` returns false
+    - `@SpawnTask()` - Wraps the method in a `task.spawn`
 - Included logger (not very good tbh, probably use `@rbxts/log` w/ `@rbxts/zircon`)
 - Custom lifecycle hooks:
   - OnCharacterAdd/OnCharacterRemove
