@@ -18,7 +18,6 @@ export const SpawnTask = Modding.createDecorator(
   }
 );
 
-
 /** Calls `whenInvalid` when `validator` returns false */
 export const ValidateReturn = Modding.createDecorator<[validator: (returnValue: unknown) => boolean, whenInvalid?: (returnValue: unknown) => void, warnNotError?: boolean]>(
   "Method",

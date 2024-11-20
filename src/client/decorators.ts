@@ -2,12 +2,16 @@ import { Modding } from "@flamework/core/out/modding";
 import { Context } from "@rbxts/gamejoy";
 import { Action, Axis, Union } from "@rbxts/gamejoy/out/Actions";
 import { BaseAction } from "@rbxts/gamejoy/out/Class/BaseAction";
+import type { Constructor } from "@flamework/core/out/utility";
 import type { ActionLike, ActionOptions, AxisActionEntry, RawActionEntry } from "@rbxts/gamejoy/out/Definitions/Types";
+import type { ClientReceiver as ClientEventReceiver } from "@flamework/networking/out/events/types";
+import type { ClientReceiver as ClientFunctionReceiver } from "@flamework/networking/out/functions/types";
+import type { Serializer } from "@rbxts/flamework-binary-serializer";
 
 import { FlameworkIgnited } from "shared/constants";
 import Log from "shared/logger";
 
-const inputContext = new Context;
+const inputContext = new Context({ Process: false });
 const processedContext = new Context({ Process: true });
 export const inputActions: Record<string, BaseAction> = {};
 
@@ -27,11 +31,11 @@ export const OnInput = Modding.createDecorator<[binding: (RawActionEntry | BaseA
       inputActions[actionName] = action;
 
     FlameworkIgnited.Once(() => {
-      const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
       const context = process ? processedContext : inputContext;
-      context.Bind(<ActionLike<RawActionEntry>>action, () =>
-        void task.spawn(object[descriptor.property], object, action)
-      );
+      context.Bind(<ActionLike<RawActionEntry>>action, () => {
+        const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
+        void task.spawn(object[descriptor.property], object, action);
+      });
     });
   }
 );
@@ -44,11 +48,11 @@ export const OnAxisInput = Modding.createDecorator<[binding: AxisActionEntry, ac
       inputActions[actionName] = axis;
 
     FlameworkIgnited.Once(() => {
-      const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
       const context = process ? processedContext : inputContext;
-      context.Bind(axis, () =>
-        void task.spawn(object[descriptor.property], object, axis)
-      );
+      context.Bind(axis, () => {
+        const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
+        void task.spawn(object[descriptor.property], object, axis);
+      });
     });
   }
 );
@@ -67,11 +71,36 @@ export const OnInputRelease = Modding.createDecorator<[actionName: string, proce
       if (action === undefined)
         throw Log.fatal(`Failed to bind method "${descriptor.property}" using @OnInputRelease decorator: No input action "${actionName}" exists`);
 
-      const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
       const context = process ? processedContext : inputContext;
-      context.BindEvent(actionName, action.Released, () =>
-        void task.spawn(object[descriptor.property], object, action)
-      );
+      context.BindEvent(actionName, action.Released, () => {
+        const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
+        void task.spawn(object[descriptor.property], object, action);
+      });
     });
   })
 );
+
+type ClientReceiver<I extends unknown[] = unknown[], O = void> = ClientEventReceiver<I> | ClientFunctionReceiver<I, O>;
+interface MethodDescriptor<T extends Callback = Callback> {
+  readonly value: T;
+}
+
+/** @metadata reflect identifier flamework:parameters */
+export function LinkRemote<I extends unknown[] = unknown[], O = void>(remote: ClientReceiver<I, O>) {
+  return (ctor: object, propertyKey: string, descriptor: MethodDescriptor<(self: unknown, ...input: I) => O>) => {
+    (<UnionToIntersection<ClientReceiver<I, O>>>remote)["setCallback" in remote ? "setCallback" : "connect"]((...args) => descriptor.value(Modding.resolveSingleton(<Constructor>ctor), ...args));
+  }
+}
+
+/** @metadata reflect identifier flamework:parameters */
+export function LinkSerializedRemote<PacketStruct extends object, I extends [packet: SerializedPacket] = [packet: SerializedPacket], O = void>(remote: ClientReceiver<I, O>, deserializer: Serializer<PacketStruct>) {
+  return (ctor: object, propertyKey: string, descriptor: MethodDescriptor<(self: unknown, struct: PacketStruct, ...otherArgs: never[]) => O>) => {
+    (<UnionToIntersection<ClientReceiver<I, O>>>remote)["setCallback" in remote ? "setCallback" : "connect"]((...args) => {
+      const [{ buffer, blobs }] = args;
+      args.shift();
+
+      const struct = deserializer.deserialize(buffer, blobs);
+      return descriptor.value(Modding.resolveSingleton(<Constructor>ctor), struct, ...<never[]><unknown>args);
+    });
+  }
+}
