@@ -1,7 +1,9 @@
 import { Reflect } from "@flamework/core";
 
-export function createSymbol(name: string): symbol {
-  const symbol = newproxy(true);
+declare const newproxy: <T extends symbol = symbol>(addMetatable: boolean) => T;
+
+export function createSymbol<T extends symbol = symbol>(name: string): T {
+  const symbol = newproxy<T>(true);
   const mt = <Record<string, unknown>>getmetatable(<never>symbol);
   mt.__tostring = () => name;
   return symbol;

@@ -1,14 +1,10 @@
-declare const newproxy: (addMetatable: boolean) => symbol;
-
 interface SerializedPacket {
   buffer: buffer;
   blobs: defined[];
 }
 
-type EnumObject<T extends string | number = string | number> = Record<string, T> & Record<T, string>;
-
 type Maybe<T> = T | undefined;
-
+type EnumObject<T extends string | number = string | number> = Record<string, T> & Record<T, string>;
 type If<Value extends boolean, TrueResult, FalseResult = null> = Value extends true
   ? TrueResult
   : Value extends false
