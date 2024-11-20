@@ -43,14 +43,21 @@ It aims to be decently simple and lightweight but still provide as many reusable
     - `@Retry(times: number, delay?: number, retryCondition?: (fn: () => void) => boolean` - Retries the function every time `retryCondition` returns true, `times` times, with `delay` seconds in between
     - `@ValidateReturn(validator: (returnValue: unknown) => boolean, whenInvalid?: (returnValue: unknown) => void)` - Calls `whenInvalid` when `validator` returns false
     - `@SpawnTask()` - Wraps the method in a `task.spawn`
+    - `@LinkRemote(remote: ClientReceiver)` - Binds a method to a remote being fired
+    - `@LinkSerializedRemote(remote: ClientReceiver, deserializer: Serializer)` - Binds a method to a remote being fired and automatically deserializes arguments
 - Included logger (not very good tbh, probably use `@rbxts/log` w/ `@rbxts/zircon`)
+- Object pooling classes
+  - Generic `InstancePool<T>`
+  - `PartPool` for parts
+  - `UIPool` for UI objects
 - Custom lifecycle hooks:
   - OnCharacterAdd/OnCharacterRemove
   - OnPlayerJoin/OnPlayerLeave
   - OnDataLoad/OnDataUpdate
   - LogStart (logs when a singleton/component is started)
 - `@rbxts/flamework-binary-serializer` is included with serializers created & exported in `shared/network.ts`
-  - This package serializes tables and instances into buffers (list of bytes) which reduces the size of the data massively. It is useful for optimizing networking.
+  - This package serializes tables and instances into buffers (list of bytes) which reduces the size of the data massively. It is useful for optimizing networking
+  - You can skip manually deserializing arguments from remotes by using the `@LinkSerializedRemote` decorator
 
 ## Usage
 
