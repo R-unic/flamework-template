@@ -1,5 +1,5 @@
 import { Controller, type OnStart } from "@flamework/core";
-import { Stats } from "@rbxts/services";
+import { Workspace as World, Stats } from "@rbxts/services";
 import type { Widget } from "@rbxts/iris/out/IrisDeclaration";
 import type { WindowCreation } from "@rbxts/iris/out/widgetsTypes/Window";
 import Object from "@rbxts/object-utils";
@@ -9,16 +9,26 @@ import { OnInput } from "client/decorators";
 import { Player } from "client/utility";
 import { isDeveloper } from "shared/constants";
 import { roundDecimal } from "shared/utility/numbers";
+import { getAverage } from "shared/utility/array";
 
 import type { MouseController } from "./mouse";
 import type { CameraController, Cameras } from "./camera";
 
+const STAT_UPDATE_RATE = 1; // second
+
 @Controller({ loadOrder: 1 })
 export class ControlPanelController implements OnStart {
-  private mouseUnlocked = false;
-  private highestNetworkSend = 0;
-  private highestHeartbeatTime = 0;
+  private readonly sendSizes: number[] = [];
+  private readonly recvSizes: number[] = [];
   private window!: Widget<WindowCreation>;
+  private mouseUnlocked = false;
+  private lastSendRecvUpdate = 0;
+  private avgSend = 0;
+  private avgRecv = 0;
+  private highestSend = 0;
+  private highestRecv = 0;
+  private lowestSend = 0;
+  private lowestRecv = 0;
 
   public constructor(
     private readonly mouse: MouseController,
@@ -45,13 +55,13 @@ export class ControlPanelController implements OnStart {
   }
 
   @OnInput("Comma")
-  private open(): void {
+  public open(): void {
     if (!isDeveloper(Player)) return;
     this.window.state.isOpened.set(!this.window.state.isOpened.get());
   }
 
   @OnInput("P")
-  private unlockMouse(): void {
+  public unlockMouse(): void {
     if (!isDeveloper(Player)) return;
     this.mouseUnlocked = !this.mouseUnlocked;
     this.mouse.iconEnabled(this.mouseUnlocked);
@@ -60,23 +70,43 @@ export class ControlPanelController implements OnStart {
   }
 
   private renderStatsTab(): void {
+    const now = os.clock();
+    if (now - this.lastSendRecvUpdate >= STAT_UPDATE_RATE) {
+      const sortedSends = this.sendSizes.sort();
+      const sortedRecvs = this.recvSizes.sort();
+      this.highestSend = sortedSends[sortedSends.size() - 1];
+      this.lowestSend = sortedSends[0];
+      this.highestRecv = sortedRecvs[sortedRecvs.size() - 1];
+      this.lowestRecv = sortedRecvs[0];
+      this.avgSend = getAverage(this.sendSizes);
+      this.avgRecv = getAverage(this.recvSizes);
+
+      this.sendSizes.clear();
+      this.recvSizes.clear();
+      this.lastSendRecvUpdate = now;
+    }
+
     Iris.Tree(["Statistics"]);
     {
-      const receive = Stats.DataReceiveKbps;
+      const recv = Stats.DataReceiveKbps;
       const send = Stats.DataSendKbps;
-      const heartbeatTime = roundDecimal(Stats.HeartbeatTimeMs, 3);
-      if (send > this.highestNetworkSend)
-        this.highestNetworkSend = send;
-      if (heartbeatTime > this.highestHeartbeatTime)
-        this.highestHeartbeatTime = heartbeatTime;
-      Iris.Text([`<b>Network Receive</b>: ${receive < 1 ? "&lt;1" : math.floor(receive)} kb/s`, undefined, undefined, true]);
-      Iris.Text([`<b>Network Send</b>: ${send < 1 ? "&lt;1" : math.floor(send)} kb/s`, undefined, undefined, true]);
-      Iris.Text([`<b>Highest Network Send</b>: ${this.highestNetworkSend < 1 ? "&lt;1" : math.floor(this.highestNetworkSend)} kb/s`, undefined, undefined, true]);
-      Iris.Text([`<b>Heartbeat Time</b>: ${heartbeatTime} ms`, undefined, undefined, true]);
-      Iris.Text([`<b>Highest Heartbeat Time</b>: ${this.highestHeartbeatTime} ms`, undefined, undefined, true]);
-      Iris.Text([`<b>Memory Usage (Signals)</b>: ${math.floor(Stats.GetMemoryUsageMbForTag("Signals"))} mb`, undefined, undefined, true]);
-      Iris.Text([`<b>Memory Usage (Script)</b>: ${math.floor(Stats.GetMemoryUsageMbForTag("Script"))} mb`, undefined, undefined, true]);
-      Iris.Text([`<b>Memory Usage (Total)</b>: ${math.floor(Stats.GetTotalMemoryUsageMb())} mb`, undefined, undefined, true]);
+      this.recvSizes.push(recv);
+      this.sendSizes.push(send);
+
+      const formatKBsPerSecond = (kbps: number) => (kbps === undefined ? "..." : (kbps < 0.1 ? "<0.1" : roundDecimal(kbps, 2))) + " kb/s";
+      Iris.Text([`Network Receive: ${formatKBsPerSecond(recv)}`]);
+      Iris.Text([`Network Receive (High): ${formatKBsPerSecond(this.highestRecv)}`]);
+      Iris.Text([`Network Receive (Low): ${formatKBsPerSecond(this.lowestRecv)}`]);
+      Iris.Text([`Network Receive (Average): ${formatKBsPerSecond(this.avgRecv)}`]);
+      Iris.Text([`Network Send: ${formatKBsPerSecond(send)}`]);
+      Iris.Text([`Network Send (High): ${formatKBsPerSecond(this.highestSend)}`]);
+      Iris.Text([`Network Send (Low): ${formatKBsPerSecond(this.lowestSend)}`]);
+      Iris.Text([`Network Send (Average): ${formatKBsPerSecond(this.avgSend)}`]);
+      Iris.Text([`Heartbeat Time: ${roundDecimal(Stats.HeartbeatTimeMs, 2)} ms`]);
+      Iris.Text([`Memory Usage (Signals): ${math.floor(Stats.GetMemoryUsageMbForTag("Signals"))} mb`]);
+      Iris.Text([`Memory Usage (Script): ${math.floor(Stats.GetMemoryUsageMbForTag("Script"))} mb`]);
+      Iris.Text([`Memory Usage (Total): ${math.floor(Stats.GetTotalMemoryUsageMb())} mb`]);
+      Iris.Text([`Workspace Instance Count: ${World.GetDescendants().size()}`]);
     }
     Iris.End();
   }

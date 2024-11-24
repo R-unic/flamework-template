@@ -1,7 +1,19 @@
 const { max, min, floor, random } = math;
 
+export function getAverage(numbers: number[]): number {
+  return numbers.reduce((sum, n) => sum + n, 0) / numbers.size();
+}
+
 export function randomElement<T extends defined>(array: T[]): T {
-  return array[math.random(1, array.size()) - 1];
+  return array[random(1, array.size()) - 1];
+}
+
+export function isArrayDeepEqual<T extends defined>(a: T[], b: T[]): boolean {
+  return a.every((v, i) => typeOf(v) === "table" && typeOf(b[i]) === "table" ? isArrayDeepEqual(<defined[]><unknown>v, <defined[]><unknown>b[i]) : b[i] === v);
+}
+
+export function isArrayEqual<T extends defined>(a: T[], b: T[]): boolean {
+  return a.every((v, i) => b[i] === v);
 }
 
 /** Fisher-Yates shuffle algorithm */
