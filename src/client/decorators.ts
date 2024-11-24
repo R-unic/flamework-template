@@ -1,4 +1,6 @@
-import { Modding } from "@flamework/core/out/modding";
+import { Dependency, Modding } from "@flamework/core";
+import { Components } from "@flamework/components";
+import { getIdFromSpecifier } from "@flamework/components/out/utility";
 import { Context } from "@rbxts/gamejoy";
 import { Action, Axis, Union } from "@rbxts/gamejoy/out/Actions";
 import { BaseAction } from "@rbxts/gamejoy/out/Class/BaseAction";
@@ -10,6 +12,7 @@ import type { Serializer } from "@rbxts/flamework-binary-serializer";
 
 import { FlameworkIgnited } from "shared/constants";
 import Log from "shared/logger";
+import { callMethodOnDependency } from "shared/utility/meta";
 
 const inputContext = new Context({ Process: false });
 const processedContext = new Context({ Process: true });
@@ -88,19 +91,23 @@ interface MethodDescriptor<T extends Callback = Callback> {
 /** @metadata reflect identifier flamework:parameters */
 export function LinkRemote<I extends unknown[] = unknown[], O = void>(remote: ClientReceiver<I, O>) {
   return (ctor: object, propertyKey: string, descriptor: MethodDescriptor<(self: unknown, ...input: I) => O>) => {
-    (<UnionToIntersection<ClientReceiver<I, O>>>remote)["setCallback" in remote ? "setCallback" : "connect"]((...args) => descriptor.value(Modding.resolveSingleton(<Constructor>ctor), ...args));
+    FlameworkIgnited.Once(() => {
+      (<UnionToIntersection<ClientReceiver<I, O>>>remote)["setCallback" in remote ? "setCallback" : "connect"]((...args) => callMethodOnDependency(ctor, descriptor, ...args));
+    });
   }
 }
 
 /** @metadata reflect identifier flamework:parameters */
 export function LinkSerializedRemote<PacketStruct extends object, I extends [packet: SerializedPacket] = [packet: SerializedPacket], O = void>(remote: ClientReceiver<I, O>, deserializer: Serializer<PacketStruct>) {
   return (ctor: object, propertyKey: string, descriptor: MethodDescriptor<(self: unknown, struct: PacketStruct, ...otherArgs: never[]) => O>) => {
-    (<UnionToIntersection<ClientReceiver<I, O>>>remote)["setCallback" in remote ? "setCallback" : "connect"]((...args) => {
-      const [{ buffer, blobs }] = args;
-      args.shift();
+    FlameworkIgnited.Once(() => {
+      (<UnionToIntersection<ClientReceiver<I, O>>>remote)["setCallback" in remote ? "setCallback" : "connect"]((...args) => {
+        const [{ buffer, blobs }] = args;
+        args.shift();
 
-      const struct = deserializer.deserialize(buffer, blobs);
-      return descriptor.value(Modding.resolveSingleton(<Constructor>ctor), struct, ...<never[]><unknown>args);
+        const struct = deserializer.deserialize(buffer, blobs);
+        return callMethodOnDependency(ctor, descriptor, struct, ...<never[]><unknown>args);
+      });
     });
   }
 }

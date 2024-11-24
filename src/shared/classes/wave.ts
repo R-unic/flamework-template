@@ -1,10 +1,10 @@
 import Iris from "@rbxts/iris";
 
-import type { WithControlPanelSettings } from "shared/structs/control-panel";
+import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel";
 
 const { sin } = math;
 
-export default class Wave implements WithControlPanelSettings {
+export default class Wave implements ControlPanelDropdownRenderer {
   public constructor(
     public amplitude: number = 1,
     public frequency: number = 1,
@@ -18,7 +18,7 @@ export default class Wave implements WithControlPanelSettings {
     return ((this.amplitude * this.waveFunction(this.frequency * os.clock() + phaseShift) + this.verticalShift) * dt) / damping;
   }
 
-  public renderControlPanelSettings(prefix?: string): void {
+  public renderControlPanelDropdown(prefix?: string): void {
     Iris.SeparatorText([(prefix !== undefined ? prefix + " " : "") + "Wave"]);
 
     const useSin = Iris.Checkbox(["Is Sine Wave?"], { isChecked: Iris.State(this.waveFunction === math.sin) });

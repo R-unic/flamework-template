@@ -1,3 +1,3 @@
-export interface WithControlPanelSettings {
-  renderControlPanelSettings(): void;
+export interface ControlPanelDropdownRenderer {
+  renderControlPanelDropdown(): void;
 }

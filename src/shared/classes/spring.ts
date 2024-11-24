@@ -1,7 +1,7 @@
 import Iris from "@rbxts/iris";
 
 import { isNaN } from "shared/utility/numbers";
-import type { WithControlPanelSettings } from "shared/structs/control-panel";
+import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel";
 
 const { ceil, min, huge: INF } = math;
 
@@ -11,7 +11,7 @@ const { ceil, min, huge: INF } = math;
 */
 const MAX_SPRING_DELTA = 1 / 40;
 
-export default class Spring implements WithControlPanelSettings {
+export default class Spring implements ControlPanelDropdownRenderer {
   static readonly iterations = 8;
 
   public defaultPosition: Vector3;
@@ -87,7 +87,7 @@ export default class Spring implements WithControlPanelSettings {
     return positionDifference;
   }
 
-  public renderControlPanelSettings(prefix?: string): void {
+  public renderControlPanelDropdown(prefix?: string): void {
     Iris.SeparatorText([(prefix !== undefined ? prefix + " " : "") + "Spring"]);
 
     const mass = Iris.SliderNum(["Spring Mass", 0.25, 0.25, 100], { number: Iris.State(this.mass) });
