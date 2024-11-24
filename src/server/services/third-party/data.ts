@@ -77,13 +77,13 @@ export class DataService implements OnInit, OnStart, OnPlayerJoin, OnPlayerLeave
 	@SpawnTask()
 	private update(player: Player, data: PlayerData): void {
 		this.updated.Fire(player, data);
-		Events.data.updated(player, Serializers.playerData.serialize({ data }));
+		Events.data.updated(player, Serializers.playerData.serialize(data));
 	}
 
 	private async setup(player: Player): Promise<void> {
 		const data = await this.initialize(player);
 		this.loaded.Fire(player, data);
-		Events.data.loaded(player, Serializers.playerData.serialize({ data }));
+		Events.data.loaded(player, Serializers.playerData.serialize(data));
 		Log.info(`Initialized ${player}'s data`);
 	}
 

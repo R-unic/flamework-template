@@ -15,14 +15,14 @@ export class DataUpdateController implements OnStart {
     Modding.onListenerRemoved<OnDataUpdate>(object => dataUpdateListeners.delete(object));
 
     Events.data.loaded.connect(async ({ buffer, blobs }) => {
-      const { data } = Serializers.playerData.deserialize(buffer, blobs);
+      const data = Serializers.playerData.deserialize(buffer, blobs);
       for (const listener of dataLoadListeners)
         listener.onDataLoad(data);
       for (const listener of dataUpdateListeners)
         listener.onDataUpdate(data);
     });
     Events.data.updated.connect(({ buffer, blobs }) => {
-      const { data } = Serializers.playerData.deserialize(buffer, blobs);
+      const data = Serializers.playerData.deserialize(buffer, blobs);
       for (const listener of dataUpdateListeners)
         listener.onDataUpdate(data);
     });

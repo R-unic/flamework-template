@@ -1,7 +1,7 @@
 import { Networking } from "@flamework/networking";
 import { createBinarySerializer } from "@rbxts/flamework-binary-serializer";
 
-import type { PlayerDataPacket } from "./structs/packets";
+import type { PlayerData } from "./data-models/player-data";
 
 type SerializedCallback = (packet: SerializedPacket) => void;
 
@@ -26,7 +26,7 @@ interface ServerFunctions { }
 interface ClientFunctions { }
 
 export const Serializers = {
-  playerData: createBinarySerializer<PlayerDataPacket>()
+  playerData: createBinarySerializer<PlayerData>()
 };
 
 export const GlobalEvents = Networking.createEvent<ServerEvents, ClientEvents>();
