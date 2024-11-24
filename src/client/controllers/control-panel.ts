@@ -1,6 +1,4 @@
 import { Controller, type OnStart } from "@flamework/core";
-import type { Widget } from "@rbxts/iris/out/IrisDeclaration";
-import type { WindowCreation } from "@rbxts/iris/out/widgetsTypes/Window";
 import Iris from "@rbxts/iris";
 
 import type { LogStart } from "shared/hooks";
@@ -21,9 +19,11 @@ interface Renderable {
   readonly order?: number;
 }
 
-@Controller({ loadOrder: 1 })
+@Controller()
 export class ControlPanelController implements OnStart, LogStart {
-  private window!: Widget<WindowCreation>;
+  private readonly windowSize = new Vector2(300, 400);
+  private readonly windowOpened = Iris.State(false);
+  private renderables: Renderable[] = [];
   private mouseUnlocked = false;
 
   public constructor(
@@ -31,35 +31,21 @@ export class ControlPanelController implements OnStart, LogStart {
   ) { }
 
   public async onStart(): Promise<void> {
-    const windowSize = new Vector2(300, 400);
-    const renderables: Renderable[] = [];
-
     for (const [_, [ctor, [dropdownName, order]]] of renderableMeta)
-      processDependency(ctor, renderable => renderables.push({ renderer: renderable, dropdownName, order }))
+      processDependency(ctor, renderable => this.renderables.push({ renderer: renderable, dropdownName, order }))
 
-    renderables.sort((a, b) => (a.order ?? math.huge + 1) < (b.order ?? math.huge + 1));
+    this.renderables.sort((a, b) => (a.order ?? math.huge + 1) < (b.order ?? math.huge + 1));
 
     Iris.Init();
     Iris.UpdateGlobalConfig(Iris.TemplateConfig.colorDark);
     Iris.UpdateGlobalConfig(Iris.TemplateConfig.sizeClear);
-    Iris.Connect(() => {
-      this.window = Iris.Window(["Control Panel"], {
-        size: Iris.State(windowSize),
-        isOpened: Iris.State(false)
-      });
-      for (const renderable of renderables) {
-        Iris.Tree([renderable.dropdownName]);
-        renderable.renderer.renderControlPanelDropdown();
-        Iris.End();
-      }
-      Iris.End();
-    });
+    Iris.Connect(() => this.render());
   }
 
   @OnInput("Comma")
   public open(): void {
     if (!isDeveloper(Player)) return;
-    this.window.state.isOpened.set(!this.window.state.isOpened.get());
+    this.windowOpened.set(!this.windowOpened.get());
   }
 
   @OnInput("P")
@@ -69,5 +55,18 @@ export class ControlPanelController implements OnStart, LogStart {
     this.mouse.iconEnabled(this.mouseUnlocked);
     this.mouse.behavior(this.mouseUnlocked ? Enum.MouseBehavior.Default : Enum.MouseBehavior.LockCenter);
     Player.CameraMode = this.mouseUnlocked ? Enum.CameraMode.Classic : Enum.CameraMode.LockFirstPerson;
+  }
+
+  private render(): void {
+    Iris.Window(["Control Panel"], {
+      size: Iris.State(this.windowSize),
+      isOpened: this.windowOpened
+    });
+    for (const renderable of this.renderables) {
+      Iris.Tree([renderable.dropdownName]);
+      renderable.renderer.renderControlPanelDropdown();
+      Iris.End();
+    }
+    Iris.End();
   }
 }

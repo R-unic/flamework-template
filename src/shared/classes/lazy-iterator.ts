@@ -12,7 +12,7 @@ export default class LazyIterator<T extends defined> {
   private finished = false;
 
   public constructor(
-    private nextItem: () => T | SkipSymbol
+    private next: () => T | SkipSymbol
   ) { }
 
   public static fromKeys<K extends string | number | symbol>(object: Record<K, unknown>): LazyIterator<K> {
@@ -39,7 +39,7 @@ export default class LazyIterator<T extends defined> {
   public indexOf(value: T): number {
     let currentIndex = 0;
     while (!this.finished) {
-      const currentValue = this.nextItem();
+      const currentValue = this.next();
       if (currentValue === undefined) break;
       if (currentValue !== LazyIterator.Skip) {
         if (currentValue === value)
@@ -54,7 +54,7 @@ export default class LazyIterator<T extends defined> {
 
   public first(): Maybe<T> {
     while (!this.finished) {
-      const value = this.nextItem();
+      const value = this.next();
       if (value === undefined) break;
       if (value !== LazyIterator.Skip)
         return <T>value;
@@ -64,7 +64,7 @@ export default class LazyIterator<T extends defined> {
   public last(): Maybe<T> {
     let lastValue: Maybe<T> = undefined;
     while (!this.finished) {
-      const value = this.nextItem();
+      const value = this.next();
       if (value === undefined) break
       if (value !== LazyIterator.Skip)
         lastValue = <T>value;
@@ -78,7 +78,7 @@ export default class LazyIterator<T extends defined> {
 
     let currentIndex = 0;
     while (!this.finished) {
-      const value = this.nextItem();
+      const value = this.next();
       if (value === undefined) break;
       if (value !== LazyIterator.Skip)
         if (currentIndex++ === index)
@@ -87,10 +87,10 @@ export default class LazyIterator<T extends defined> {
   }
 
   public append(element: T): LazyIterator<T> {
-    const oldNext = this.nextItem;
+    const oldNext = this.next;
     let exhausted = false;
 
-    this.nextItem = () => {
+    this.next = () => {
       if (exhausted) return undefined!;
 
       const value = oldNext();
@@ -106,10 +106,10 @@ export default class LazyIterator<T extends defined> {
   }
 
   public prepend(element: T): LazyIterator<T> {
-    const oldNext = this.nextItem;
+    const oldNext = this.next;
     let yielded = false;
 
-    this.nextItem = () => {
+    this.next = () => {
       if (!yielded) {
         yielded = true;
         return element;
@@ -130,8 +130,8 @@ export default class LazyIterator<T extends defined> {
   }
 
   public map<U extends defined>(transform: (value: T) => U | SkipSymbol): LazyIterator<U> {
-    const oldNext = this.nextItem;
-    this.nextItem = () => {
+    const oldNext = this.next;
+    this.next = () => {
       while (true) {
         const value = oldNext();
         if (value === undefined) return undefined!;
@@ -151,8 +151,8 @@ export default class LazyIterator<T extends defined> {
   public filter<S extends T>(predicate: (value: T) => value is S): LazyIterator<S>
   public filter(predicate: (value: T) => boolean): LazyIterator<T>
   public filter(predicate: (value: T) => boolean): LazyIterator<T> {
-    const oldNext = this.nextItem;
-    this.nextItem = () => {
+    const oldNext = this.next;
+    this.next = () => {
       while (!this.finished) {
         const value = oldNext();
         if (value === undefined) return undefined!;
@@ -176,8 +176,8 @@ export default class LazyIterator<T extends defined> {
 
   public take(amount: number): LazyIterator<T> {
     let count = 0;
-    const oldNext = this.nextItem;
-    this.nextItem = () => {
+    const oldNext = this.next;
+    this.next = () => {
       if (count >= amount) {
         this.finished = true;
         return undefined!;
@@ -198,8 +198,8 @@ export default class LazyIterator<T extends defined> {
 
   public skip(amount: number): LazyIterator<T> {
     let count = 0;
-    const oldNext = this.nextItem;
-    this.nextItem = () => {
+    const oldNext = this.next;
+    this.next = () => {
       if (count < amount) {
         const value = oldNext();
         if (value === LazyIterator.Skip) return value;
@@ -215,7 +215,7 @@ export default class LazyIterator<T extends defined> {
   public reduce(reducer: (accumulation: T, value: T) => T): Maybe<T> {
     let accumulation: Maybe<T> = undefined;
     while (!this.finished) {
-      const value = this.nextItem();
+      const value = this.next();
       if (value === undefined) break;
       if (value !== LazyIterator.Skip) {
         if (accumulation === undefined)
@@ -231,7 +231,7 @@ export default class LazyIterator<T extends defined> {
   public fold(reducer: (accumulation: T, value: T) => T, initial: T): Maybe<T> {
     let accumulation = initial;
     while (!this.finished) {
-      const value = this.nextItem();
+      const value = this.next();
       if (value === undefined) break;
       if (value !== LazyIterator.Skip)
         accumulation = reducer(accumulation, <T>value);
@@ -243,7 +243,7 @@ export default class LazyIterator<T extends defined> {
   public some(predicate: (value: T, index: number) => boolean): boolean {
     let index = 0;
     while (!this.finished) {
-      const value = this.nextItem();
+      const value = this.next();
       if (value === undefined) break;
       if (value !== LazyIterator.Skip && predicate(<T>value, index++))
         return true;
@@ -255,7 +255,7 @@ export default class LazyIterator<T extends defined> {
   public every(predicate: (value: T, index: number) => boolean): boolean {
     let index = 0;
     while (!this.finished) {
-      const value = this.nextItem();
+      const value = this.next();
       if (value === undefined) break;
       if (value !== LazyIterator.Skip && !predicate(<T>value, index++))
         return false;
@@ -269,7 +269,7 @@ export default class LazyIterator<T extends defined> {
     let isFirstValue = true;
 
     while (!this.finished) {
-      const value = this.nextItem();
+      const value = this.next();
       if (value === undefined) break;
       if (!isFirstValue)
         result.append(separator);
@@ -296,7 +296,7 @@ export default class LazyIterator<T extends defined> {
       results = [];
 
     while (!this.finished) {
-      const value = this.nextItem();
+      const value = this.next();
       if (value === undefined) {
         this.finished = true;
         break;
