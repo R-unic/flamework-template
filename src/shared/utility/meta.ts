@@ -1,13 +1,9 @@
-import { Dependency, Flamework, Modding, Reflect } from "@flamework/core";
+import { Dependency, Modding, Reflect } from "@flamework/core";
 import { getIdFromSpecifier } from "@flamework/components/out/utility";
 import type { Constructor } from "@flamework/core/out/utility";
-import type { BaseComponent, Components } from "@flamework/components";
+import type { Components } from "@flamework/components";
 
 declare const newproxy: <T extends symbol = symbol>(addMetatable: boolean) => T;
-
-interface MethodDescriptor<T extends Callback = Callback> {
-  readonly value: T;
-}
 
 export function resolveDependency<T extends object = object>(ctor: Constructor<T>): T | T[] {
   try {

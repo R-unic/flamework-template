@@ -1,17 +1,19 @@
-import { Service, type OnInit, type OnStart } from "@flamework/core";
+import { Service, type OnInit } from "@flamework/core";
 import Signal from "@rbxts/signal";
 
 import type { LogStart } from "shared/hooks";
 import type { OnPlayerJoin, OnPlayerLeave } from "server/hooks";
 import { Events } from "server/network";
 import { Serializers } from "shared/network";
-import { SpawnTask } from "shared/decorators";
+import { LinkRemote } from "server/decorators";
+import { LogBenchmark, SpawnTask } from "shared/decorators";
 import { type PlayerData, type GlobalData, INITIAL_DATA } from "shared/data-models/player-data";
 import Firebase from "server/firebase";
 import Log from "shared/logger";
+import { roundDecimal } from "shared/utility/numbers";
 
 @Service({ loadOrder: -1 })
-export class DataService implements OnInit, OnStart, OnPlayerJoin, OnPlayerLeave, LogStart {
+export class DataService implements OnInit, OnPlayerJoin, OnPlayerLeave, LogStart {
 	public readonly loaded = new Signal<(player: Player, data: PlayerData) => void>;
 	public readonly updated = new Signal<(player: Player, data: PlayerData) => void>;
 	public readonly updatedGlobal = new Signal<(data: GlobalData) => void>;
@@ -27,10 +29,6 @@ export class DataService implements OnInit, OnStart, OnPlayerJoin, OnPlayerLeave
 		this.playerData = await this.getDatabase();
 	}
 
-	public onStart(): void {
-		Events.data.initialize.connect(player => this.setup(player));
-	}
-
 	public async onPlayerJoin(player: Player): Promise<void> {
 		if (this.firebase === undefined)
 			this.firebaseCreated.Wait();
@@ -41,6 +39,14 @@ export class DataService implements OnInit, OnStart, OnPlayerJoin, OnPlayerLeave
 
 	public async onPlayerLeave(player: Player): Promise<void> {
 		await this.firebase.set(`playerData/${player.UserId}`, this.get(player));
+	}
+
+	@LinkRemote(Events.data.initialize)
+	@LogBenchmark((_, msElapsed, player) => `Initialized ${player}'s data in ${roundDecimal(msElapsed, 2)} ms`)
+	public async setup(player: Player): Promise<void> {
+		const data = await this.initialize(player);
+		this.loaded.Fire(player, data);
+		Events.data.loaded(player, Serializers.playerData.serialize(data));
 	}
 
 	public async getGlobal<T>(directory: string, defaultValue?: T): Promise<T> {
@@ -78,13 +84,6 @@ export class DataService implements OnInit, OnStart, OnPlayerJoin, OnPlayerLeave
 	private update(player: Player, data: PlayerData): void {
 		this.updated.Fire(player, data);
 		Events.data.updated(player, Serializers.playerData.serialize(data));
-	}
-
-	private async setup(player: Player): Promise<void> {
-		const data = await this.initialize(player);
-		this.loaded.Fire(player, data);
-		Events.data.loaded(player, Serializers.playerData.serialize(data));
-		Log.info(`Initialized ${player}'s data`);
 	}
 
 	private async initialize(player: Player): Promise<PlayerData> {

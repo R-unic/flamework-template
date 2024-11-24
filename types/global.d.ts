@@ -1,3 +1,7 @@
+interface MethodDescriptor<T extends Callback = Callback> {
+  readonly value: T;
+}
+
 interface SerializedPacket {
   buffer: buffer;
   blobs: defined[];

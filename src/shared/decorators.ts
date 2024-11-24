@@ -131,23 +131,22 @@ export const StudioOnly = Modding.createDecorator<[]>(
   }
 );
 
-/** Benchmark how long the function takes to run */
-export const LogBenchmark = Modding.createDecorator<[formatter?: (secondsElapsed: number, methodName: string) => string]>(
-  "Method",
-  (descriptor, [formatter]) => {
-    // FlameworkIgnited.Once(() => {
-    const object = <Record<string, Callback>><unknown>descriptor.constructor!;
-    const originalMethod = object[descriptor.property];
-    formatter ??= (elapsed, name) => `Method "${name}" took ${roundDecimal(elapsed, 3)} seconds to execute.`;
+/**
+ * Benchmark how long the function takes to run
+ * @metadata reflect identifier flamework:parameters
+ */
+export function LogBenchmark<Args extends unknown[] = unknown[]>(formatter?: (methodName: string, msElapsed: number, ...args: Args) => string) {
+  return (ctor: object, propertyKey: string, descriptor: MethodDescriptor<(self: unknown, ...args: Args) => unknown>) => {
+    const object = <Record<string, Callback>>ctor;
+    formatter ??= (name, elapsed, ..._) => `Method "${name}" took ${roundDecimal(elapsed, 2)} ms to execute.`;
 
-    object[descriptor.property] = function (...args: unknown[]) {
+    object[propertyKey] = function (_: unknown, ...args: Args) {
       const startTime = os.clock();
-      const result = originalMethod(...args);
+      const result = descriptor.value(_, ...args);
       const endTime = os.clock();
-      const elapsed = endTime - startTime;
-      Log.info(formatter!(elapsed, descriptor.property));
+      const elapsed = (endTime - startTime) * 1000;
+      Log.info(formatter!(propertyKey, elapsed, ...args));
       return result;
     };
-    // });
   }
-);
+}

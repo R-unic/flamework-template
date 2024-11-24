@@ -6,9 +6,6 @@ import { callMethodOnDependency } from "shared/utility/meta";
 import { FlameworkIgnited } from "shared/constants";
 
 type ServerReceiver<I extends unknown[] = unknown[], O = void> = ServerEventReceiver<I> | ServerFunctionReceiver<I, O>;
-interface MethodDescriptor<T extends Callback = Callback> {
-  readonly value: T;
-}
 
 /** @metadata reflect identifier flamework:parameters */
 export function LinkRemote<I extends unknown[] = unknown[], O = void>(remote: ServerReceiver<I, O>) {

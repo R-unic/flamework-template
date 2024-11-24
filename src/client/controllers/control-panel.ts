@@ -3,6 +3,7 @@ import type { Widget } from "@rbxts/iris/out/IrisDeclaration";
 import type { WindowCreation } from "@rbxts/iris/out/widgetsTypes/Window";
 import Iris from "@rbxts/iris";
 
+import type { LogStart } from "shared/hooks";
 import { OnInput } from "client/decorators";
 import { Player } from "client/utility";
 import { isDeveloper } from "shared/constants";
@@ -21,7 +22,7 @@ interface Renderable {
 }
 
 @Controller({ loadOrder: 1 })
-export class ControlPanelController implements OnStart {
+export class ControlPanelController implements OnStart, LogStart {
   private window!: Widget<WindowCreation>;
   private mouseUnlocked = false;
 

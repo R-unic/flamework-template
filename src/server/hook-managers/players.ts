@@ -2,10 +2,9 @@ import { Service, Modding, type OnStart } from "@flamework/core";
 import { Players } from "@rbxts/services";
 
 import type { OnPlayerJoin, OnPlayerLeave } from "server/hooks";
-import type { LogStart } from "shared/hooks";
 
 @Service({ loadOrder: 1 })
-export class PlayersService implements OnStart, LogStart {
+export class PlayersService implements OnStart {
   public onStart(): void {
     const joinListeners = new Set<OnPlayerJoin>;
     const leaveListeners = new Set<OnPlayerLeave>;

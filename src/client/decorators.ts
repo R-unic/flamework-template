@@ -84,9 +84,6 @@ export const OnInputRelease = Modding.createDecorator<[actionName: string, proce
 );
 
 type ClientReceiver<I extends unknown[] = unknown[], O = void> = ClientEventReceiver<I> | ClientFunctionReceiver<I, O>;
-interface MethodDescriptor<T extends Callback = Callback> {
-  readonly value: T;
-}
 
 /** @metadata reflect identifier flamework:parameters */
 export function LinkRemote<I extends unknown[] = unknown[], O = void>(remote: ClientReceiver<I, O>) {
