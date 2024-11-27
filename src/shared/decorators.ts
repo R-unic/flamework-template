@@ -1,8 +1,16 @@
-import { Modding } from "@flamework/core";
+import { Modding, Reflect } from "@flamework/core";
 import { RunService as Runtime } from "@rbxts/services";
 
 import { roundDecimal } from "./utility/numbers";
 import Log from "./logger";
+
+/**
+ * Request the required metadata for lifecycle events and dependency resolution.
+ * @metadata flamework:implements flamework:parameters
+ */
+export const Singleton = Modding.createDecorator("Class", descriptor => {
+  Reflect.defineMetadata(descriptor.object, "flamework:singleton", true);
+});
 
 /**
  * Wraps the function in a `task.spawn()`

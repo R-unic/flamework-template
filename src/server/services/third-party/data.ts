@@ -7,10 +7,10 @@ import { Events } from "server/network";
 import { Serializers } from "shared/network";
 import { LinkRemote } from "server/decorators";
 import { LogBenchmark, SpawnTask } from "shared/decorators";
+import { roundDecimal } from "shared/utility/numbers";
 import { type PlayerData, type GlobalData, INITIAL_DATA } from "shared/data-models/player-data";
 import Firebase from "server/firebase";
 import Log from "shared/logger";
-import { roundDecimal } from "shared/utility/numbers";
 
 @Service({ loadOrder: -1 })
 export class DataService implements OnInit, OnPlayerJoin, OnPlayerLeave, LogStart {

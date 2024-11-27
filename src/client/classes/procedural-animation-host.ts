@@ -1,91 +1,64 @@
 import Object from "@rbxts/object-utils";
 
 import { combineCFrames } from "shared/utility/3D";
-import { lerp } from "shared/utility/numbers";
-import WalkCycleAnimation from "client/classes/procedural-animations/walk-cycle";
-import MouseSwayAnimation from "client/classes/procedural-animations/mouse-sway";
-import LandingAnimation from "client/classes/procedural-animations/landing";
-import type ProceduralAnimation from "./procedural-animation";
+import { createMappingDecorator, getName, processDependency } from "shared/utility/meta";
+import { Constructor } from "@flamework/core/out/utility";
+import { getChildrenOfType } from "shared/utility/instances";
 
-import type { CharacterController } from "client/controllers/character";
+const { min } = math;
 
-const { min, rad } = math;
+type ProceduralAnimationDecoratorArgs = [instance: ProceduralAnimationInstance];
+const [animationClassMap, ProceduralAnimation] = createMappingDecorator<BaseProceduralAnimation, never[], ProceduralAnimationDecoratorArgs>();
+export { ProceduralAnimation };
 
-export class ProceduralAnimationHost<I extends Camera | Model> implements ProceduralAnimation<CFrame> {
-  public readonly animations;
-  public readonly cframeManipulators = {
+export const enum ProceduralAnimationInstance {
+  Camera,
+  Model,
+  Any
+}
+
+export abstract class BaseProceduralAnimation {
+  protected abstract update(dt: number): Vector3;
+  public abstract getCFrame(dt: number): CFrame;
+}
+
+export class ProceduralAnimationHost<I extends Camera | Model = Camera | Model> {
+  private readonly cframeManipulators = {
     aim: new Instance("CFrameValue")
   };
 
-  private readonly connectedToCamera;
+  private readonly animations: [BaseProceduralAnimation, ProceduralAnimationDecoratorArgs][] = [];
+  private readonly connectedToCamera: boolean;
 
   public constructor(
-    private readonly instance: I,
-    private readonly character: CharacterController
+    private readonly target: I
   ) {
-    this.connectedToCamera = this.instance.IsA("Camera");
-    this.animations = {
-      walkCycle: new WalkCycleAnimation(this.character),
-      mouseSway: new MouseSwayAnimation,
-      landing: new LandingAnimation(this.character),
-    };
-  }
+    this.connectedToCamera = this.target.IsA("Camera");
 
-  public start(): void {
-    for (const animation of Object.values(this.animations))
-      animation.start();
+    for (const animationModule of getChildrenOfType(script.Parent!.WaitForChild("procedural-animations"), "ModuleScript"))
+      require(animationModule);
+
+    for (const [ProceduralAnimation, args] of Object.values(animationClassMap))
+      processDependency(ProceduralAnimation, animation => {
+        this.animations.push([animation, args])
+      });
   }
 
   public update(dt: number): CFrame {
     dt = min(dt, 1);
-    const offset = this.connectedToCamera ? this.getCameraOffset(dt) : this.getModelOffset(dt);
+    const offset = this.getOffset(dt);
     const finalManipulatorOffset = combineCFrames(Object.values(this.cframeManipulators).map(manipulator => manipulator.Value));
     return offset.mul(finalManipulatorOffset);
   }
 
-  private getCameraOffset(dt: number): CFrame {
-    const cameraOffsets: CFrame[] = [];
-    {
-      const movement = this.animations.walkCycle.update(dt).div(-4);
-      cameraOffsets.push(
-        new CFrame(0, movement.Y, 0)
-          .mul(CFrame.Angles(movement.Y, movement.X / 3.5, movement.Z))
-      );
-    }
-    {
-      const movement = this.animations.mouseSway.update(dt);
-      this.animations.mouseSway.angle = lerp(this.animations.mouseSway.angle, movement.X, 4 * dt);
-      cameraOffsets.push(CFrame.Angles(0, 0, this.animations.mouseSway.angle));
-    }
-    {
-      const movement = this.animations.landing.update(dt).div(8);
-      cameraOffsets.push(
-        new CFrame(0, movement.Y / 8, 0)
-          .mul(CFrame.Angles(rad(movement.Y), 0, 0))
-      );
+  private getOffset(dt: number): CFrame {
+    const offsets: CFrame[] = [];
+    for (const [animation, [instance]] of this.animations) {
+      if (instance === ProceduralAnimationInstance.Camera && !this.connectedToCamera) continue;
+      if (instance === ProceduralAnimationInstance.Model && this.connectedToCamera) continue;
+      offsets.push(animation.getCFrame(dt));
     }
 
-    return combineCFrames(cameraOffsets);
-  }
-
-  private getModelOffset(dt: number): CFrame {
-    const modelOffsets: CFrame[] = [];
-    {
-      const movement = this.animations.walkCycle.update(dt).mul(16);
-      modelOffsets.push(
-        new CFrame(movement.X * 2, movement.Y * 2, 0)
-          .mul(CFrame.Angles(movement.Y * 1.5, movement.X / 8, movement.Z))
-      );
-    }
-    {
-      const movement = this.animations.landing.update(dt).div(32);
-      // const multiplier = this.fps.state.aimed ? 0.75 : 1;
-      modelOffsets.push(
-        new CFrame(0, -movement.Y, 0)
-          .mul(CFrame.Angles(movement.Y, 0, 0))
-      );
-    }
-
-    return combineCFrames(modelOffsets);
+    return combineCFrames(offsets);
   }
 }

@@ -4,7 +4,7 @@ import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel"
 
 const { sin } = math;
 
-export default class Wave implements ControlPanelDropdownRenderer {
+export class Wave implements ControlPanelDropdownRenderer {
   public constructor(
     public amplitude: number = 1,
     public frequency: number = 1,

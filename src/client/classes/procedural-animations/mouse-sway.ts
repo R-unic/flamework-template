@@ -1,42 +1,59 @@
-import { UserInputService } from "@rbxts/services";
+import Iris from "@rbxts/iris";
 
-import { Player } from "client/utility";
+import { Singleton } from "shared/decorators";
+import { Spring } from "shared/classes/spring";
+import { doubleSidedLimit } from "shared/utility/numbers";
+import { ProceduralAnimation, BaseProceduralAnimation, ProceduralAnimationInstance } from "../procedural-animation-host";
+import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel";
 
-import type ProceduralAnimation from "../procedural-animation";
+import type { MouseController } from "client/controllers/mouse";
 
-const { clamp } = math;
+@Singleton()
+@ProceduralAnimation(ProceduralAnimationInstance.Model)
+export class MouseSwayAnimation extends BaseProceduralAnimation implements ControlPanelDropdownRenderer {
+  private readonly horizontalDamping = 0.5;
 
-export default class MouseSwayAnimation implements ProceduralAnimation {
-  public damping = 1;
-  public limit = 1;
-  public angle = 0;
+  private readonly spring = new Spring(4, 25, 16, 3.5);
+  private damping = 450;
+  private limit = 0.018;
 
-  private readonly mouse = Player.GetMouse();
-  private lastX = this.mouse.X;
-  private lastY = this.mouse.Y;
+  public constructor(
+    private readonly mouse: MouseController
+  ) { super(); }
 
-  public start(): void { }
+  public getCFrame(dt: number): CFrame {
+    const movement = this.update(dt).div(this.damping);
+    const rotationalMovement = movement.X / 2;
 
-  public update(dt: number): Vector3 {
-    const { X, Y } = this.getDelta().div(1500).div(this.damping);
-    return new Vector3(
-      clamp(X, -this.limit, this.limit),
-      clamp(Y, -this.limit, this.limit),
-      0
-    );
+    return new CFrame(-movement.X / this.horizontalDamping, movement.Y * 1.25, 0)
+      .mul(CFrame.Angles(-movement.Y * 1.25, -movement.X, rotationalMovement));
   }
 
-  private getDelta(): Vector2 {
-    if (UserInputService.MouseBehavior === Enum.MouseBehavior.LockCenter)
-      return UserInputService.GetMouseDelta();
+  public renderControlPanelDropdown(): void {
+    Iris.Tree(["Mouse Sway"]);
+    {
+      const dampingSlider = Iris.SliderNum(["Damping", 1, 1, 500], { number: Iris.State(this.damping) });
+      if (dampingSlider.numberChanged())
+        this.damping = dampingSlider.state.number.get();
 
-    const delta = new Vector2(
-      this.mouse.X - this.lastX,
-      this.mouse.Y - this.lastY
+      const limitSlider = Iris.SliderNum(["Limit", 0.005, 0.005, 0.15], { number: Iris.State(this.limit) });
+      if (limitSlider.numberChanged())
+        this.limit = limitSlider.state.number.get();
+
+      this.spring.renderControlPanelDropdown();
+    }
+    Iris.End();
+  }
+
+  protected update(dt: number): Vector3 {
+    const { X, Y } = this.mouse.getDelta().div(this.damping);
+    const swayForce = new Vector3(
+      doubleSidedLimit(X, this.limit),
+      doubleSidedLimit(Y, this.limit),
+      0
     );
 
-    this.lastX = this.mouse.X;
-    this.lastY = this.mouse.Y;
-    return delta;
+    this.spring.shove(swayForce);
+    return this.spring.update(dt).mul(1.25);
   }
 }

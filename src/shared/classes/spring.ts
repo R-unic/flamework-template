@@ -11,7 +11,7 @@ const { ceil, min, huge: INF } = math;
 */
 const MAX_SPRING_DELTA = 1 / 40;
 
-export default class Spring implements ControlPanelDropdownRenderer {
+export class Spring implements ControlPanelDropdownRenderer {
   static readonly iterations = 8;
 
   public defaultPosition: Vector3;

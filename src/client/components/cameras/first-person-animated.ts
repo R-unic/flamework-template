@@ -2,7 +2,6 @@ import { Dependency, type OnRender } from "@flamework/core";
 import { Component, type Components } from "@flamework/components";
 import { Workspace as World } from "@rbxts/services";
 
-import { Player } from "client/utility";
 import { ProceduralAnimationHost } from "client/classes/procedural-animation-host";
 
 import { FirstPersonCamera } from "./first-person";
@@ -17,7 +16,7 @@ export class FirstPersonAnimatedCamera extends FirstPersonCamera implements OnRe
   public static create(controller: CameraController): FirstPersonAnimatedCamera {
     const components = Dependency<Components>();
     const camera = World.CurrentCamera!.Clone();
-    camera.Name = "FirstPersonAnimatedCamera";
+    camera.Name = "FirstPersonAnimated";
     camera.Parent = controller.cameraStorage;
 
     return components.addComponent(camera);
@@ -29,13 +28,12 @@ export class FirstPersonAnimatedCamera extends FirstPersonCamera implements OnRe
     private readonly camera: CameraController
   ) {
     super(mouse, character);
-    this.animator = new ProceduralAnimationHost(this.instance, character);
-    this.animator.start();
+    this.animator = new ProceduralAnimationHost(this.instance);
   }
 
   public onRender(dt: number): void {
     super.onRender(dt);
-    if (this.camera.get() !== this) return;
+    if (this.camera.currentName !== this.instance.Name) return;
 
     const offset = this.animator.update(dt);
     this.instance.CFrame = this.instance.CFrame.mul(offset);

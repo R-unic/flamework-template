@@ -1,7 +1,8 @@
 import { OnRender, OnStart } from "@flamework/core";
 import { Component } from "@flamework/components";
 
-import Spring from "shared/classes/spring";
+import { Spring } from "shared/classes/spring";
+
 import BaseButtonAnimation from "client/base-components/base-button-animation";
 
 interface Attributes {
@@ -35,10 +36,6 @@ export class SpringScaleAnimation extends BaseButtonAnimation<Attributes> implem
 
   protected active = undefined;
   protected inactive = undefined;
-
-  public onStart(): void {
-    super.onStart();
-  }
 
   public onRender(dt: number): void {
     if (this.hovered)

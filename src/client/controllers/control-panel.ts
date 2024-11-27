@@ -10,7 +10,7 @@ import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel"
 
 import type { MouseController } from "./mouse";
 
-const [renderableMeta, ControlPanelRenderable] = createMappingDecorator<ControlPanelDropdownRenderer, [dropdownName: string, order?: number]>();
+const [renderableMeta, ControlPanelRenderable] = createMappingDecorator<ControlPanelDropdownRenderer, never[], [dropdownName: string, order?: number]>();
 export { ControlPanelRenderable };
 
 interface Renderable {

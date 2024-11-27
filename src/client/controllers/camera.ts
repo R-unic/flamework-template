@@ -59,7 +59,7 @@ export class CameraController implements OnInit, OnRender, LogStart, ControlPane
     if (fov.numberChanged())
       currentCamera.FieldOfView = fov.state.number.get();
 
-    const cameraComponents = Object.keys(this.cameras).sort();
+    const cameraComponents = Object.keys(this.cameras.getValue()).sort();
     const componentIndex = Iris.State<keyof Cameras>(this.currentName);
     Iris.Combo(["Camera Component"], { index: componentIndex });
     {

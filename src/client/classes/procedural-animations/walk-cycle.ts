@@ -1,7 +1,7 @@
-import Spring from "shared/classes/spring";
-import Wave from "shared/classes/wave";
-
-import type ProceduralAnimation from "../procedural-animation";
+import { Singleton } from "shared/decorators";
+import { Spring } from "shared/classes/spring";
+import { Wave } from "shared/classes/wave";
+import { ProceduralAnimation, BaseProceduralAnimation, ProceduralAnimationInstance } from "../procedural-animation-host";
 
 import type { CharacterController } from "client/controllers/character";
 
@@ -9,7 +9,9 @@ const { round, cos } = math;
 
 const WAVE_PARAMETERS = <const>[1.5, 16, -1, 0];
 
-export default class WalkCycleAnimation implements ProceduralAnimation {
+@Singleton()
+@ProceduralAnimation(ProceduralAnimationInstance.Any)
+export class WalkCycleAnimation extends BaseProceduralAnimation {
   public readonly spring = new Spring;
   public readonly sineWave = new Wave(...WAVE_PARAMETERS);
   public readonly cosineWave = new Wave(...WAVE_PARAMETERS);
@@ -18,14 +20,20 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
 
   public constructor(
     private readonly character: CharacterController
-  ) { }
-
-  public start(): void {
+  ) {
+    super();
     this.cosineWave.phaseShift = 1;
     this.cosineWave.waveFunction = cos;
   }
 
-  public update(dt: number): Vector3 {
+  public getCFrame(dt: number): CFrame {
+    const movement = this.update(dt).div(-4);
+
+    return new CFrame(0, movement.Y, 0)
+      .mul(CFrame.Angles(movement.Y, movement.X / 3.5, movement.Z));
+  }
+
+  protected update(dt: number): Vector3 {
     const root = this.character.getRoot();
     if (root === undefined)
       return this.spring.update(dt);
@@ -39,9 +47,7 @@ export default class WalkCycleAnimation implements ProceduralAnimation {
     const doNotApplyWave = walkSpeed === 0 || walkSpeed < this.minimumSpeed;
     const x = doNotApplyWave ? 0 : this.sineWave.update(1, waveDamping);
     const y = doNotApplyWave ? 0 : this.cosineWave.update(1, waveDamping);
-    const force = new Vector3(x, y, x); // x * (aimed ? 1 : 3), only for 1st coord
-    // .div(aimed ? 5 : 1)
-    // .mul(sprinting ? 1.4 : 1);
+    const force = new Vector3(x, y, x);
 
     this.spring.shove(force);
     return this.spring.update(dt).div(this.damping);
