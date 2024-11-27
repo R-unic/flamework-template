@@ -22,18 +22,18 @@ export class CharacterController {
   }
 
   public getRoot(): Maybe<CharacterModel["HumanoidRootPart"]> {
-    return <Maybe<CharacterModel["HumanoidRootPart"]>>this.get()?.FindFirstChild("HumanoidRootPart");
+    return this.get()?.FindFirstChild<CharacterModel["HumanoidRootPart"]>("HumanoidRootPart");
   }
 
   public mustGetRoot(): CharacterModel["HumanoidRootPart"] {
-    return <CharacterModel["HumanoidRootPart"]>this.mustGet().WaitForChild("HumanoidRootPart");
+    return this.mustGet().WaitForChild<CharacterModel["HumanoidRootPart"]>("HumanoidRootPart");
   }
 
   public getHumanoid(): Maybe<CharacterModel["Humanoid"]> {
-    return <Maybe<CharacterModel["Humanoid"]>>this.get()?.FindFirstChild("Humanoid");
+    return this.get()?.FindFirstChild<CharacterModel["Humanoid"]>("Humanoid");
   }
 
   public mustGetHumanoid(): CharacterModel["Humanoid"] {
-    return <CharacterModel["Humanoid"]>this.mustGet().WaitForChild("Humanoid");
+    return this.mustGet().WaitForChild<CharacterModel["Humanoid"]>("Humanoid");
   }
 }
