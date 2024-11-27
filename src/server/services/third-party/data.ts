@@ -33,7 +33,7 @@ export class DataService implements OnInit, OnPlayerJoin, OnPlayerLeave, LogStar
 		if (this.firebase === undefined)
 			this.firebaseCreated.Wait();
 
-		const data = await this.firebase.get<PlayerData>(`playerData/${player.UserId}`, table.clone(INITIAL_DATA))
+		const data = await this.firebase.get<PlayerData>(`playerData/${player.UserId}`, table.clone(INITIAL_DATA));
 		this.playerData[tostring(player.UserId)] = data;
 	}
 
@@ -73,7 +73,7 @@ export class DataService implements OnInit, OnPlayerJoin, OnPlayerLeave, LogStar
 		return data;
 	}
 
-	public async getDatabase(): Promise<Record<string, PlayerData>> {
+	private async getDatabase(): Promise<Record<string, PlayerData>> {
 		if (this.firebase === undefined)
 			this.firebaseCreated.Wait();
 
