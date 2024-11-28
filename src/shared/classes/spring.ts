@@ -88,22 +88,24 @@ export class Spring implements ControlPanelDropdownRenderer {
   }
 
   public renderControlPanelDropdown(prefix?: string): void {
-    Iris.SeparatorText([(prefix !== undefined ? prefix + " " : "") + "Spring"]);
+    Iris.Tree([(prefix !== undefined ? prefix + " " : "") + "Spring"]);
 
-    const mass = Iris.SliderNum(["Spring Mass", 0.25, 0.25, 100], { number: Iris.State(this.mass) });
+    const mass = Iris.SliderNum(["Mass", 0.25, 0.25, 100], { number: Iris.State(this.mass) });
     if (mass.numberChanged())
       this.mass = mass.state.number.get();
 
-    const force = Iris.SliderNum(["Spring Force", 0.25, 0.25, 100], { number: Iris.State(this.force) });
+    const force = Iris.SliderNum(["Force", 0.25, 0.25, 100], { number: Iris.State(this.force) });
     if (force.numberChanged())
       this.force = force.state.number.get();
 
-    const damping = Iris.SliderNum(["Spring Damping", 0.25, 0.25, 100], { number: Iris.State(this.damping) });
+    const damping = Iris.SliderNum(["Damping", 0.25, 0.25, 100], { number: Iris.State(this.damping) });
     if (damping.numberChanged())
       this.damping = damping.state.number.get();
 
-    const speed = Iris.SliderNum(["Spring Speed", 0.25, 0.25, 100], { number: Iris.State(this.speed) });
+    const speed = Iris.SliderNum(["Speed", 0.25, 0.25, 100], { number: Iris.State(this.speed) });
     if (speed.numberChanged())
       this.speed = speed.state.number.get();
+
+    Iris.End();
   }
 }

@@ -19,7 +19,7 @@ export class Wave implements ControlPanelDropdownRenderer {
   }
 
   public renderControlPanelDropdown(prefix?: string): void {
-    Iris.SeparatorText([(prefix !== undefined ? prefix + " " : "") + "Wave"]);
+    Iris.Tree([(prefix !== undefined ? prefix + " " : "") + "Wave"]);
 
     const useSin = Iris.Checkbox(["Is Sine Wave?"], { isChecked: Iris.State(this.waveFunction === math.sin) });
     if (useSin.checked())
@@ -42,5 +42,7 @@ export class Wave implements ControlPanelDropdownRenderer {
     const verticalShift = Iris.SliderNum(["Vertical Shift", 0.01, 0, 5], { number: Iris.State(this.verticalShift) });
     if (verticalShift.numberChanged())
       this.verticalShift = verticalShift.state.number.get();
+
+    Iris.End();
   }
 }

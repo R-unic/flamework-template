@@ -5,7 +5,7 @@ import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel"
 const { sin, cos, sqrt } = math;
 
 export class Quaternion implements ControlPanelDropdownRenderer {
-  public static readonly identity = new Quaternion(0, 0, 0, -1);
+  public static readonly identity = new Quaternion(0, 0, 0, 1);
 
   public constructor(
     public readonly x: number,
@@ -83,7 +83,7 @@ export class Quaternion implements ControlPanelDropdownRenderer {
     *
     * The position is assumed to be (0, 0, 0) unless provided separately
     */
-  public toCFrame(position: Vector3 = new Vector3(0, 0, 0)): CFrame {
+  public toCFrame(position = new Vector3): CFrame {
     return new CFrame(
       position.X,
       position.Y,
@@ -95,8 +95,50 @@ export class Quaternion implements ControlPanelDropdownRenderer {
     );
   }
 
+  public add(q: Quaternion): Quaternion {
+    return new Quaternion(
+      this.x + q.x,
+      this.y + q.y,
+      this.z + q.z,
+      this.w + q.w
+    );
+  }
+
+  public sub(q: Quaternion): Quaternion {
+    return new Quaternion(
+      this.x - q.x,
+      this.y - q.y,
+      this.z - q.z,
+      this.w - q.w
+    );
+  }
+
+  public mul(q: Quaternion): Quaternion {
+    return new Quaternion(
+      this.w * q.x + this.x * q.w + this.y * q.z - this.z * q.y,
+      this.w * q.y - this.x * q.z + this.y * q.w + this.z * q.x,
+      this.w * q.z + this.x * q.y - this.y * q.x + this.z * q.w,
+      this.w * q.w - this.x * q.x - this.y * q.y - this.z * q.z
+    );
+  }
+
+  public div(q: Quaternion): Quaternion {
+    const inverse = q.inverse();
+    return this.mul(inverse);
+  }
+
+  public inverse(): Quaternion {
+    const norm = this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
+    return new Quaternion(
+      -this.x / norm,
+      -this.y / norm,
+      -this.z / norm,
+      this.w / norm
+    );
+  }
+
   public renderControlPanelDropdown(this: Writable<this>, prefix?: string): void {
-    Iris.SeparatorText([(prefix !== undefined ? prefix + " " : "") + "Quaternion"]);
+    Iris.Tree([(prefix !== undefined ? prefix + " " : "") + "Quaternion"]);
 
     const x = Iris.SliderNum(["X", 0.01, -1, 1], { number: Iris.State(this.x) });
     if (x.numberChanged())
@@ -113,5 +155,7 @@ export class Quaternion implements ControlPanelDropdownRenderer {
     const w = Iris.SliderNum(["W", 0.01, -1, 1], { number: Iris.State(this.w) });
     if (w.numberChanged())
       this.w = w.state.number.get();
+
+    Iris.End();
   }
 }

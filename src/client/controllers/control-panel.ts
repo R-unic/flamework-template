@@ -9,6 +9,7 @@ import { createMappingDecorator, processDependency } from "shared/utility/meta";
 import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel";
 
 import type { MouseController } from "./mouse";
+import { Transform } from "shared/classes/transform";
 
 const [renderableMeta, ControlPanelRenderable] = createMappingDecorator<ControlPanelDropdownRenderer, never[], [dropdownName: string, order?: number]>();
 export { ControlPanelRenderable };
@@ -25,6 +26,8 @@ export class ControlPanelController implements OnStart, LogStart {
   private readonly windowOpened = Iris.State(false);
   private renderables: Renderable[] = [];
   private mouseUnlocked = false;
+
+  transform = new Transform;
 
   public constructor(
     private readonly mouse: MouseController
@@ -62,6 +65,7 @@ export class ControlPanelController implements OnStart, LogStart {
       size: Iris.State(this.windowSize),
       isOpened: this.windowOpened
     });
+    this.transform.renderControlPanelDropdown("Test");
     for (const renderable of this.renderables) {
       Iris.Tree([renderable.dropdownName]);
       renderable.renderer.renderControlPanelDropdown();
