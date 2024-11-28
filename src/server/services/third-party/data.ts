@@ -88,10 +88,10 @@ export class DataService implements OnInit, OnPlayerJoin, OnPlayerLeave, LogStar
 
 	private async initialize(player: Player): Promise<PlayerData> {
 		const database = await this.getDatabase();
-		const data = this.get(player, database[tostring(player.UserId)]);
+		const data = <Writable<PlayerData>>this.get(player, database[tostring(player.UserId)]);
 		for (const [key, value] of pairs(INITIAL_DATA))
 			if (!(key in data))
-				(<Writable<PlayerData>>data)[key] = <never>value;
+				data[key] = <never>value;
 
 		return this.set(player, data);
 	}

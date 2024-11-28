@@ -13,7 +13,7 @@ export class ReplicaController implements OnStart, OnDataUpdate, LogStart {
     Events.data.initialize();
   }
 
-  public onDataUpdate(data: PlayerData): void {
-    (<Writable<ReplicaController>>this).data = data;
+  public onDataUpdate(this: Writable<ReplicaController>, data: PlayerData): void {
+    this.data = data;
   }
 }
