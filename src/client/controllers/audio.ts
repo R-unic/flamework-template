@@ -3,6 +3,7 @@ import { Controller } from "@flamework/core";
 import { Events } from "client/network";
 import { SerializedReplicable } from "shared/classes/replicable";
 import { Serializers } from "shared/network";
+import { PlaySoundOptions } from "shared/structs/audio";
 import type { AudioPacket } from "shared/structs/packets";
 
 @Controller()
@@ -11,8 +12,8 @@ export class AudioController extends SerializedReplicable<AudioPacket> {
     super(Events.audio.played, Events.audio.replicate, Serializers.audio);
   }
 
-  public play(packet: AudioPacket): void {
-    this.requestReplication(packet);
+  public play(sound: Sound, options?: PlaySoundOptions): void {
+    this.requestReplication({ sound, options });
   }
 
   protected replicate({ sound, options }: AudioPacket): void {
