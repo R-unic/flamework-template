@@ -6,15 +6,21 @@ import type { PlayerData } from "./data-models/player-data";
 type SerializedCallback = (packet: SerializedPacket) => void;
 
 interface ServerEvents {
+  audio: {
+    replicate(sound: Sound, parent?: Instance): void
+  };
   data: {
     initialize(): void;
-  }
+  };
   character: {
     toggleDefaultMovement(on: boolean): void;
   };
 }
 
 interface ClientEvents {
+  audio: {
+    played(sound: Sound, parent?: Instance): void
+  };
   data: {
     loaded: SerializedCallback;
     updated: SerializedCallback;

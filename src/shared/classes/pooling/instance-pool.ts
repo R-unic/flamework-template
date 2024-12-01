@@ -1,5 +1,5 @@
 import { Dependency } from "@flamework/core";
-import { BaseComponent, Component, Components } from "@flamework/components";
+import { BaseComponent, Component, type Components } from "@flamework/components";
 import { slice } from "@rbxts/string-utils";
 
 interface BaseInstancePool<T extends PoolableInstance<Instance>> {
