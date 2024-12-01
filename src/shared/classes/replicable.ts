@@ -8,6 +8,7 @@ import { Players } from "@rbxts/services";
 
 import LazyIterator from "./lazy-iterator";
 import Destroyable from "./destroyable";
+import { Serializer } from "@rbxts/flamework-binary-serializer";
 
 interface WithRange {
   readonly rangeOrigin: Vector3;
@@ -30,7 +31,7 @@ const DEFAULT_REPLICATION_OPTIONS: ReplicationOptions = {};
 export abstract class Replicable<I extends unknown[]> extends Destroyable {
   public constructor(
     receiver: ClientEventReceiver<I>,
-    private readonly sender: ClientEventSender<I>
+    protected readonly sender: ClientEventSender<I>
   ) {
     super();
     this.janitor.Add(receiver.connect((...args) => this.replicate(...args)));
@@ -61,4 +62,28 @@ export class Replicator<I extends unknown[]> extends Destroyable {
       sender(players.collect(), ...args);
     }));
   }
+}
+
+/** The replicable to create on the client */
+export abstract class SerializedReplicable<Packet extends object = object> extends Replicable<[packet: SerializedPacket | Packet]> {
+  public constructor(
+    receiver: ClientEventReceiver<[packet: SerializedPacket]>,
+    sender: ClientEventSender<[packet: SerializedPacket]>,
+    private readonly serializer: Serializer<Packet>
+  ) {
+    super(receiver, <ClientEventSender<[packet: SerializedPacket | Packet]>>sender);
+  }
+
+  protected abstract replicate(packet: Packet): void;
+
+  protected override requestReplication(packet: Packet): void {
+    const serialized = this.serializer.serialize(packet);
+    this.sender(serialized);
+    this.replicate(packet);
+  }
+}
+
+/** Replicates to client */
+export class SerializedReplicator extends Replicator<[packet: SerializedPacket]> {
+
 }

@@ -1,5 +1,5 @@
 import { Controller, OnRender, type OnInit } from "@flamework/core";
-import { Workspace as World } from "@rbxts/services";
+import { Workspace as World, SoundService } from "@rbxts/services";
 import Object from "@rbxts/object-utils";
 import Iris from "@rbxts/iris";
 
@@ -15,6 +15,8 @@ import Lazy from "shared/classes/lazy";
 
 import { ControlPanelRenderable } from "./control-panel";
 import type { CameraControllerComponent } from "client/base-components/camera-controller-component";
+import { AudioController } from "./audio";
+import { Assets } from "shared/utility/instances";
 
 // add new camera components here
 export interface Cameras {

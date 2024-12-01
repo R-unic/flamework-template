@@ -2,12 +2,14 @@ import { Networking } from "@flamework/networking";
 import { createBinarySerializer } from "@rbxts/flamework-binary-serializer";
 
 import type { PlayerData } from "./data-models/player-data";
+import type { AudioPacket } from "./structs/packets";
 
-type SerializedCallback = (packet: SerializedPacket) => void;
+type SerializedRemote = (packet: SerializedPacket) => void;
+type UnreliableSerializedRemote = Networking.Unreliable<(packet: SerializedPacket) => void>;
 
 interface ServerEvents {
   audio: {
-    replicate(sound: Sound, parent?: Instance): void
+    replicate: SerializedRemote;
   };
   data: {
     initialize(): void;
@@ -19,11 +21,11 @@ interface ServerEvents {
 
 interface ClientEvents {
   audio: {
-    played(sound: Sound, parent?: Instance): void
+    played: SerializedRemote;
   };
   data: {
-    loaded: SerializedCallback;
-    updated: SerializedCallback;
+    loaded: SerializedRemote;
+    updated: SerializedRemote;
   };
 }
 
@@ -32,7 +34,8 @@ interface ServerFunctions { }
 interface ClientFunctions { }
 
 export const Serializers = {
-  playerData: createBinarySerializer<PlayerData>()
+  playerData: createBinarySerializer<PlayerData>(),
+  audio: createBinarySerializer<AudioPacket>()
 };
 
 export const GlobalEvents = Networking.createEvent<ServerEvents, ClientEvents>();
