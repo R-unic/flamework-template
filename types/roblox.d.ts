@@ -1,0 +1,1 @@
+declare function require<T = unknown>(moduleScript: ModuleScript | number): T;

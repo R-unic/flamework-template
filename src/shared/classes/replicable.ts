@@ -1,14 +1,14 @@
-import {
+import type {
   ClientReceiver as ClientEventReceiver,
   ClientSender as ClientEventSender,
   ServerSender as ServerEventSender,
   ServerReceiver as ServerEventReceiver
 } from "@flamework/networking/out/events/types";
-import { Players } from "@rbxts/services";
+import type { Serializer } from "@rbxts/flamework-binary-serializer";
+import { Players, ServerScriptService } from "@rbxts/services";
 
 import LazyIterator from "./lazy-iterator";
 import Destroyable from "./destroyable";
-import { Serializer } from "@rbxts/flamework-binary-serializer";
 
 interface WithRange {
   readonly rangeOrigin: Vector3;
@@ -29,17 +29,22 @@ const DEFAULT_REPLICATION_OPTIONS: ReplicationOptions = {};
 
 /** The replicable to create on the client */
 export abstract class Replicable<I extends unknown[]> extends Destroyable {
+  protected readonly useReplicationOptions: ClientEventSender<[options: ReplicationOptions]>;
+
   public constructor(
     receiver: ClientEventReceiver<I>,
     protected readonly sender: ClientEventSender<I>
   ) {
     super();
+    const { Events } = require<typeof import("client/network")>(Players.LocalPlayer.WaitForChild("PlayerScripts").WaitForChild("TS").WaitForChild<ModuleScript>("network"));
+    this.useReplicationOptions = Events.useReplicationOptions;
     this.janitor.Add(receiver.connect((...args) => this.replicate(...args)));
   }
 
   protected abstract replicate(...args: I): void;
 
-  protected requestReplication(...args: I): void {
+  protected requestReplication(replicationOptions = DEFAULT_REPLICATION_OPTIONS, ...args: I): void {
+    this.useReplicationOptions(replicationOptions);
     this.sender(...args);
     this.replicate(...args);
   }
@@ -47,16 +52,24 @@ export abstract class Replicable<I extends unknown[]> extends Destroyable {
 
 /** Replicates to client */
 export class Replicator<I extends unknown[]> extends Destroyable {
-  public constructor(receiver: ServerEventReceiver<I>, sender: ServerEventSender<I>, options = DEFAULT_REPLICATION_OPTIONS) {
+  public constructor(receiver: ServerEventReceiver<I>, sender: ServerEventSender<I>) {
     super();
+
+    const { Events } = require<typeof import("server/network")>(ServerScriptService.WaitForChild("TS").WaitForChild<ModuleScript>("network"));
+    let replicationOptions = DEFAULT_REPLICATION_OPTIONS;
+    this.janitor.Add(Events.useReplicationOptions.connect((_, options) => replicationOptions = options));
+
     this.janitor.Add(receiver.connect((player, ...args) => {
       const players = LazyIterator.fromArray(Players.GetPlayers())
         .filter(p => p !== player);
 
-      if (options.range !== undefined)
+      if (replicationOptions.range !== undefined)
         players.filter(player => {
           const character = <Maybe<CharacterModel>>player.Character;
-          return character !== undefined && character.HumanoidRootPart.Position.sub(options.rangeOrigin).Magnitude < options.range;
+          if (character === undefined) return false;
+
+          const distance = character.HumanoidRootPart.Position.sub(replicationOptions.rangeOrigin!).Magnitude;
+          return distance < replicationOptions.range!;
         });
 
       sender(players.collect(), ...args);
@@ -76,8 +89,9 @@ export abstract class SerializedReplicable<Packet extends object = object> exten
 
   protected abstract replicate(packet: Packet): void;
 
-  protected override requestReplication(packet: Packet): void {
+  protected override requestReplication(packet: Packet, replicationOptions = DEFAULT_REPLICATION_OPTIONS): void {
     const serialized = this.serializer.serialize(packet);
+    this.useReplicationOptions(replicationOptions);
     this.sender(serialized);
     this.replicate(packet);
   }

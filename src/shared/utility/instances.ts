@@ -44,31 +44,6 @@ export function getChildrenOfType<T extends keyof Instances, I extends Instances
   return instance.GetChildren().filter((child): child is I => child.IsA(className));
 }
 
-export function playTemporarySound(soundTemplate: Sound, { parent, createContainerPart, position }: Partial<PlaySoundOptions> = {}, beforePlay?: (sound: Sound) => void): Sound {
-  const sound = soundTemplate.Clone();
-  if (createContainerPart) {
-    if (parent === undefined) {
-      const ignore = new Instance("Folder");
-      ignore.Name = "Ignore";
-      ignore.Parent = World;
-    }
-
-    const container = new Instance("Part", parent ?? World.FindFirstChild("Ignore"));
-    container.Transparency = 1;
-    container.Anchored = true;
-    container.CanCollide = false;
-    container.Size = Vector3.one;
-    container.Position = position!;
-    sound.Parent = container;
-  } else
-    sound.Parent = parent ?? Sound;
-
-  sound.Ended.Once(() => sound.Destroy());
-  beforePlay?.(sound);
-  sound.Play();
-  return sound;
-}
-
 export function getCharacterParts(character: Model): BasePart[] {
   return getDescendantsOfType(character, "BasePart");
 }
