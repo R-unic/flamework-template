@@ -1,4 +1,6 @@
 import { Service, type OnInit } from "@flamework/core";
+import { DataStoreService as Data } from "@rbxts/services";
+import { Firebase } from "@rbxts/firebase";
 import Signal from "@rbxts/signal";
 
 import type { LogStart } from "shared/hooks";
@@ -9,8 +11,26 @@ import { LinkRemote } from "server/decorators";
 import { LogBenchmark, SpawnTask } from "shared/decorators";
 import { roundDecimal } from "shared/utility/numbers";
 import { type PlayerData, type GlobalData, INITIAL_DATA } from "shared/data-models/player-data";
-import Firebase from "server/firebase";
-import Log from "shared/logger";
+
+export async function getFirebaseInfo(): Promise<[string, string]> {
+	return new Promise((resolve, reject) => {
+		const env = Data.GetDataStore("EnvironmentInfo");
+		try {
+			const authKey = <string>env.GetAsync<string>("FIREBASE_AUTH")[0];
+			const dbUrl = <string>env.GetAsync<string>("FIREBASE_URL")[0];
+
+			// Complain if we don't have values to input
+			if (authKey === undefined)
+				return reject("FIREBASE_AUTH was not found in EnvironmentInfo data store");
+			if (dbUrl === undefined)
+				return reject("FIREBASE_URL was not found in EnvironmentInfo data store");
+
+			resolve([dbUrl, authKey]);
+		} catch (err) {
+			reject(`Failed to fetch Firebase info because DataStoreService errored: ${err}`);
+		}
+	});
+}
 
 @Service({ loadOrder: -1 })
 export class DataService implements OnInit, OnPlayerJoin, OnPlayerLeave, LogStart {
@@ -18,13 +38,13 @@ export class DataService implements OnInit, OnPlayerJoin, OnPlayerLeave, LogStar
 	public readonly updated = new Signal<(player: Player, data: PlayerData) => void>;
 	public readonly updatedGlobal = new Signal<(data: GlobalData) => void>;
 	public readonly firebaseCreated = new Signal;
-	public playerData: Record<string, PlayerData> = {};
+	public playerData: Record<number, PlayerData> = {};
 
 	private firebase!: Firebase;
 
 	@SpawnTask()
 	public async onInit(): Promise<void> {
-		this.firebase = new Firebase;
+		this.firebase = new Firebase(...await getFirebaseInfo());
 		this.firebaseCreated.Fire();
 		this.playerData = await this.getDatabase();
 	}
@@ -34,7 +54,7 @@ export class DataService implements OnInit, OnPlayerJoin, OnPlayerLeave, LogStar
 			this.firebaseCreated.Wait();
 
 		const data = await this.firebase.get<PlayerData>(`playerData/${player.UserId}`, table.clone(INITIAL_DATA));
-		this.playerData[tostring(player.UserId)] = data;
+		this.playerData[player.UserId] = data;
 	}
 
 	public async onPlayerLeave(player: Player): Promise<void> {
@@ -49,26 +69,26 @@ export class DataService implements OnInit, OnPlayerJoin, OnPlayerLeave, LogStar
 		Events.data.loaded(player, Serializers.playerData.serialize(data));
 	}
 
-	public async getGlobal<T>(directory: string, defaultValue?: T): Promise<T> {
+	public async getGlobal<T>(directory: string, defaultValue?: T): Promise<Maybe<T>> {
 		return this.firebase.get(directory, defaultValue);
 	}
 
 	public async setGlobal<T>(directory: string, value: T): Promise<void> {
-		const newData = await this.firebase.set<GlobalData>(directory, value);
-		this.updatedGlobal.Fire(newData);
+		await this.firebase.set<T>(directory, value);
+		this.updatedGlobal.Fire((await this.getGlobal(""))!);
 	}
 
 	public async addToArrayGlobal<T extends defined>(directory: string, value: T): Promise<void> {
-		const newData = await this.firebase.addToArray(directory, value);
-		this.updatedGlobal.Fire(newData);
+		await this.firebase.addToArray(directory, value);
+		this.updatedGlobal.Fire((await this.getGlobal(""))!);
 	}
 
 	public get(player: Player, initialValue = INITIAL_DATA): PlayerData {
-		return this.playerData[tostring(player.UserId)] ?? initialValue;
+		return this.playerData[player.UserId] ?? initialValue;
 	}
 
 	public set(player: Player, data: PlayerData): PlayerData {
-		this.playerData[tostring(player.UserId)] = data;
+		this.playerData[player.UserId] = data;
 		this.update(player, data);
 		return data;
 	}
