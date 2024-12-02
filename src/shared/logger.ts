@@ -23,16 +23,6 @@ const log = (category: LogFunctionName, ...messages: defined[]): void => {
 }
 
 namespace Log {
-  export class Exception {
-    public constructor(
-      name: string,
-      public readonly message: string,
-      public readonly level?: number
-    ) {
-      Log.fatal(`${name}Exception: ${message}`);
-    }
-  }
-
   export function debug(...messages: defined[]): void {
     if (!Runtime.IsStudio()) return;
     log("debug", ...messages);
@@ -81,4 +71,4 @@ namespace Log {
   }
 }
 
-export default Log;
+export = Log;

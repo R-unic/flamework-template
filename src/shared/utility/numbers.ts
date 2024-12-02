@@ -56,7 +56,7 @@ export function toSuffixedNumber(n: number): string {
 export function parseSuffixedNumber(suffixed: string): number {
   const match = suffixed.gsub(",", "")[0].match("^([0-9,.]+)([KMBT]?)$");
   if (!match)
-    throw new Log.Exception("InvalidSuffixedNumber", "Invalid suffixed number format");
+    throw Log.fatal("Invalid suffixed number format");
 
   let numberPart = tostring(match[0]);
   const suffix = tostring(match[1]);
@@ -64,7 +64,7 @@ export function parseSuffixedNumber(suffixed: string): number {
   if (suffix && suffix !== "" && suffix !== "nil") {
     const index = (<readonly string[]>suffixes).indexOf(suffix.lower());
     if (index === -1)
-      throw new Log.Exception("InvalidNumberSuffix", "Invalid suffix in suffixed number");
+      throw Log.fatal("Invalid suffix in suffixed number");
 
     const multiplier = 10 ** ((index + 1) * 3);
     numberPart = tostring(tonumber(numberPart)! * multiplier);
