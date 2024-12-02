@@ -3,7 +3,7 @@ import { TweenInfoBuilder } from "@rbxts/builders";
 
 import type { LogStart } from "shared/hooks";
 import { PlayerGui } from "client/utility";
-import { tween } from "shared/utility/ui";
+import { tween } from "shared/utility/instances";
 import Lazy from "shared/classes/lazy";
 
 @Controller()

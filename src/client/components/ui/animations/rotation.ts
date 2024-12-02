@@ -1,22 +1,21 @@
 import { OnStart } from "@flamework/core";
 import { Component } from "@flamework/components";
 import { TweenInfoBuilder } from "@rbxts/builders";
+import { $nameof } from "rbxts-transform-debug";
 
-import { tween } from "shared/utility/ui";
+import { tween } from "shared/utility/instances";
 import ButtonTweenAnimation from "client/base-components/button-tween-animation";
 
 interface Attributes {
-  RotationGoal: number;
-  Speed: number;
+  readonly RotationAnimation_RotationGoal: number;
+  readonly RotationAnimation_Speed: number;
 }
 
-const { EasingStyle } = Enum;
-
 @Component({
-  tag: "RotationAnimation",
+  tag: $nameof<RotationAnimation>(),
   defaults: {
-    RotationGoal: 15,
-    Speed: 0.35
+    RotationAnimation_RotationGoal: 15,
+    RotationAnimation_Speed: 0.35
   }
 })
 export class RotationAnimation extends ButtonTweenAnimation<Attributes> implements OnStart {
@@ -24,8 +23,8 @@ export class RotationAnimation extends ButtonTweenAnimation<Attributes> implemen
   protected override readonly includeClick = false;
 
   protected readonly tweenInfo = new TweenInfoBuilder()
-    .SetEasingStyle(EasingStyle.Quad)
-    .SetTime(this.attributes.Speed);
+    .SetEasingStyle(Enum.EasingStyle.Quad)
+    .SetTime(this.attributes.RotationAnimation_Speed);
 
   public onStart(): void {
     super.onStart();
@@ -33,7 +32,7 @@ export class RotationAnimation extends ButtonTweenAnimation<Attributes> implemen
 
   public active(): void {
     tween(this.instance, this.tweenInfo, {
-      Rotation: this.attributes.RotationGoal
+      Rotation: this.attributes.RotationAnimation_RotationGoal
     });
   }
 

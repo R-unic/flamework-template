@@ -1,10 +1,7 @@
 import { Workspace as World } from "@rbxts/services";
-import type { StorableVector3 } from "shared/data-models/common";
 
 const { abs } = math;
 
-export const toStorableVector3 = ({ X, Y, Z }: Vector3) => ({ x: X, y: Y, z: Z });
-export const toUsableVector3 = ({ x, y, z }: StorableVector3) => new Vector3(x, y, z);
 export function toRegion3({ CFrame, Size }: Part, areaShrink = 0): Region3 {
   const { X: sx, Y: sy, Z: sz } = Size;
   const [x, y, z, r00, r01, r02, r10, r11, r12, r20, r21, r22] = CFrame.GetComponents();

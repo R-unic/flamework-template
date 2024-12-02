@@ -2,10 +2,10 @@ import type { OnStart } from "@flamework/core";
 import { Component } from "@flamework/components";
 import { TweenInfoBuilder } from "@rbxts/builders";
 import { endsWith } from "@rbxts/string-utils";
+import { $nameof } from "rbxts-transform-debug";
 
 import { PlayerGui } from "client/utility";
-import { getChildrenOfType } from "shared/utility/instances";
-import { tween } from "shared/utility/ui";
+import { getChildrenOfType, tween } from "shared/utility/instances";
 
 import DestroyableComponent from "shared/base-components/destroyable";
 
@@ -14,7 +14,7 @@ interface Attributes {
 }
 
 @Component({
-  tag: "SmoothListLayout",
+  tag: $nameof<SmoothListLayout>(),
   ancestorWhitelist: [PlayerGui],
   defaults: {
     SmoothListLayout_Speed: 0.2

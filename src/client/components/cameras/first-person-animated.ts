@@ -1,6 +1,7 @@
 import { Dependency, type OnRender } from "@flamework/core";
 import { Component, type Components } from "@flamework/components";
 import { Workspace as World } from "@rbxts/services";
+import { $nameof } from "rbxts-transform-debug";
 
 import { ProceduralAnimationHost } from "client/classes/procedural-animation-host";
 
@@ -9,14 +10,14 @@ import type { CameraController } from "client/controllers/camera";
 import type { MouseController } from "client/controllers/mouse";
 import type { CharacterController } from "client/controllers/character";
 
-@Component({ tag: "FirstPersonAnimatedCamera" })
+@Component({ tag: $nameof<FirstPersonAnimatedCamera>() })
 export class FirstPersonAnimatedCamera extends FirstPersonCamera implements OnRender {
   public readonly animator;
 
   public static create(controller: CameraController): FirstPersonAnimatedCamera {
     const components = Dependency<Components>();
     const camera = World.CurrentCamera!.Clone();
-    camera.Name = "FirstPersonAnimated";
+    camera.Name = $nameof<FirstPersonAnimatedCamera>();
     camera.Parent = controller.cameraStorage;
 
     return components.addComponent(camera);

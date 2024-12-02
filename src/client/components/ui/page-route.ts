@@ -1,10 +1,11 @@
 import type { OnStart } from "@flamework/core";
 import { Component } from "@flamework/components";
+import { $nameof } from "rbxts-transform-debug";
 
 import { PlayerGui } from "client/utility";
+import { getChildrenOfType } from "shared/utility/instances";
 
 import DestroyableComponent from "shared/base-components/destroyable";
-import { getChildrenOfType } from "shared/utility/instances";
 
 interface Attributes {
   PageRoute_Destination: string;
@@ -12,7 +13,7 @@ interface Attributes {
 }
 
 @Component({
-  tag: "PageRoute",
+  tag: $nameof<PageRoute>(),
   ancestorWhitelist: [PlayerGui],
   defaults: {
     PageRoute_Exclusive: true

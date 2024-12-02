@@ -1,5 +1,6 @@
 import { OnRender, OnStart } from "@flamework/core";
 import { Component } from "@flamework/components";
+import { $nameof } from "rbxts-transform-debug";
 
 import { Spring } from "shared/classes/spring";
 
@@ -14,7 +15,7 @@ interface Attributes {
 }
 
 @Component({
-  tag: "SpringScaleAnimation",
+  tag: $nameof<SpringScaleAnimation>(),
   defaults: {
     SpringScaleAnimation_ScaleIncrement: 0.2,
     SpringScaleAnimation_Mass: 5,

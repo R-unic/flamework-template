@@ -1,17 +1,19 @@
 import { Dependency } from "@flamework/core";
 import { Component, type Components } from "@flamework/components";
 import { Workspace as World } from "@rbxts/services";
+import { $nameof } from "rbxts-transform-debug";
 
 import { Player } from "client/utility";
-import { CameraControllerComponent } from "client/base-components/camera-controller-component";
+
+import { CameraComponent } from "client/base-components/camera";
 import type { CameraController } from "client/controllers/camera";
 
-@Component({ tag: "DefaultCamera" })
-export class DefaultCamera extends CameraControllerComponent {
+@Component({ tag: $nameof<DefaultCamera>() })
+export class DefaultCamera extends CameraComponent {
   public static create(controller: CameraController): DefaultCamera {
     const components = Dependency<Components>();
     const camera = World.CurrentCamera!; // every other camera component should clone a new camera
-    camera.Name = "DefaultCamera";
+    camera.Name = $nameof<DefaultCamera>();
     camera.Parent = controller.cameraStorage;
 
     return components.addComponent(camera);

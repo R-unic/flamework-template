@@ -14,7 +14,7 @@ import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel"
 import Lazy from "shared/classes/lazy";
 
 import { ControlPanelRenderable } from "./control-panel";
-import type { CameraControllerComponent } from "client/base-components/camera-controller-component";
+import type { CameraComponent } from "client/base-components/camera";
 import { AudioController } from "./audio";
 import { Assets } from "shared/utility/instances";
 
@@ -50,7 +50,7 @@ export class CameraController implements OnInit, OnRender, LogStart, ControlPane
   public onRender(dt: number): void {
     const camera = this.get();
     if (camera !== undefined && "onRender" in camera && typeOf(camera.onRender) === "function") {
-      const update = <(camera: CameraControllerComponent, dt: number) => void>camera.onRender;
+      const update = <(camera: CameraComponent, dt: number) => void>camera.onRender;
       update(camera, dt);
     }
   }
@@ -80,7 +80,7 @@ export class CameraController implements OnInit, OnRender, LogStart, ControlPane
       this.get(otherCameraName).toggle(cameraName === otherCameraName);
   }
 
-  public get<T extends CameraControllerComponent>(cameraName: keyof Cameras = this.currentName): T {
+  public get<T extends CameraComponent>(cameraName: keyof Cameras = this.currentName): T {
     return <T>this.cameras.getValue()[cameraName];
   }
 }

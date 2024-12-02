@@ -1,12 +1,12 @@
 import type { OnStart } from "@flamework/core";
 import { Component, BaseComponent } from "@flamework/components";
-import { $git } from "rbxts-transform-debug";
+import { $git, $nameof } from "rbxts-transform-debug";
 
 import type { LogStart } from "shared/hooks";
 import { PlayerGui } from "client/utility";
 
 @Component({
-  tag: "VersionLabel",
+  tag: $nameof<VersionLabel>(),
   ancestorWhitelist: [PlayerGui]
 })
 export class VersionLabel extends BaseComponent<{}, TextLabel> implements OnStart, LogStart {

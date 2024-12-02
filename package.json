@@ -37,6 +37,7 @@
     "@rbxts/builders": "^1.0.2",
     "@rbxts/charm": "^0.5.3",
     "@rbxts/cmdr": "^1.12.1",
+    "@rbxts/destroyable": "^1.0.0",
     "@rbxts/firebase": "^1.0.1",
     "@rbxts/flamework-binary-serializer": "^0.6.0",
     "@rbxts/gamejoy": "^1.1.4",

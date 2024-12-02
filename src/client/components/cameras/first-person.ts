@@ -1,20 +1,21 @@
 import { Dependency } from "@flamework/core";
 import { Component, type Components } from "@flamework/components";
 import { Workspace as World } from "@rbxts/services";
+import { $nameof } from "rbxts-transform-debug";
 
 import { Player } from "client/utility";
 
-import { CameraControllerComponent } from "client/base-components/camera-controller-component";
+import { CameraComponent } from "client/base-components/camera";
 import type { CameraController } from "client/controllers/camera";
 import type { MouseController } from "client/controllers/mouse";
 import type { CharacterController } from "client/controllers/character";
 
-@Component({ tag: "FirstPersonCamera" })
-export class FirstPersonCamera extends CameraControllerComponent {
+@Component({ tag: $nameof<FirstPersonCamera>() })
+export class FirstPersonCamera extends CameraComponent {
   public static create(controller: CameraController): FirstPersonCamera {
     const components = Dependency<Components>();
     const camera = World.CurrentCamera!.Clone();
-    camera.Name = "FirstPersonCamera";
+    camera.Name = $nameof<FirstPersonCamera>();
     camera.VRTiltAndRollEnabled = true;
     camera.Parent = controller.cameraStorage;
 

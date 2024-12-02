@@ -3,7 +3,7 @@ import { Workspace as World } from "@rbxts/services";
 
 const { rad } = math;
 
-export class CameraControllerComponent<A extends {} = {}> extends BaseComponent<A, Camera> {
+export class CameraComponent<A extends {} = {}> extends BaseComponent<A, Camera> {
   protected readonly offsets: CFrame[] = [];
 
   public toggle(on: boolean): void {

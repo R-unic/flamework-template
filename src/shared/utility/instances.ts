@@ -1,6 +1,21 @@
-import { ReplicatedFirst, RunService as Runtime, MarketplaceService as Market, Players } from "@rbxts/services";
+import { TweenService, ReplicatedFirst, RunService as Runtime, MarketplaceService as Market, Players } from "@rbxts/services";
+import { TweenInfoBuilder } from "@rbxts/builders";
 
 export const Assets = ReplicatedFirst.Assets;
+
+export function tween<T extends Instance = Instance>(
+  instance: T,
+  tweenInfo: TweenInfo | TweenInfoBuilder,
+  goal: Partial<ExtractMembers<T, Tweenable>>
+): Tween {
+  if (tweenInfo instanceof TweenInfoBuilder)
+    tweenInfo = tweenInfo.Build();
+
+  const tween = TweenService.Create(instance, tweenInfo, goal);
+  tween.Play();
+
+  return tween;
+}
 
 export interface DevProductInfo {
   readonly Description: string;
