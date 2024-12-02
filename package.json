@@ -24,11 +24,10 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-roblox-ts": "^0.0.30",
     "prettier": "^2.3.2",
-    "rbxts-transform-debug": "latest",
-    "rbxts-transform-env": "latest",
+    "rbxts-transform-debug": "github:roblox-aurora/rbxts-transform-debug",
     "rbxts-transformer-flamework": "latest",
-    "roblox-ts": "2.3.0",
-    "typescript": "5.2.2"
+    "roblox-ts": "^3.0.0",
+    "typescript": "~5.5.2"
   },
   "dependencies": {
     "@flamework/components": "latest",
@@ -37,7 +36,7 @@
     "@rbxts/builders": "^1.0.2",
     "@rbxts/charm": "^0.5.3",
     "@rbxts/cmdr": "^1.12.1",
-    "@rbxts/destroyable": "^1.0.0",
+    "@rbxts/destroyable": "^1.0.1",
     "@rbxts/firebase": "^1.0.1",
     "@rbxts/flamework-binary-serializer": "^0.6.0",
     "@rbxts/gamejoy": "^1.1.4",

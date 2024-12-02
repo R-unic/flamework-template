@@ -32,7 +32,7 @@ export class ControlPanelController implements OnStart, LogStart {
 
   public async onStart(): Promise<void> {
     for (const [_, [ctor, [dropdownName, order]]] of renderableMeta)
-      processDependency(ctor, renderable => this.renderables.push({ renderer: renderable, dropdownName, order }))
+      processDependency(ctor, renderable => this.renderables.push({ renderer: renderable, dropdownName, order }));
 
     this.renderables.sort((a, b) => (a.order ?? math.huge + 1) < (b.order ?? math.huge + 1));
 

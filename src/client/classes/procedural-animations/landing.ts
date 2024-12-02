@@ -10,17 +10,17 @@ const { clamp, rad } = math;
 @ProceduralAnimation(ProceduralAnimationInstance.Camera)
 export class LandingAnimation extends BaseProceduralAnimation {
   private readonly spring = new Spring(15, 80, 3.5, 4);
-  private angularDamping = 2;
-  private intensity = 1.5;
+  private readonly damping = 4;
+  private readonly angularDamping = 2;
+  private readonly intensity = 1.5;
 
   public constructor(
     private readonly character: CharacterController
   ) { super(); }
 
   public getCFrame(dt: number): CFrame {
-    const movement = this.update(dt).div(8);
-
-    return new CFrame(0, movement.Y / 8, 0)
+    const movement = this.update(dt).div(this.damping);
+    return new CFrame(0, movement.Y / this.damping, 0)
       .mul(CFrame.Angles(rad(movement.Y), 0, 0))
   }
 

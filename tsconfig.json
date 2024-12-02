@@ -14,23 +14,23 @@
 		"moduleDetection": "force",
 		"strict": true,
 		"target": "ESNext",
-		"typeRoots": ["node_modules/@rbxts", "node_modules/@flamework"],
-
+		"typeRoots": [
+			"node_modules/@rbxts",
+			"node_modules/@flamework"
+		],
 		// configurable
 		"rootDir": "src",
 		"outDir": "dist",
 		"baseUrl": "src",
 		"incremental": true,
 		"tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
-
 		"experimentalDecorators": true,
 		"plugins": [
 			{
 				"transform": "rbxts-transformer-flamework",
 				"obfuscation": false
-			}, {
-				"transform": "rbxts-transform-env"
-			}, {
+			},
+			{
 				"transform": "rbxts-transform-debug"
 			}
 		]
