@@ -45,6 +45,7 @@ export class CameraController implements OnInit, OnRender, LogStart, ControlPane
 
   public onInit(): void {
     this.cameraStorage.Name = "Cameras";
+    this.set("Default");
   }
 
   public onRender(dt: number): void {

@@ -15,7 +15,7 @@ export class WalkCycleAnimation extends BaseProceduralAnimation {
   public readonly spring = new Spring;
   public readonly sineWave = new Wave(...WAVE_PARAMETERS);
   public readonly cosineWave = new Wave(...WAVE_PARAMETERS);
-  public damping = 1.5;
+  public damping = -6;
   public minimumSpeed = 1; // if you want
 
   public constructor(
@@ -27,8 +27,7 @@ export class WalkCycleAnimation extends BaseProceduralAnimation {
   }
 
   public getCFrame(dt: number): CFrame {
-    const movement = this.update(dt).div(-4);
-
+    const movement = this.update(dt);
     return new CFrame(0, movement.Y, 0)
       .mul(CFrame.Angles(movement.Y, movement.X / 3.5, movement.Z));
   }

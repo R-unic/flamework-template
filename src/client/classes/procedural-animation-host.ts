@@ -1,8 +1,7 @@
 import Object from "@rbxts/object-utils";
 
 import { combineCFrames } from "shared/utility/3D";
-import { createMappingDecorator, getName, processDependency } from "shared/utility/meta";
-import { Constructor } from "@flamework/core/out/utility";
+import { createMappingDecorator, processDependency } from "shared/utility/meta";
 import { getChildrenOfType } from "shared/utility/instances";
 
 const { min } = math;
