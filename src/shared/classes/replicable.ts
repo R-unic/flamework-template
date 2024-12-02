@@ -6,9 +6,8 @@ import type {
 } from "@flamework/networking/out/events/types";
 import type { Serializer } from "@rbxts/flamework-binary-serializer";
 import { Players, ServerScriptService } from "@rbxts/services";
+import LazyIterator from "@rbxts/lazy-iterator";
 import Destroyable from "@rbxts/destroyable";
-
-import LazyIterator from "./lazy-iterator";
 
 interface WithRange {
   readonly rangeOrigin: Vector3;

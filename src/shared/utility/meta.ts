@@ -65,16 +65,6 @@ export function callMethodOnDependency<Args extends unknown[], O = void>(ctor: o
   return processDependency(<Constructor>ctor, dependency => descriptor.value(dependency, ...args))
 }
 
-declare const newproxy: <T extends symbol = symbol>(addMetatable: boolean) => T;
-
-/** Create a unique symbol */
-export function createSymbol<T extends symbol = symbol>(name: string): T {
-  const symbol = newproxy<T>(true);
-  const mt = <Record<string, unknown>>getmetatable(<never>symbol);
-  mt.__tostring = () => name;
-  return symbol;
-}
-
 /**
  * Generates a map and a decorator that adds the target to the map, for the given object type and constructor arguments
  */
