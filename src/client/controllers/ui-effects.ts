@@ -1,10 +1,10 @@
 import { Controller } from "@flamework/core";
 import { TweenInfoBuilder } from "@rbxts/builders";
+import { Lazy } from "@rbxts/lazy";
 
 import type { LogStart } from "shared/hooks";
 import { PlayerGui } from "client/utility";
 import { tween } from "shared/utility/instances";
-import Lazy from "shared/classes/lazy";
 
 @Controller()
 export class UIEffectsController implements LogStart {
