@@ -1,7 +1,7 @@
+import { StringBuilder } from "@rbxts/string-builder";
 import Object from "@rbxts/object-utils";
 
 import { createSymbol } from "../utility/meta";
-import StringBuilder from "./string-builder";
 
 type SkipSymbol = symbol & {
   readonly __skip?: undefined;
