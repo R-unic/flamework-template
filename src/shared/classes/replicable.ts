@@ -52,24 +52,26 @@ export abstract class Replicable<I extends unknown[]> extends Destroyable {
 
 /** Replicates to client */
 export class Replicator<I extends unknown[]> extends Destroyable {
+  public static replicationOptions = DEFAULT_REPLICATION_OPTIONS;
+  public static initialize(): void {
+    const { Events } = require<typeof import("server/network")>(ServerScriptService.WaitForChild("TS").WaitForChild<ModuleScript>("network"));
+    Events.useReplicationOptions.connect((_, options) => Replicator.replicationOptions = options);
+  }
+
   public constructor(receiver: ServerEventReceiver<I>, sender: ServerEventSender<I>) {
     super();
-
-    const { Events } = require<typeof import("server/network")>(ServerScriptService.WaitForChild("TS").WaitForChild<ModuleScript>("network"));
-    let replicationOptions = DEFAULT_REPLICATION_OPTIONS;
-    this.janitor.Add(Events.useReplicationOptions.connect((_, options) => replicationOptions = options));
 
     this.janitor.Add(receiver.connect((player, ...args) => {
       const players = LazyIterator.fromArray(Players.GetPlayers())
         .filter(p => p !== player);
 
-      if (replicationOptions.range !== undefined)
+      if (Replicator.replicationOptions.range !== undefined)
         players.filter(player => {
           const character = <Maybe<CharacterModel>>player.Character;
           if (character === undefined) return false;
 
-          const distance = character.HumanoidRootPart.Position.sub(replicationOptions.rangeOrigin!).Magnitude;
-          return distance < replicationOptions.range!;
+          const distance = character.HumanoidRootPart.Position.sub(Replicator.replicationOptions.rangeOrigin!).Magnitude;
+          return distance < Replicator.replicationOptions.range!;
         });
 
       sender(players.collect(), ...args);

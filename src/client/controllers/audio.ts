@@ -4,7 +4,7 @@ import { Workspace as World, SoundService as Sound } from "@rbxts/services";
 import { Events } from "client/network";
 import { ReplicationOptions, SerializedReplicable } from "shared/classes/replicable";
 import { Serializers } from "shared/network";
-import type { PlaySoundOptions } from "shared/structs/audio";
+import { PlaySoundOptions } from "shared/structs/audio";
 import type { AudioPacket } from "shared/structs/packets";
 
 @Controller()
