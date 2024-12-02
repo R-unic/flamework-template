@@ -1,4 +1,4 @@
-import { DataType } from "@rbxts/flamework-binary-serializer";
+import type { DataType } from "@rbxts/flamework-binary-serializer";
 
 export const INITIAL_GLOBAL_DATA: GlobalData = {
 
@@ -16,8 +16,4 @@ export const INITIAL_DATA: PlayerData = {
 export interface PlayerData {
   readonly coins: DataType.u32;
   readonly purchaseHistory: string[];
-}
-
-export function getDirectoryForPlayer(player: Player, directory: string): string {
-  return `playerData/${player.UserId}/${directory}`;
 }

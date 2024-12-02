@@ -106,18 +106,18 @@ export const Memoize = Modding.createDecorator<[]>(
   "Method",
   descriptor => {
     // FlameworkIgnited.Once(() => {
-    const object = <Record<string, Callback>><unknown>descriptor.constructor!;
+    const object = <Record<string, Callback> & { __memoizationCache: Record<string, unknown> }><unknown>descriptor.constructor!;
     const originalMethod = object[descriptor.property];
-    const memoizationCache: Record<string, Record<string, unknown>> = table.clone({});
     const key = tostring(originalMethod);
 
-    object[descriptor.property] = function (...args: unknown[]) {
-      if (memoizationCache[key] === undefined) {
-        const result = originalMethod(...args);
-        memoizationCache[key] = result;
+    object[descriptor.property] = function (this, ...args: unknown[]) {
+      this.__memoizationCache ??= {};
+      if (this.__memoizationCache[key] === undefined) {
+        const result = originalMethod(this, ...args);
+        this.__memoizationCache[key] = result;
       }
 
-      return memoizationCache[key];
+      return this.__memoizationCache[key];
     };
     // });
   }
