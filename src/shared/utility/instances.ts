@@ -1,6 +1,4 @@
-import { Workspace as World, SoundService as Sound, ReplicatedFirst, RunService as Runtime, MarketplaceService as Market, Players } from "@rbxts/services";
-
-import type { PlaySoundOptions } from "shared/structs/audio";
+import { ReplicatedFirst, RunService as Runtime, MarketplaceService as Market, Players } from "@rbxts/services";
 
 export const Assets = ReplicatedFirst.Assets;
 

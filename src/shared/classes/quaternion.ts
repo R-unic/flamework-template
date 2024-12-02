@@ -4,7 +4,7 @@ import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel"
 
 const { sin, cos, sqrt } = math;
 
-export class Quaternion implements ControlPanelDropdownRenderer {
+export class Quaternion implements ControlPanelDropdownRenderer<Quaternion> {
   public static readonly identity = new Quaternion(0, 0, 0, 1);
 
   public constructor(
@@ -137,25 +137,29 @@ export class Quaternion implements ControlPanelDropdownRenderer {
     );
   }
 
-  public renderControlPanelDropdown(this: Writable<this>, prefix?: string): void {
+  public renderControlPanelDropdown(this: Writable<this>, prefix?: string): Quaternion {
+    let x, y, z, w;
+
     Iris.Tree([(prefix !== undefined ? prefix + " " : "") + "Quaternion"]);
 
-    const x = Iris.SliderNum(["X", 0.01, -1, 1], { number: Iris.State(this.x) });
-    if (x.numberChanged())
-      this.x = x.state.number.get();
+    const xSlider = Iris.SliderNum(["X", 0.01, -1, 1], { number: Iris.State(this.x) });
+    if (xSlider.numberChanged())
+      x = xSlider.state.number.get();
 
-    const y = Iris.SliderNum(["Y", 0.01, -1, 1], { number: Iris.State(this.y) });
-    if (y.numberChanged())
-      this.y = y.state.number.get();
+    const ySlider = Iris.SliderNum(["Y", 0.01, -1, 1], { number: Iris.State(this.y) });
+    if (ySlider.numberChanged())
+      y = ySlider.state.number.get();
 
-    const z = Iris.SliderNum(["Z", 0.01, -1, 1], { number: Iris.State(this.z) });
-    if (z.numberChanged())
-      this.z = z.state.number.get();
+    const zSlider = Iris.SliderNum(["Z", 0.01, -1, 1], { number: Iris.State(this.z) });
+    if (zSlider.numberChanged())
+      z = zSlider.state.number.get();
 
-    const w = Iris.SliderNum(["W", 0.01, -1, 1], { number: Iris.State(this.w) });
-    if (w.numberChanged())
-      this.w = w.state.number.get();
+    const wSlider = Iris.SliderNum(["W", 0.01, -1, 1], { number: Iris.State(this.w) });
+    if (wSlider.numberChanged())
+      w = wSlider.state.number.get();
 
     Iris.End();
+
+    return new Quaternion(x!, y!, z!, w!);
   }
 }

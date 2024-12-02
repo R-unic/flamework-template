@@ -1,3 +1,3 @@
-export interface ControlPanelDropdownRenderer {
-  renderControlPanelDropdown(): void;
+export interface ControlPanelDropdownRenderer<O = void> {
+  renderControlPanelDropdown(): O;
 }
