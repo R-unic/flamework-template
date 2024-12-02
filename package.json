@@ -43,6 +43,7 @@
     "@rbxts/iris": "^2.2.0-ts.0",
     "@rbxts/janitor": "^1.15.7-ts.0",
     "@rbxts/object-utils": "^1.0.4",
+    "@rbxts/quaternion": "^1.0.0",
     "@rbxts/signal": "^1.1.1",
     "@rbxts/strict-map": "^1.0.2",
     "@rbxts/string-builder": "^1.0.0",

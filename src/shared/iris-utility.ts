@@ -1,3 +1,4 @@
+import Quaternion from "@rbxts/quaternion";
 import Iris from "@rbxts/iris";
 
 export function createVector3Tree(
@@ -19,4 +20,36 @@ export function createVector3Tree(
   Iris.End();
 
   return resultVector;
+}
+
+export function createQuaternionTree(
+  quaternion: Quaternion,
+  name = "Quaternion",
+  increment = 0.01,
+  minimum = -1,
+  maximum = 1
+): Quaternion {
+  let x, y, z, w;
+
+  Iris.Tree([name]);
+
+  const xSlider = Iris.SliderNum(["X", increment, minimum, maximum], { number: Iris.State(quaternion.x) });
+  if (xSlider.numberChanged())
+    x = xSlider.state.number.get();
+
+  const ySlider = Iris.SliderNum(["Y", increment, minimum, maximum], { number: Iris.State(quaternion.y) });
+  if (ySlider.numberChanged())
+    y = ySlider.state.number.get();
+
+  const zSlider = Iris.SliderNum(["Z", increment, minimum, maximum], { number: Iris.State(quaternion.z) });
+  if (zSlider.numberChanged())
+    z = zSlider.state.number.get();
+
+  const wSlider = Iris.SliderNum(["W", increment, minimum, maximum], { number: Iris.State(quaternion.w) });
+  if (wSlider.numberChanged())
+    w = wSlider.state.number.get();
+
+  Iris.End();
+
+  return new Quaternion(x!, y!, z!, w!);
 }
