@@ -7,5 +7,5 @@ interface Instance {
   FindFirstChild<T extends Instance = Instance>(childName: string | number, recursive?: boolean): Maybe<T>;
   FindFirstAncestor<T extends Instance = Instance>(name: string | number): Maybe<T>;
   FindFirstDescendant<T extends Instance = Instance>(name: string | number): Maybe<T>;
-  GetAttribute<T extends AttributeValue>(attribute: string): Maybe<T>;
+  GetAttribute<T extends AttributeValue = AttributeValue>(attribute: string): Maybe<T>;
 }
