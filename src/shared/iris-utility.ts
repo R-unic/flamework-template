@@ -1,5 +1,32 @@
 import Quaternion from "@rbxts/quaternion";
+import Wave from "@rbxts/wave";
 import Iris from "@rbxts/iris";
+
+export function createWaveTree(wave: Wave, name = "Wave"): Wave {
+  let resultWave = wave;
+
+  Iris.Tree([name]);
+  {
+    const useSin = Iris.Checkbox(["Is Sine Wave?"], { isChecked: Iris.State(wave.waveFunction === math.sin) });
+    const amplitude = Iris.SliderNum(["Amplitude", 0.1, 0.1, 20], { number: Iris.State(wave.amplitude) });
+    const frequency = Iris.SliderNum(["Frequency", 0.1, 0, 20], { number: Iris.State(wave.frequency) });
+    const phaseShift = Iris.SliderNum(["Phase Shift", 0.01, 0, 5], { number: Iris.State(wave.phaseShift) });
+    const verticalShift = Iris.SliderNum(["Vertical Shift", 0.01, 0, 5], { number: Iris.State(wave.verticalShift) });
+    const damping = Iris.SliderNum(["Damping", 0.1, 1, 10], { number: Iris.State(wave.damping) });
+
+    resultWave = new Wave(
+      amplitude.state.number.get(),
+      frequency.state.number.get(),
+      phaseShift.state.number.get(),
+      verticalShift.state.number.get(),
+      damping.state.number.get(),
+      useSin.state.isChecked.get() ? math.sin : math.cos
+    );
+  }
+  Iris.End();
+
+  return resultWave;
+}
 
 export function createVector3Tree(
   vector: Vector3,
@@ -8,7 +35,7 @@ export function createVector3Tree(
   minimum = Vector3.one.mul(-100),
   maximum = Vector3.one.mul(100)
 ): Vector3 {
-  let resultVector: Vector3;
+  let resultVector = vector;
 
   Iris.Tree([name]);
   {
@@ -29,27 +56,23 @@ export function createQuaternionTree(
   minimum = -1,
   maximum = 1
 ): Quaternion {
-  let x, y, z, w;
+  let resultQuaternion = quaternion;
 
   Iris.Tree([name]);
+  {
+    const x = Iris.SliderNum(["X", increment, minimum, maximum], { number: Iris.State(quaternion.x) });
+    const y = Iris.SliderNum(["Y", increment, minimum, maximum], { number: Iris.State(quaternion.y) });
+    const z = Iris.SliderNum(["Z", increment, minimum, maximum], { number: Iris.State(quaternion.z) });
+    const w = Iris.SliderNum(["W", increment, minimum, maximum], { number: Iris.State(quaternion.w) });
 
-  const xSlider = Iris.SliderNum(["X", increment, minimum, maximum], { number: Iris.State(quaternion.x) });
-  if (xSlider.numberChanged())
-    x = xSlider.state.number.get();
-
-  const ySlider = Iris.SliderNum(["Y", increment, minimum, maximum], { number: Iris.State(quaternion.y) });
-  if (ySlider.numberChanged())
-    y = ySlider.state.number.get();
-
-  const zSlider = Iris.SliderNum(["Z", increment, minimum, maximum], { number: Iris.State(quaternion.z) });
-  if (zSlider.numberChanged())
-    z = zSlider.state.number.get();
-
-  const wSlider = Iris.SliderNum(["W", increment, minimum, maximum], { number: Iris.State(quaternion.w) });
-  if (wSlider.numberChanged())
-    w = wSlider.state.number.get();
-
+    resultQuaternion = new Quaternion(
+      x.state.number.get(),
+      y.state.number.get(),
+      z.state.number.get(),
+      w.state.number.get()
+    )
+  }
   Iris.End();
 
-  return new Quaternion(x!, y!, z!, w!);
+  return resultQuaternion;
 }

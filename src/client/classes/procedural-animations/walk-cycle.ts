@@ -1,30 +1,30 @@
+import Wave from "@rbxts/wave";
+
 import { Singleton } from "shared/decorators";
 import { Spring } from "shared/classes/spring";
-import { Wave } from "shared/classes/wave";
 import { ProceduralAnimation, BaseProceduralAnimation, ProceduralAnimationInstance } from "../procedural-animation-host";
 
 import type { CharacterController } from "client/controllers/character";
 
 const { round, cos } = math;
 
-const WAVE_PARAMETERS = <const>[1.5, 16, -1, 0];
+const WAVE_DAMPING = 900;
+const BASE_AMPLITUDE = 1.5;
+const BASE_FREQUENCY = 16;
+const BASE_VERTICAL_SHIFT = -1;
 
 @Singleton()
 @ProceduralAnimation(ProceduralAnimationInstance.Any)
 export class WalkCycleAnimation extends BaseProceduralAnimation {
   public readonly spring = new Spring;
-  public readonly sineWave = new Wave(...WAVE_PARAMETERS);
-  public readonly cosineWave = new Wave(...WAVE_PARAMETERS);
+  public readonly sineWave = new Wave(BASE_AMPLITUDE, BASE_FREQUENCY, BASE_VERTICAL_SHIFT, 0, WAVE_DAMPING);
+  public readonly cosineWave = new Wave(BASE_AMPLITUDE, BASE_FREQUENCY, BASE_VERTICAL_SHIFT, 1, WAVE_DAMPING, cos);
   public damping = -6;
   public minimumSpeed = 1; // if you want
 
   public constructor(
     private readonly character: CharacterController
-  ) {
-    super();
-    this.cosineWave.phaseShift = 1;
-    this.cosineWave.waveFunction = cos;
-  }
+  ) { super(); }
 
   public getCFrame(dt: number): CFrame {
     const movement = this.update(dt);
@@ -37,15 +37,14 @@ export class WalkCycleAnimation extends BaseProceduralAnimation {
     if (root === undefined)
       return this.spring.update(dt);
 
-    const waveDamping = 900;
     const velocity = root.AssemblyLinearVelocity.mul(60);
     const walkSpeed = velocity.mul(new Vector3(1, 0, 1)).Magnitude;
     this.sineWave.frequency = round(walkSpeed) / 1.25;
     this.cosineWave.frequency = round(walkSpeed) / 1.25;
 
     const doNotApplyWave = walkSpeed === 0 || walkSpeed < this.minimumSpeed;
-    const x = doNotApplyWave ? 0 : this.sineWave.update(1, waveDamping);
-    const y = doNotApplyWave ? 0 : this.cosineWave.update(1, waveDamping);
+    const x = doNotApplyWave ? 0 : this.sineWave.update(1);
+    const y = doNotApplyWave ? 0 : this.cosineWave.update(1);
     const force = new Vector3(x, y, x);
 
     this.spring.shove(force);

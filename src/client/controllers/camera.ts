@@ -1,5 +1,6 @@
 import { Controller, OnRender, type OnInit } from "@flamework/core";
-import { Workspace as World, SoundService } from "@rbxts/services";
+import { Workspace as World } from "@rbxts/services";
+import { Lazy } from "@rbxts/lazy";
 import Object from "@rbxts/object-utils";
 import Iris from "@rbxts/iris";
 
@@ -11,12 +12,9 @@ import { FixedCamera } from "client/components/cameras/fixed";
 import { FlyOnTheWallCamera } from "client/components/cameras/fly-on-the-wall";
 import { FirstPersonAnimatedCamera } from "client/components/cameras/first-person-animated";
 import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel";
-import Lazy from "shared/classes/lazy";
 
 import { ControlPanelRenderable } from "./control-panel";
 import type { CameraComponent } from "client/base-components/camera";
-import { AudioController } from "./audio";
-import { Assets } from "shared/utility/instances";
 
 // add new camera components here
 export interface Cameras {
