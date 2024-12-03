@@ -1,10 +1,8 @@
-import { Dependency, Modding } from "@flamework/core";
-import { Components } from "@flamework/components";
-import { getIdFromSpecifier } from "@flamework/components/out/utility";
+import { Modding } from "@flamework/core";
 import { Context } from "@rbxts/gamejoy";
 import { Action, Axis, Union } from "@rbxts/gamejoy/out/Actions";
 import { BaseAction } from "@rbxts/gamejoy/out/Class/BaseAction";
-import type { Constructor } from "@flamework/core/out/utility";
+import { callMethodOnDependency } from "@rbxts/flamework-meta-utils";
 import type { ActionLike, ActionOptions, AxisActionEntry, RawActionEntry } from "@rbxts/gamejoy/out/Definitions/Types";
 import type { ClientReceiver as ClientEventReceiver } from "@flamework/networking/out/events/types";
 import type { ClientReceiver as ClientFunctionReceiver } from "@flamework/networking/out/functions/types";
@@ -12,7 +10,6 @@ import type { Serializer } from "@rbxts/flamework-binary-serializer";
 
 import { FlameworkIgnited } from "shared/constants";
 import Log from "shared/logger";
-import { callMethodOnDependency } from "shared/utility/meta";
 
 const inputContext = new Context({ Process: false });
 const processedContext = new Context({ Process: true });

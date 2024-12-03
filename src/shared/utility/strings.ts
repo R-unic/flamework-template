@@ -36,10 +36,3 @@ export function capitalize(text: string): string {
 export function removeWhitespace(text: string): string {
   return text.gsub("%s+", "")[0];
 }
-
-/**
- * Trims all leading & trailing whitespace characters from `text`
- */
-export function trim(text: string): string {
-  return text.gsub("^%s*(.-)%s*$", "%1")[0];
-}

@@ -1,9 +1,9 @@
 import { OnStart } from "@flamework/core";
 import { Component } from "@flamework/components";
 import { TweenInfoBuilder } from "@rbxts/builders";
+import { tween } from "@rbxts/instance-utility";
 import { $nameof } from "rbxts-transform-debug";
 
-import { tween } from "shared/utility/instances";
 import ButtonTweenAnimation from "client/base-components/button-tween-animation";
 
 interface Attributes {
@@ -25,7 +25,8 @@ export class ScaleAnimation extends ButtonTweenAnimation<Attributes> implements 
 
   protected readonly tweenInfo = new TweenInfoBuilder()
     .SetEasingStyle(Enum.EasingStyle.Sine)
-    .SetTime(this.attributes.ScaleAnimation_Speed);
+    .SetTime(this.attributes.ScaleAnimation_Speed)
+    .Build();
 
   public onStart(): void {
     super.onStart();

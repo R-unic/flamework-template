@@ -1,4 +1,4 @@
-import StringUtils from "@rbxts/string-utils";
+import { trim } from "@rbxts/string-utils";
 
 const { floor } = math;
 
@@ -61,7 +61,7 @@ export function toRemainingTime(seconds: number): string {
   if (seconds > 0)
     remainingTime += "%ds ".format(seconds);
 
-  return StringUtils.trim(remainingTime);
+  return trim(remainingTime);
 }
 
 export function toLongRemainingTime(seconds: number): string {

@@ -9,6 +9,7 @@ try {
 	Flamework.addPaths("src/server/services");
 	Flamework.ignite();
 	Replicator.initialize();
+
 	FlameworkIgnited.Fire();
 } catch (e) {
 	error("Issue igniting Flamework: " + <string>e);

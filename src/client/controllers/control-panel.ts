@@ -1,11 +1,12 @@
 import { Controller, type OnStart } from "@flamework/core";
+import { processDependency } from "@rbxts/flamework-meta-utils";
 import Iris from "@rbxts/iris";
 
 import type { LogStart } from "shared/hooks";
 import { OnInput } from "client/decorators";
 import { Player } from "client/utility";
 import { isDeveloper } from "shared/constants";
-import { createMappingDecorator, processDependency } from "shared/utility/meta";
+import { createMappingDecorator } from "shared/utility/meta";
 import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel";
 
 import type { MouseController } from "./mouse";

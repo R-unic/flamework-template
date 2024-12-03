@@ -1,10 +1,10 @@
 import { Controller } from "@flamework/core";
 import { TweenInfoBuilder } from "@rbxts/builders";
 import { Lazy } from "@rbxts/lazy";
+import { tween } from "@rbxts/instance-utility";
 
 import type { LogStart } from "shared/hooks";
 import { PlayerGui } from "client/utility";
-import { tween } from "shared/utility/instances";
 
 @Controller()
 export class UIEffectsController implements LogStart {
@@ -28,7 +28,8 @@ export class UIEffectsController implements LogStart {
     type RType = Disable extends true ? () => Tween : void;
     const info = new TweenInfoBuilder()
       .SetTime(fadeTime)
-      .SetEasingStyle(Enum.EasingStyle.Sine);
+      .SetEasingStyle(Enum.EasingStyle.Sine)
+      .Build();
 
     const toggle = (on: boolean) => tween(this.blackFrame, info, { Transparency: on ? 0 : 1 });
     const fadeIn = toggle(true);

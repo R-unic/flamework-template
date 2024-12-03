@@ -1,8 +1,8 @@
+import { getChildrenOfType } from "@rbxts/instance-utility";
+import { processDependency } from "@rbxts/flamework-meta-utils";
 import Object from "@rbxts/object-utils";
 
-import { combineCFrames } from "shared/utility/3D";
-import { createMappingDecorator, processDependency } from "shared/utility/meta";
-import { getChildrenOfType } from "shared/utility/instances";
+import { createMappingDecorator } from "shared/utility/meta";
 
 const { min } = math;
 
@@ -19,6 +19,10 @@ export const enum ProceduralAnimationInstance {
 export abstract class BaseProceduralAnimation {
   protected abstract update(dt: number): Vector3;
   public abstract getCFrame(dt: number): CFrame;
+}
+
+function combineCFrames(cframes: CFrame[]): CFrame {
+  return cframes.reduce((sum, cf) => sum.mul(cf), new CFrame);
 }
 
 export class ProceduralAnimationHost<I extends Camera | Model = Camera | Model> {

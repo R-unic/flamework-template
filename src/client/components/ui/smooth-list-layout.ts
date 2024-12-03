@@ -1,11 +1,11 @@
 import type { OnStart } from "@flamework/core";
 import { Component } from "@flamework/components";
 import { TweenInfoBuilder } from "@rbxts/builders";
+import { getChildrenOfType, tween } from "@rbxts/instance-utility";
 import { endsWith } from "@rbxts/string-utils";
 import { $nameof } from "rbxts-transform-debug";
 
 import { PlayerGui } from "client/utility";
-import { getChildrenOfType, tween } from "shared/utility/instances";
 
 import DestroyableComponent from "shared/base-components/destroyable";
 
@@ -21,7 +21,9 @@ interface Attributes {
   }
 })
 export class SmoothListLayout extends DestroyableComponent<Attributes, GuiObject & { UIListLayout: UIListLayout; }> implements OnStart {
-  private readonly tweenInfo = new TweenInfoBuilder().SetTime(this.attributes.SmoothListLayout_Speed);
+  private readonly tweenInfo = new TweenInfoBuilder()
+    .SetTime(this.attributes.SmoothListLayout_Speed)
+    .Build();
 
   public onStart(): void {
     for (const child of getChildrenOfType(this.instance, "GuiObject"))

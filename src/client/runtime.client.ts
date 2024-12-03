@@ -7,6 +7,7 @@ try {
 	Flamework.addPaths("src/client/components");
 	Flamework.addPaths("src/client/controllers");
 	Flamework.ignite();
+
 	FlameworkIgnited.Fire();
 } catch (e) {
 	error("Issue igniting Flamework: " + <string>e);

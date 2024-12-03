@@ -1,9 +1,8 @@
 import { BaseComponent } from "@flamework/components";
-import { RunService as Runtime } from "@rbxts/services";
+import { RunService as Runtime, Players } from "@rbxts/services";
+import { getName } from "@rbxts/flamework-meta-utils";
+import { flatten } from "@rbxts/array-utils";
 
-import { flatten } from "./utility/array";
-import { getInstancePath } from "./utility/instances";
-import { getName } from "./utility/meta";
 import repr from "./libraries/repr";
 
 type LogFunctionName = ExtractKeys<typeof Log, Callback>;
@@ -11,6 +10,17 @@ type LogFunctionName = ExtractKeys<typeof Log, Callback>;
 const DISABLED: Partial<Record<LogFunctionName, boolean>> = {
 
 };
+
+function getInstancePath(instance: Instance): string {
+  let path = instance.GetFullName()
+    .gsub("Workspace", "World")[0]
+    .gsub("PlayerGui", "UI")[0];
+
+  if (Runtime.IsClient())
+    path = path.gsub(`Players.${Players.LocalPlayer.Name}.`, "")[0];
+
+  return path;
+}
 
 const log = (category: LogFunctionName, ...messages: defined[]): void => {
   if (DISABLED[category]) return;

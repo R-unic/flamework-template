@@ -1,9 +1,9 @@
 import type { OnStart } from "@flamework/core";
 import { Component } from "@flamework/components";
+import { getChildrenOfType } from "@rbxts/instance-utility";
 import { $nameof } from "rbxts-transform-debug";
 
 import { PlayerGui } from "client/utility";
-import { getChildrenOfType } from "shared/utility/instances";
 
 import DestroyableComponent from "shared/base-components/destroyable";
 

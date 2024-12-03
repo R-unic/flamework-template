@@ -1,9 +1,9 @@
 import { Controller } from "@flamework/core";
 import { Workspace as World, Stats } from "@rbxts/services";
+import { eMath } from "@rbxts/atlas";
 import Iris from "@rbxts/iris";
 
 import { roundDecimal } from "shared/utility/numbers";
-import { getAverage } from "shared/utility/array";
 import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel";
 
 import { ControlPanelRenderable } from "./control-panel";
@@ -32,8 +32,8 @@ export class PerformanceStatsController implements ControlPanelDropdownRenderer 
       this.lowestSend = sortedSends[0];
       this.highestRecv = sortedRecvs[sortedRecvs.size() - 1];
       this.lowestRecv = sortedRecvs[0];
-      this.avgSend = getAverage(this.sendSizes);
-      this.avgRecv = getAverage(this.recvSizes);
+      this.avgSend = eMath.avg(...this.sendSizes);
+      this.avgRecv = eMath.avg(...this.recvSizes);
 
       this.sendSizes.clear();
       this.recvSizes.clear();
