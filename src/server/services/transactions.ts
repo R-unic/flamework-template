@@ -2,7 +2,7 @@ import { OnInit, Service } from "@flamework/core";
 import { MarketplaceService as Market, Players } from "@rbxts/services";
 
 import { DataService } from "./third-party/data";
-import Log from "shared/logger";
+import Log from "shared/log";
 
 type RewardHandler = (player: Player) => void;
 const enum ProductIDs {
@@ -41,7 +41,7 @@ export class TransactionsService implements OnInit {
       } catch (err) {
         success = false;
         purchaseRecorded = undefined;
-        Log.warning(`Failed to process purchase for product ${ProductId}: ${err}`);
+        Log.warn(`Failed to process purchase for product ${ProductId}: ${err}`);
       }
 
       return Enum.ProductPurchaseDecision[(!success || purchaseRecorded === undefined) ? "NotProcessedYet" : "PurchaseGranted"];

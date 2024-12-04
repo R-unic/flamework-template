@@ -1,6 +1,3 @@
-import Object from "@rbxts/object-utils";
-import Size from "shared/libraries/number-size";
-
 /**
  * Compact method of storing and manipulating individual bits within a data structure
  *

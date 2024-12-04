@@ -2,7 +2,7 @@ import { Modding, Reflect } from "@flamework/core";
 import { RunService as Runtime } from "@rbxts/services";
 
 import { roundDecimal } from "./utility/numbers";
-import Log from "./logger";
+import Log from "./log";
 
 /**
  * Request the required metadata for lifecycle events and dependency resolution.
@@ -34,7 +34,7 @@ export const ValidateReturn = Modding.createDecorator<[validator: (returnValue: 
     const object = <Record<string, Callback>><unknown>descriptor.constructor!;
     const originalMethod = object[descriptor.property];
     warnNotError ??= false;
-    whenInvalid ??= value => Log[warnNotError ? "warning" : "fatal"](`Invalid return value ${value} returned by ${tostring(descriptor.constructor)}.${descriptor.property}()`);
+    whenInvalid ??= value => Log[warnNotError ? "warn" : "fatal"](`Invalid return value ${value} returned by ${tostring(descriptor.constructor)}.${descriptor.property}()`);
 
     object[descriptor.property] = function (...args: unknown[]) {
       const value = originalMethod(...args);

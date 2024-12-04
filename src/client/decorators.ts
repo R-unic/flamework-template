@@ -9,7 +9,7 @@ import type { ClientReceiver as ClientFunctionReceiver } from "@flamework/networ
 import type { Serializer } from "@rbxts/flamework-binary-serializer";
 
 import { FlameworkIgnited } from "shared/constants";
-import Log from "shared/logger";
+import Log from "shared/log";
 
 const inputContext = new Context({ Process: false });
 const processedContext = new Context({ Process: true });
@@ -25,7 +25,7 @@ export const OnInput = Modding.createDecorator<[binding: (RawActionEntry | BaseA
         : new Union(<RawActionEntry[]>rawAction);
 
     if (action instanceof Union && options !== undefined)
-      Log.warning(`Action options given to @OnInput decorator on "${descriptor.property}" method were ignored because it is a union action`);
+      Log.warn(`Action options given to @OnInput decorator on "${descriptor.property}" method were ignored because it is a union action`);
 
     if (actionName !== undefined)
       inputActions[actionName] = action;
