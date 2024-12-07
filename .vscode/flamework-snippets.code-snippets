@@ -1,21 +1,26 @@
 {
 	"Flamework Controller": {
-		"prefix":[ "controller", "flameworkcontroller"],
+		"prefix": [
+			"controller",
+			"flameworkcontroller"
+		],
 		"description": "Create a Flamework controller",
 		"body": [
 			"import { Controller, type OnInit } from \"@flamework/core\";",
 			"",
 			"@Controller()",
 			"export class ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}Controller implements OnInit {",
-				"\tpublic onInit(): void {",
-					"\t\t$2",
-				"\t}",
+			"\tpublic onInit(): void {",
+			"\t\t$2",
+			"\t}",
 			"}",
 		]
 	},
-
 	"Flamework Service": {
-		"prefix":[ "service", "flameworkservice"],
+		"prefix": [
+			"service",
+			"flameworkservice"
+		],
 		"description": "Create a Flamework service",
 		"body": [
 			"import { Service, type OnInit } from \"@flamework/core\";",
@@ -23,32 +28,37 @@
 			"@Service()",
 			"export class ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}Service implements OnInit {",
 			"\tpublic onInit(): void {",
-				"\t\t$2",
+			"\t\t$2",
 			"\t}",
 			"}",
 		]
 	},
-
 	"Flamework Component": {
-		"prefix":[ "component", "flameworkcomponent"],
+		"prefix": [
+			"component",
+			"flameworkcomponent"
+		],
 		"description": "Create a Flamework component",
 		"body": [
 			"import type { OnStart } from \"@flamework/core\";",
 			"import { Component, BaseComponent } from \"@flamework/components\";",
+			"import { $nameof } from \"rbxts-transform-debug\";",
 			"",
 			"interface Attributes {}",
 			"",
-			"@Component({ tag: \"${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}\" })",
+			"@Component({ tag: $nameof<${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}>() })",
 			"export class ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g} extends BaseComponent<Attributes> implements OnStart {",
-				"\tpublic onStart(): void {",
-					"\t\t$0",
-				"\t}",
+			"\tpublic onStart(): void {",
+			"\t\t$0",
+			"\t}",
 			"}",
 		]
 	},
-
 	"Singleton": {
-		"prefix":[ "singleton", "ston"],
+		"prefix": [
+			"singleton",
+			"ston"
+		],
 		"description": "Create a singleton",
 		"body": [
 			"import type { OnStart } from \"@flamework/core\";",
@@ -57,15 +67,16 @@
 			"",
 			"@Singleton()",
 			"export class ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g} implements OnStart {",
-				"\tpublic onStart(): void {",
-					"\t\t$0",
-				"\t}",
+			"\tpublic onStart(): void {",
+			"\t\t$0",
+			"\t}",
 			"}",
 		]
 	},
-
 	"UI Component": {
-		"prefix":[ "uicomponent" ],
+		"prefix": [
+			"uicomponent"
+		],
 		"description": "Create a UI component",
 		"body": [
 			"import type { OnStart } from \"@flamework/core\";",
@@ -75,26 +86,27 @@
 			"",
 			"@Component({",
 			"\ttag: \"${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g}\",",
-			"\tancestorWhitelist: [ PlayerGui ]"
-			"})"
+			"\tancestorWhitelist: [ PlayerGui ]",
+			"})",
 			"export class ${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g} extends BaseComponent<{}, ${1:GuiObject}> implements OnStart {",
-				"\tpublic onStart(): void {",
-					"\t\t$2",
-				"\t}",
+			"\tpublic onStart(): void {",
+			"\t\t$2",
+			"\t}",
 			"}",
 		]
-	}
-
+	},
 	"Bitfield": {
-		"prefix":[ "bitf, bitfield" ],
+		"prefix": [
+			"bitf, bitfield"
+		],
 		"description": "Create a Bitfield",
 		"body": [
 			"import Bitfield from \"shared/classes/bitfield\";",
 			"",
-			"export const enum ${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g}Masks {"
-			"\t"
+			"export const enum ${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g}Masks {",
+			"\t",
 			"}",
-			""
+			"",
 			"export class ${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g} extends Bitfield<${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g}Masks> {",
 			"\tpublic constructor() {",
 			"\t\tsuper();",
