@@ -89,63 +89,74 @@ export class MouseController implements OnInit, OnRender {
     UserInput.MouseIcon = icon;
   }
 
+  /** @hidden */
   @OnAxisInput("MouseWheel")
-  private onScroll(axis: Axis<"MouseWheel">): void {
+  public onScroll(axis: Axis<"MouseWheel">): void {
     this.scrolled.Fire(-axis.Position.Z);
   }
 
+  /** @hidden */
   @OnAxisInput("ButtonR2", "axisR2")
-  private onR2AxisChange(axis: Axis<"ButtonR2">): void {
+  public onR2AxisChange(axis: Axis<"ButtonR2">): void {
     this.triggerAxesChange(axis, this.isLmbDown);
   }
 
+  /** @hidden */
   @OnAxisInput("ButtonL2", "axisL2")
-  private onL2AxisChange(axis: Axis<"ButtonL2">): void {
+  public onL2AxisChange(axis: Axis<"ButtonL2">): void {
     this.triggerAxesChange(axis, this.isLmbDown);
   }
 
+  /** @hidden */
   @OnInputRelease("axisR2")
-  private onR2Release(): void {
+  public onR2Release(): void {
     this.rmbUp();
   }
 
+  /** @hidden */
   @OnInputRelease("axisL2")
-  private onL2Release(): void {
+  public onL2Release(): void {
     this.lmbUp();
   }
 
+  /** @hidden */
   @OnInputRelease("mmb")
-  private mmbUp(): void {
-    return this.isMmbDown(false);
+  public mmbUp(): void {
+    this.isMmbDown(false);
   }
 
+  /** @hidden */
   @OnInput("MouseButton3", "mmb")
-  private mmbDown(): void {
-    return this.isMmbDown(true);
+  public mmbDown(): void {
+    this.isMmbDown(true);
   }
 
+  /** @hidden */
   @OnInputRelease("rmb")
-  private rmbUp(): void {
-    return this.isRmbDown(false);
+  public rmbUp(): void {
+    this.isRmbDown(false);
   }
 
+  /** @hidden */
   @OnInput("MouseButton2", "rmb")
-  private rmbDown(): void {
-    return this.isRmbDown(true);
+  public rmbDown(): void {
+    this.isRmbDown(true);
   }
 
+  /** @hidden */
   @OnInputRelease("lmb")
-  private lmbUp(): void {
-    return this.isLmbDown(false);
+  public lmbUp(): void {
+    this.isLmbDown(false);
   }
 
+  /** @hidden */
   @OnInput("MouseButton1", "lmb")
-  private lmbDown(): void {
-    return this.isLmbDown(true);
+  public lmbDown(): void {
+    this.isLmbDown(true);
   }
 
   private triggerAxesChange(axis: Axis<"ButtonL2" | "ButtonR2">, isDown: Charm.Atom<boolean>): void {
-    if (axis.Delta.Z < 0) return isDown(false);
+    if (axis.Delta.Z < 0) return void isDown(false);
     if (axis.Delta.Z < 0.05) return;
     isDown(true);
   }
