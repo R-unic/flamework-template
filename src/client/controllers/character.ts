@@ -1,6 +1,7 @@
 import { Controller } from "@flamework/core";
 
 import { Player } from "client/utility";
+import { promisifyEvent } from "shared/utility/other";
 
 @Controller()
 export class CharacterController {
@@ -13,27 +14,28 @@ export class CharacterController {
     return <Maybe<CharacterModel>>Player.Character;
   }
 
-  public waitFor(): CharacterModel {
-    return <CharacterModel>Player.CharacterAdded.Wait()[0];
+  public async waitFor(): Promise<CharacterModel> {
+    const [character] = await promisifyEvent<[character: CharacterModel]>(Player.CharacterAdded);
+    return character;
   }
 
-  public mustGet(): CharacterModel {
-    return this.get() ?? this.waitFor();
+  public async mustGet(): Promise<CharacterModel> {
+    return this.get() ?? await this.waitFor();
   }
 
   public getRoot(): Maybe<CharacterModel["HumanoidRootPart"]> {
-    return this.get()?.FindFirstChild<CharacterModel["HumanoidRootPart"]>("HumanoidRootPart");
+    return this.get()?.FindFirstChild("HumanoidRootPart");
   }
 
-  public mustGetRoot(): CharacterModel["HumanoidRootPart"] {
-    return this.mustGet().WaitForChild<CharacterModel["HumanoidRootPart"]>("HumanoidRootPart");
+  public async mustGetRoot(): Promise<CharacterModel["HumanoidRootPart"]> {
+    return (await this.mustGet()).WaitForChild("HumanoidRootPart");
   }
 
   public getHumanoid(): Maybe<CharacterModel["Humanoid"]> {
-    return this.get()?.FindFirstChild<CharacterModel["Humanoid"]>("Humanoid");
+    return this.get()?.FindFirstChild("Humanoid");
   }
 
-  public mustGetHumanoid(): CharacterModel["Humanoid"] {
-    return this.mustGet().WaitForChild<CharacterModel["Humanoid"]>("Humanoid");
+  public async mustGetHumanoid(): Promise<CharacterModel["Humanoid"]> {
+    return (await this.mustGet()).WaitForChild("Humanoid");
   }
 }

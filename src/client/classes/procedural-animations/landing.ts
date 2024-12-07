@@ -25,7 +25,11 @@ export class LandingAnimation extends BaseProceduralAnimation {
   }
 
   protected update(dt: number): Vector3 {
-    this.shoveLandingSpring(this.character.mustGetRoot().AssemblyLinearVelocity.div(12 * this.intensity));
+    const root = this.character.getRoot();
+    if (root === undefined)
+      return this.spring.update(dt);
+
+    this.shoveLandingSpring(root.AssemblyLinearVelocity.div(12 * this.intensity));
     return this.spring.update(dt);
   }
 

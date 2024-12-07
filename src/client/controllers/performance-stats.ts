@@ -26,12 +26,12 @@ export class PerformanceStatsController implements ControlPanelDropdownRenderer 
   public renderControlPanelDropdown(): void {
     const now = os.clock();
     if (now - this.lastSendRecvUpdate >= STAT_UPDATE_RATE) {
-      const sortedSends = this.sendSizes.sort();
-      const sortedRecvs = this.recvSizes.sort();
-      this.highestSend = sortedSends[sortedSends.size() - 1];
-      this.lowestSend = sortedSends[0];
-      this.highestRecv = sortedRecvs[sortedRecvs.size() - 1];
-      this.lowestRecv = sortedRecvs[0];
+      this.sendSizes.sort();
+      this.recvSizes.sort();
+      this.highestSend = this.sendSizes[this.sendSizes.size() - 1];
+      this.lowestSend = this.sendSizes[0];
+      this.highestRecv = this.recvSizes[this.recvSizes.size() - 1];
+      this.lowestRecv = this.recvSizes[0];
       this.avgSend = eMath.avg(...this.sendSizes);
       this.avgRecv = eMath.avg(...this.recvSizes);
 
