@@ -42,11 +42,11 @@
 		"body": [
 			"import type { OnStart } from \"@flamework/core\";",
 			"import { Component, BaseComponent } from \"@flamework/components\";",
-			"import { $nameof } from \"rbxts-transform-debug\";",
+			"import { \\$nameof } from \"rbxts-transform-debug\";",
 			"",
 			"interface Attributes {}",
 			"",
-			"@Component({ tag: $nameof<${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}>() })",
+			"@Component({ tag: \\$nameof<${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}>() })",
 			"export class ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g} extends BaseComponent<Attributes> implements OnStart {",
 			"\tpublic onStart(): void {",
 			"\t\t$0",

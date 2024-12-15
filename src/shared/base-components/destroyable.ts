@@ -5,6 +5,7 @@ export default class DestroyableComponent<A extends {} = {}, I extends Instance 
   protected readonly janitor = new Janitor;
 
   public destroy(): void {
+    if (!("Destroy" in this.janitor)) return;
     this.janitor.Destroy();
   }
 }
