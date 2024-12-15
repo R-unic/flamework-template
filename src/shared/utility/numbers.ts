@@ -1,4 +1,4 @@
-const { floor, abs, clamp } = math;
+const { floor, round, abs, clamp } = math;
 
 export const isNaN = (n: number) => n !== n;
 export const isEven = (n: number) => n % 2 === 0;
@@ -16,7 +16,7 @@ export function doubleSidedLimit(n: number, limit: number): number {
  * @param epsilon
  */
 export function zeroIfClose(n: number, epsilon = 0.001): number {
-  return abs(n) < epsilon ? 0 : n;
+  return abs(n) <= epsilon ? 0 : n;
 }
 
 /**
@@ -24,18 +24,23 @@ export function zeroIfClose(n: number, epsilon = 0.001): number {
  * @example toNearestFiveOrTen(7) // 10
  */
 export function toNearestFiveOrTen(n: number): number {
-  let result = floor(n / 5 + 0.5) * 5;
-  if (result % 10 !== 0)
-    result += 10 - result % 10;
+  const nearestFive = round(n / 5) * 5;
+  const lowerTen = floor(nearestFive / 10) * 10;
+  const upperTen = lowerTen + 10;
 
-  return result;
+  if (abs(n - lowerTen) <= abs(n - nearestFive))
+    return lowerTen;
+  else if (abs(n - upperTen) <= abs(n - nearestFive))
+    return upperTen;
+
+  return nearestFive;
 }
 
 /**
  * Rounds `n` to the nearest `digits` digits
  * @example roundDecimal(10.45687, 2) // 10.46
  */
-export function roundDecimal(n: number, digits = 0): number {
+export function roundDecimal(n: number, digits: number): number {
   const mult = 10 ** digits;
   return floor(n * mult + 0.5) / mult;
 }
