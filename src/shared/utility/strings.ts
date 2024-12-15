@@ -10,24 +10,19 @@ export function slugToPascal(slug: string): string {
 }
 
 /**
- * Takes a camelCase string and converts it into spaced text
+ * Takes a string and converts it into spaced text
  */
-export function camelCaseToSpaced(camelCased: string): string {
-  return camelCased.gsub("%u", " %1")[0];
-}
-
-/**
- * Takes a PascalCase and converts it into paced text
- */
-export function pascalCaseToSpaced(pascalCased: string): string {
-  return camelCaseToSpaced(pascalCased).sub(2);
+export function toSpaced(camelCased: string): string {
+  return camelCased
+    .gsub("([a-z])([A-Z])", "%1 %2")[0]
+    .gsub("([A-Za-z])(%d)", "%1 %2")[0];
 }
 
 /**
  * Capitalizes the first letter of `text`
  */
 export function capitalize(text: string): string {
-  return text.gsub("^%1", s => s.upper())[0];
+  return text.gsub("^[a-z]", s => s.upper())[0];
 }
 
 /**

@@ -10,6 +10,9 @@
 			"$className": "ServerScriptService",
 			"TS": {
 				"$path": "dist/server"
+			},
+			"Tests": {
+				"$path": "dist/tests"
 			}
 		},
 		"ReplicatedFirst": {
@@ -34,6 +37,9 @@
 			},
 			"TS": {
 				"$path": "dist/shared"
+			},
+			"Scripts": {
+				"$path": "dist/scripts"
 			}
 		},
 		"StarterPlayer": {
