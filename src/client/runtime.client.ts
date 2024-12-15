@@ -1,6 +1,7 @@
 import { Flamework } from "@flamework/core";
+import { Workspace as World } from "@rbxts/services";
 
-import { FlameworkIgnited } from "shared/constants";
+import { Assets, FlameworkIgnited } from "shared/constants";
 
 try {
 	Flamework.addPaths("src/client/hook-managers");
@@ -12,3 +13,7 @@ try {
 } catch (e) {
 	error("Issue igniting Flamework: " + <string>e);
 }
+
+const block = Assets.GrassBlock.Clone();
+block.Parent = World;
+block.Position = new Vector3(0, 4, 0);
