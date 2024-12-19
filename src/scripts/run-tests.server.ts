@@ -1,7 +1,8 @@
+import { TestRunner } from "@rbxts/runit";
 import { ServerScriptService } from "@rbxts/services";
 
-import { TestRunner } from "shared/runit";
-
-TestRunner.run([
+const testRunner = new TestRunner([
   ServerScriptService.WaitForChild("Tests")
 ]);
+
+testRunner.run();

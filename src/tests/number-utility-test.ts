@@ -1,12 +1,12 @@
+import { Theory, InlineData, Assert } from "@rbxts/runit";
+
 import { doubleSidedLimit, roundDecimal, toNearestFiveOrTen, zeroIfClose } from "shared/utility/numbers";
-import { Theory, InlineData } from "shared/runit";
-import Assert from "shared/runit/assert";
 
 class NumberUtilityTest {
   @Theory()
   @InlineData(69, 10)
   @InlineData(-69, -10)
-  public should_limitNumberOnBothSigns(input: number, expected: number) {
+  public limitsNumberOnBothSigns(input: number, expected: number): void {
     Assert.equal(expected, doubleSidedLimit(input, 10));
   }
 
@@ -14,7 +14,7 @@ class NumberUtilityTest {
   @InlineData(0.001, 0)
   @InlineData(-0.001, 0)
   @InlineData(0.01, 0.01)
-  public should_flattenToZeroIfClose(input: number, expected: number) {
+  public flattensToZeroIfClose(input: number, expected: number): void {
     Assert.equal(expected, zeroIfClose(input))
   }
 
@@ -24,14 +24,14 @@ class NumberUtilityTest {
   @InlineData(18, 20)
   @InlineData(3, 5)
   @InlineData(2, 0)
-  public should_roundToNearestFiveOrTen(input: number, expected: number) {
+  public roundsToNearestFiveOrTen(input: number, expected: number): void {
     Assert.equal(expected, toNearestFiveOrTen(input))
   }
 
   @Theory()
   @InlineData(10.678, 1, 10.7)
   @InlineData(10.678, 2, 10.68)
-  public should_roundDecimalPoints(input: number, decimalPoints: number, expected: number) {
+  public roundsDecimalPoints(input: number, decimalPoints: number, expected: number): void {
     Assert.equal(expected, roundDecimal(input, decimalPoints));
   }
 }
