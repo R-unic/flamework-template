@@ -3,6 +3,22 @@
 This is my own pre-configured template you can use for your Roblox TypeScript projects that use [Flamework](https://flamework.fireboltofdeath.dev/docs/).
 It aims to be decently simple and lightweight but still provide as many reusable things as possible to create any type of game. React/Roact is not included, you'll have to install that yourself if you want it.
 
+## Libraries
+- `@rbxts/firebase`
+- `@rbxts/ez-log`
+- `@rbxts/lazy`
+- `@rbxts/lazy-iterator`
+- `@rbxts/flamework-meta-utils`
+- `@rbxts/array-utils`
+- `@rbxts/instance-utility`
+- `@rbxts/wave`
+- `@rbxts/runit`
+  - Test files are located in `src/tests`
+- `@rbxts/flamework-binary-serializer`
+  - This package serializes tables and instances into buffers (list of bytes) which reduces the size of the data massively. It is useful for optimizing networking
+  - Includes serializers which are created & exported in `shared/network.ts`
+  - You can skip manually deserializing arguments from remotes by using the `@LinkSerializedRemote` decorator
+
 ## Features
 - Frontend:
   - Custom mouse controller
@@ -29,7 +45,7 @@ It aims to be decently simple and lightweight but still provide as many reusable
   - Cmdr for custom commands
   - Graceful Firebase API instead of DataStoreService
   - Product/gamepass transaction handler
-  - Scheduling service (run forever, execute a fn on a loop with a cooldown, e.x. `scheduling.every.second.Connect(...)`)
+  - Automatic audio replication
 - Tons of utility functions and classes (comma format, abbreviation, repr, array shuffle/flatten/reverse, springs, sin/cos waves, bitfields, string builder, etc.)
 - Tons of utility decorators
   - Method decorators
@@ -45,19 +61,11 @@ It aims to be decently simple and lightweight but still provide as many reusable
     - `@SpawnTask()` - Wraps the method in a `task.spawn`
     - `@LinkRemote(remote: ClientReceiver)` - Binds a method to a remote being fired
     - `@LinkSerializedRemote(remote: ClientReceiver, deserializer: Serializer)` - Binds a method to a remote being fired and automatically deserializes arguments
-- Included logger (not very good tbh, probably use `@rbxts/log` w/ `@rbxts/zircon`)
-- Object pooling classes
-  - Generic `InstancePool<T>`
-  - `PartPool` for parts
-  - `UIPool` for UI objects
 - Custom lifecycle hooks:
   - OnCharacterAdd/OnCharacterRemove
   - OnPlayerJoin/OnPlayerLeave
   - OnDataLoad/OnDataUpdate
   - LogStart (logs when a singleton/component is started)
-- `@rbxts/flamework-binary-serializer` is included with serializers created & exported in `shared/network.ts`
-  - This package serializes tables and instances into buffers (list of bytes) which reduces the size of the data massively. It is useful for optimizing networking
-  - You can skip manually deserializing arguments from remotes by using the `@LinkSerializedRemote` decorator
 
 ## Usage
 
