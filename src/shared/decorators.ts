@@ -144,7 +144,7 @@ export const StudioOnly = Modding.createDecorator<[]>(
  * @metadata reflect identifier flamework:parameters
  */
 export function LogBenchmark<Args extends unknown[] = unknown[]>(formatter?: (methodName: string, msElapsed: number, ...args: Args) => string) {
-  return (ctor: object, propertyKey: string, descriptor: MethodDescriptor<(self: unknown, ...args: Args) => unknown>) => {
+  return (ctor: object, propertyKey: string, descriptor: TypedPropertyDescriptor<(this: unknown, ...args: Args) => unknown>) => {
     const object = <Record<string, Callback>>ctor;
     formatter ??= (name, elapsed, ..._) => `Method "${name}" took ${roundDecimal(elapsed, 2)} ms to execute.`;
 

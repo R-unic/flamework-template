@@ -84,7 +84,7 @@ type ClientReceiver<I extends unknown[] = unknown[], O = void> = ClientEventRece
 
 /** @metadata reflect identifier flamework:parameters */
 export function LinkRemote<I extends unknown[] = unknown[], O = void>(remote: ClientReceiver<I, O>) {
-  return (ctor: object, propertyKey: string, descriptor: MethodDescriptor<(self: unknown, ...input: I) => O>) => {
+  return (ctor: object, propertyKey: string, descriptor: TypedPropertyDescriptor<(this: unknown, ...input: I) => O>) => {
     FlameworkIgnited.Once(() => {
       (<UnionToIntersection<ClientReceiver<I, O>>>remote)["setCallback" in remote ? "setCallback" : "connect"]((...args) => callMethodOnDependency(ctor, descriptor, ...args));
     });
@@ -93,7 +93,7 @@ export function LinkRemote<I extends unknown[] = unknown[], O = void>(remote: Cl
 
 /** @metadata reflect identifier flamework:parameters */
 export function LinkSerializedRemote<PacketStruct extends object, I extends [packet: SerializedPacket] = [packet: SerializedPacket], O = void>(remote: ClientReceiver<I, O>, deserializer: Serializer<PacketStruct>) {
-  return (ctor: object, propertyKey: string, descriptor: MethodDescriptor<(self: unknown, struct: PacketStruct, ...otherArgs: never[]) => O>) => {
+  return (ctor: object, propertyKey: string, descriptor: TypedPropertyDescriptor<(this: unknown, struct: PacketStruct, ...otherArgs: never[]) => O>) => {
     FlameworkIgnited.Once(() => {
       (<UnionToIntersection<ClientReceiver<I, O>>>remote)["setCallback" in remote ? "setCallback" : "connect"]((...args) => {
         const [{ buffer, blobs }] = args;

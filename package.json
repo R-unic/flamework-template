@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rbxtsc",
     "watch": "rbxtsc -w",
-    "test": "\"\"%USERPROFILE%/.aftman/bin/rojo\"\" build src -o ./place.rbxl && \"\"%USERPROFILE%/.aftman/bin/run-in-roblox\"\" --place ./place.rbxl --script ./dist/scripts/run-tests.server.lua"
+    "test": "npm run build && \"%USERPROFILE%/.aftman/bin/rojo\" build . -o ./place.rbxl && \"%USERPROFILE%/.aftman/bin/run-in-roblox\" --place ./place.rbxl --script ./dist/scripts/run-tests.server.luau"
   },
   "keywords": [],
   "repository": {
@@ -43,7 +43,7 @@
     "@rbxts/ez-log": "^1.0.0",
     "@rbxts/firebase": "^1.0.1",
     "@rbxts/flamework-binary-serializer": "^0.6.0",
-    "@rbxts/flamework-meta-utils": "^1.0.0",
+    "@rbxts/flamework-meta-utils": "^1.0.1",
     "@rbxts/gamejoy": "^1.1.4",
     "@rbxts/instance-utility": "^1.0.1",
     "@rbxts/iris": "^2.2.0-ts.0",
@@ -52,7 +52,7 @@
     "@rbxts/lazy-iterator": "^1.0.1",
     "@rbxts/object-utils": "^1.0.4",
     "@rbxts/quaternion": "^1.0.0",
-    "@rbxts/runit": "^1.0.2",
+    "@rbxts/runit": "^1.0.3",
     "@rbxts/signal": "^1.1.1",
     "@rbxts/strict-map": "^1.0.2",
     "@rbxts/string-builder": "^1.0.0",

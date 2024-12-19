@@ -1,10 +1,6 @@
-interface MethodDescriptor<T extends Callback = Callback> {
-  readonly value: T;
-}
-
 interface SerializedPacket {
-  buffer: buffer;
-  blobs: defined[];
+  readonly buffer: buffer;
+  readonly blobs: defined[];
 }
 
 type Maybe<T> = T | undefined;
