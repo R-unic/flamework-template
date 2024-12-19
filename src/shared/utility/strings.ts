@@ -28,6 +28,6 @@ export function capitalize(text: string): string {
 /**
  * Removes all whitespace characters from `text`
  */
-export function removeWhitespace(text: string): string {
+export function stripWhitespace(text: string): string {
   return text.gsub("%s+", "")[0];
 }

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "rbxtsc",
-    "watch": "rbxtsc -w"
+    "watch": "rbxtsc -w",
+    "test": "\"\"%USERPROFILE%/.aftman/bin/rojo\"\" build src -o ./place.rbxl && \"\"%USERPROFILE%/.aftman/bin/run-in-roblox\"\" --place ./place.rbxl --script ./dist/scripts/run-tests.server.lua"
   },
   "keywords": [],
   "repository": {
@@ -33,6 +34,7 @@
     "@flamework/components": "latest",
     "@flamework/core": "latest",
     "@flamework/networking": "latest",
+    "@rbxts/array-utils": "^1.0.0",
     "@rbxts/atlas": "^1.1.4",
     "@rbxts/builders": "^1.0.2",
     "@rbxts/charm": "^0.8.1",
@@ -52,9 +54,9 @@
     "@rbxts/quaternion": "^1.0.0",
     "@rbxts/signal": "^1.1.1",
     "@rbxts/strict-map": "^1.0.2",
+    "@rbxts/string-builder": "^1.0.0",
     "@rbxts/string-utils": "^1.0.3",
     "@rbxts/t": "^3.1.1",
-    "@rbxts/testez": "^0.4.2-ts.0",
     "@rbxts/wave": "^1.0.0",
     "node": "^18.20.1"
   }
