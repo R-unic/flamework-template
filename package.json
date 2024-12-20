@@ -52,7 +52,7 @@
     "@rbxts/lazy-iterator": "^1.0.1",
     "@rbxts/object-utils": "^1.0.4",
     "@rbxts/quaternion": "^1.0.0",
-    "@rbxts/runit": "^1.0.5",
+    "@rbxts/runit": "^1.1.1",
     "@rbxts/signal": "^1.1.1",
     "@rbxts/strict-map": "^1.0.2",
     "@rbxts/string-builder": "^1.0.0",
