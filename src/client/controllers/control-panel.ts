@@ -10,6 +10,7 @@ import { createMappingDecorator } from "shared/utility/meta";
 import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel";
 
 import type { MouseController } from "./mouse";
+import { StandardActionBuilder } from "@rbxts/mechanism";
 
 const [renderableMeta, ControlPanelRenderable] = createMappingDecorator<ControlPanelDropdownRenderer, never[], [dropdownName: string, order?: number]>();
 export { ControlPanelRenderable };
@@ -43,13 +44,13 @@ export class ControlPanelController implements OnStart, LogStart {
     Iris.Connect(() => this.render());
   }
 
-  @OnInput("Comma")
+  @OnInput(new StandardActionBuilder(Enum.KeyCode.Comma))
   public open(): void {
     if (!isDeveloper(Player)) return;
     this.windowOpened.set(!this.windowOpened.get());
   }
 
-  @OnInput("P")
+  @OnInput(new StandardActionBuilder(Enum.KeyCode.P))
   public unlockMouse(): void {
     if (!isDeveloper(Player)) return;
     this.mouseUnlocked = !this.mouseUnlocked;

@@ -1,13 +1,13 @@
 import { Controller, type OnInit, type OnRender } from "@flamework/core";
 import { UserInputService as UserInput, Workspace as World } from "@rbxts/services";
 import { RaycastParamsBuilder } from "@rbxts/builders";
-import { Context as InputContext } from "@rbxts/gamejoy";
-import { Axis } from "@rbxts/gamejoy/out/Actions";
 import Charm, { atom } from "@rbxts/charm";
 import Signal from "@rbxts/signal";
 
-import { OnInput, OnAxisInput, OnInputRelease } from "client/decorators";
+import { OnInput, OnAxisInput, OnInputRelease, inputManager } from "client/decorators";
 import { Player } from "client/utility";
+import { AxisAction, AxisActionBuilder, StandardActionBuilder } from "@rbxts/mechanism";
+import { ActionID } from "./input";
 
 const { abs } = math;
 
@@ -24,14 +24,17 @@ export class MouseController implements OnInit, OnRender {
   public readonly behavior = atom<Enum.MouseBehavior>(Enum.MouseBehavior.Default);
 
   private readonly playerMouse = Player.GetMouse();
-  private readonly rightThumbstickAxis = new Axis("Thumbstick2");
+  private readonly rightThumbstickAxis = new AxisActionBuilder(Enum.KeyCode.Thumbstick2);
   private readonly thumbstickDeadzone = 0.1;
 
   private lastInput?: Enum.UserInputType;
   private delta = new Vector2;
 
   public onInit(): void {
-    new InputContext().Bind(this.rightThumbstickAxis, () => { /* this is only so that the Position property computes */ });
+    inputManager
+      .bind(this.rightThumbstickAxis)
+      .bind(new StandardActionBuilder(Enum.KeyCode.ButtonL2).setID(ActionID.LeftTrigger))
+      .bind(new StandardActionBuilder(Enum.KeyCode.ButtonR2).setID(ActionID.RightTrigger));
 
     // Touch controls
     UserInput.TouchPinch.Connect((_, scale) => this.scrolled.Fire((scale < 1 ? 1 : -1) * abs(scale - 2)));
@@ -51,8 +54,15 @@ export class MouseController implements OnInit, OnRender {
         this.delta = UserInput.GetMouseDelta();
         break;
       }
-      case Enum.UserInputType.Gamepad1: {
-        const { X, Y } = this.rightThumbstickAxis.Position;
+      case Enum.UserInputType.Gamepad1:
+      case Enum.UserInputType.Gamepad2:
+      case Enum.UserInputType.Gamepad3:
+      case Enum.UserInputType.Gamepad4:
+      case Enum.UserInputType.Gamepad5:
+      case Enum.UserInputType.Gamepad6:
+      case Enum.UserInputType.Gamepad7:
+      case Enum.UserInputType.Gamepad8: {
+        const { X, Y } = this.rightThumbstickAxis.position;
         this.delta = new Vector2(
           this.applyThumbstickDeadzone(X),
           this.applyThumbstickDeadzone(-Y)
@@ -90,74 +100,83 @@ export class MouseController implements OnInit, OnRender {
   }
 
   /** @hidden */
-  @OnAxisInput("MouseWheel")
-  public onScroll(axis: Axis<"MouseWheel">): void {
-    this.scrolled.Fire(-axis.Position.Z);
+  @OnAxisInput(new AxisActionBuilder(Enum.UserInputType.MouseWheel))
+  public onScroll(axis: AxisAction): void {
+    this.scrolled.Fire(-axis.position.Z);
   }
 
   /** @hidden */
-  @OnAxisInput("ButtonR2", "axisR2")
-  public onR2AxisChange(axis: Axis<"ButtonR2">): void {
+  @OnAxisInput(new AxisActionBuilder(Enum.KeyCode.ButtonR2))
+  public onR2AxisChange(axis: AxisAction): void {
     this.triggerAxesChange(axis, this.isLmbDown);
   }
 
   /** @hidden */
-  @OnAxisInput("ButtonL2", "axisL2")
-  public onL2AxisChange(axis: Axis<"ButtonL2">): void {
+  @OnAxisInput(new AxisActionBuilder(Enum.KeyCode.ButtonL2))
+  public onL2AxisChange(axis: AxisAction): void {
     this.triggerAxesChange(axis, this.isLmbDown);
   }
 
   /** @hidden */
-  @OnInputRelease("axisR2")
+  @OnInputRelease(ActionID.RightTrigger)
   public onR2Release(): void {
     this.rmbUp();
   }
 
   /** @hidden */
-  @OnInputRelease("axisL2")
+  @OnInputRelease(ActionID.LeftTrigger)
   public onL2Release(): void {
     this.lmbUp();
   }
 
   /** @hidden */
-  @OnInputRelease("mmb")
+  @OnInputRelease(ActionID.MMB)
   public mmbUp(): void {
     this.isMmbDown(false);
   }
 
   /** @hidden */
-  @OnInput("MouseButton3", "mmb")
+  @OnInput(
+    new StandardActionBuilder(Enum.KeyCode.MouseMiddleButton)
+      .setID(ActionID.MMB)
+  )
   public mmbDown(): void {
     this.isMmbDown(true);
   }
 
   /** @hidden */
-  @OnInputRelease("rmb")
+  @OnInputRelease(ActionID.RMB)
   public rmbUp(): void {
     this.isRmbDown(false);
   }
 
   /** @hidden */
-  @OnInput("MouseButton2", "rmb")
+  @OnInput(
+    new StandardActionBuilder(Enum.KeyCode.MouseRightButton)
+      .setID(ActionID.RMB)
+  )
   public rmbDown(): void {
     this.isRmbDown(true);
   }
 
   /** @hidden */
-  @OnInputRelease("lmb")
+  @OnInputRelease(ActionID.LMB)
   public lmbUp(): void {
     this.isLmbDown(false);
   }
 
   /** @hidden */
-  @OnInput("MouseButton1", "lmb")
+  @OnInput(
+    new StandardActionBuilder(Enum.KeyCode.MouseLeftButton)
+      .setID(ActionID.LMB)
+  )
   public lmbDown(): void {
     this.isLmbDown(true);
   }
 
-  private triggerAxesChange(axis: Axis<"ButtonL2" | "ButtonR2">, isDown: Charm.Atom<boolean>): void {
-    if (axis.Delta.Z < 0) return void isDown(false);
-    if (axis.Delta.Z < 0.05) return;
+  private triggerAxesChange(axis: AxisAction, isDown: Charm.Atom<boolean>): void {
+    if (axis.delta.Z < 0) return void isDown(false);
+    if (axis.delta.Z < 0.05) return;
     isDown(true);
   }
 
