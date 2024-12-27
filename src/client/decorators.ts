@@ -1,9 +1,7 @@
 import { Modding } from "@flamework/core";
-import { Context } from "@rbxts/gamejoy";
-import { Action, Axis, Union } from "@rbxts/gamejoy/out/Actions";
-import { BaseAction } from "@rbxts/gamejoy/out/Class/BaseAction";
+import { InputManager } from "@rbxts/mechanism";
+import { BaseAction } from "@rbxts/mechanism/out/base-action";
 import { callMethodOnDependency } from "@rbxts/flamework-meta-utils";
-import type { ActionLike, ActionOptions, AxisActionEntry, RawActionEntry } from "@rbxts/gamejoy/out/Definitions/Types";
 import type { ClientReceiver as ClientEventReceiver } from "@flamework/networking/out/events/types";
 import type { ClientReceiver as ClientFunctionReceiver } from "@flamework/networking/out/functions/types";
 import type { Serializer } from "@rbxts/flamework-binary-serializer";
@@ -11,27 +9,13 @@ import type { Serializer } from "@rbxts/flamework-binary-serializer";
 import { FlameworkIgnited } from "shared/constants";
 import Log from "shared/log";
 
-const inputContext = new Context({ Process: false });
-const processedContext = new Context({ Process: true });
-export const inputActions: Record<string, BaseAction> = {};
+const inputManager = new InputManager;
 
-export const OnInput = Modding.createDecorator<[binding: (RawActionEntry | BaseAction) | (RawActionEntry | BaseAction)[], actionName?: string, process?: boolean, options?: ActionOptions]>(
+export const OnInput = Modding.createDecorator<[binding: BaseAction]>(
   "Method",
-  (descriptor, [rawAction, actionName, process, options]) => {
-    const action: BaseAction = typeOf(rawAction) === "string" ?
-      new Action(<RawActionEntry>rawAction, options)
-      : rawAction instanceof BaseAction ?
-        rawAction
-        : new Union(<RawActionEntry[]>rawAction);
-
-    if (action instanceof Union && options !== undefined)
-      Log.warn(`Action options given to @OnInput decorator on "${descriptor.property}" method were ignored because it is a union action`);
-
-    if (actionName !== undefined)
-      inputActions[actionName] = action;
-
+  (descriptor, [action]) => {
     FlameworkIgnited.Once(() => {
-      const context = process ? processedContext : inputContext;
+      inputManager.bind(action)
       context.Bind(<ActionLike<RawActionEntry>>action, () => {
         const object = <Record<string, Callback>>Modding.resolveSingleton(descriptor.constructor!);
         void task.spawn(object[descriptor.property], object, action);

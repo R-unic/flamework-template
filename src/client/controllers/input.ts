@@ -3,6 +3,7 @@ import { Controller } from "@flamework/core";
 import type { LogStart } from "shared/hooks";
 import { OnInput, OnInputRelease } from "client/decorators";
 
+
 /** Handles all game input */
 @Controller()
 export class InputController implements LogStart {

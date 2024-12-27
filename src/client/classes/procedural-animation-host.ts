@@ -42,9 +42,7 @@ export class ProceduralAnimationHost<I extends Camera | Model = Camera | Model> 
       require(animationModule);
 
     for (const [ProceduralAnimation, args] of Object.values(animationClassMap))
-      processDependency(ProceduralAnimation, animation => {
-        this.animations.push([animation, args])
-      });
+      processDependency(ProceduralAnimation, animation => this.animations.push([animation, args]));
   }
 
   public update(dt: number): CFrame {
