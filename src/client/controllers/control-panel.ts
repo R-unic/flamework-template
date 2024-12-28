@@ -44,13 +44,13 @@ export class ControlPanelController implements OnStart, LogStart {
     Iris.Connect(() => this.render());
   }
 
-  @OnInput(new StandardActionBuilder(Enum.KeyCode.Comma))
+  @OnInput(new StandardActionBuilder("Comma"))
   public open(): void {
     if (!isDeveloper(Player)) return;
     this.windowOpened.set(!this.windowOpened.get());
   }
 
-  @OnInput(new StandardActionBuilder(Enum.KeyCode.P))
+  @OnInput(new StandardActionBuilder("P"))
   public unlockMouse(): void {
     if (!isDeveloper(Player)) return;
     this.mouseUnlocked = !this.mouseUnlocked;

@@ -17,7 +17,7 @@ export const enum ActionID {
 @Controller()
 export class InputController implements LogStart {
   @OnInput(
-    new StandardActionBuilder(Enum.KeyCode.C)
+    new StandardActionBuilder("C")
       .setID(ActionID.Crouch)
   )
   public crouch(): void {

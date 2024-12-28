@@ -24,7 +24,7 @@ export class MouseController implements OnInit, OnRender {
   public readonly behavior = atom<Enum.MouseBehavior>(Enum.MouseBehavior.Default);
 
   private readonly playerMouse = Player.GetMouse();
-  private readonly rightThumbstickAxis = new AxisActionBuilder(Enum.KeyCode.Thumbstick2);
+  private readonly rightThumbstickAxis = new AxisActionBuilder("Thumbstick2");
   private readonly thumbstickDeadzone = 0.1;
 
   private lastInput?: Enum.UserInputType;
@@ -33,8 +33,8 @@ export class MouseController implements OnInit, OnRender {
   public onInit(): void {
     inputManager
       .bind(this.rightThumbstickAxis)
-      .bind(new StandardActionBuilder(Enum.KeyCode.ButtonL2).setID(ActionID.LeftTrigger))
-      .bind(new StandardActionBuilder(Enum.KeyCode.ButtonR2).setID(ActionID.RightTrigger));
+      .bind(new StandardActionBuilder("L2").setID(ActionID.LeftTrigger))
+      .bind(new StandardActionBuilder("R2").setID(ActionID.RightTrigger));
 
     // Touch controls
     UserInput.TouchPinch.Connect((_, scale) => this.scrolled.Fire((scale < 1 ? 1 : -1) * abs(scale - 2)));
@@ -100,19 +100,19 @@ export class MouseController implements OnInit, OnRender {
   }
 
   /** @hidden */
-  @OnAxisInput(new AxisActionBuilder(Enum.UserInputType.MouseWheel))
+  @OnAxisInput(new AxisActionBuilder("MouseWheel"))
   public onScroll(axis: AxisAction): void {
     this.scrolled.Fire(-axis.position.Z);
   }
 
   /** @hidden */
-  @OnAxisInput(new AxisActionBuilder(Enum.KeyCode.ButtonR2))
+  @OnAxisInput(new AxisActionBuilder("R2"))
   public onR2AxisChange(axis: AxisAction): void {
     this.triggerAxesChange(axis, this.isLmbDown);
   }
 
   /** @hidden */
-  @OnAxisInput(new AxisActionBuilder(Enum.KeyCode.ButtonL2))
+  @OnAxisInput(new AxisActionBuilder("L2"))
   public onL2AxisChange(axis: AxisAction): void {
     this.triggerAxesChange(axis, this.isLmbDown);
   }
@@ -137,7 +137,7 @@ export class MouseController implements OnInit, OnRender {
 
   /** @hidden */
   @OnInput(
-    new StandardActionBuilder(Enum.KeyCode.MouseMiddleButton)
+    new StandardActionBuilder("MouseButton3")
       .setID(ActionID.MMB)
   )
   public mmbDown(): void {
@@ -152,7 +152,7 @@ export class MouseController implements OnInit, OnRender {
 
   /** @hidden */
   @OnInput(
-    new StandardActionBuilder(Enum.KeyCode.MouseRightButton)
+    new StandardActionBuilder("MouseButton2")
       .setID(ActionID.RMB)
   )
   public rmbDown(): void {
@@ -167,7 +167,7 @@ export class MouseController implements OnInit, OnRender {
 
   /** @hidden */
   @OnInput(
-    new StandardActionBuilder(Enum.KeyCode.MouseLeftButton)
+    new StandardActionBuilder("MouseButton1")
       .setID(ActionID.LMB)
   )
   public lmbDown(): void {
