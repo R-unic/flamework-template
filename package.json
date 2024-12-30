@@ -50,7 +50,7 @@
     "@rbxts/janitor": "^1.15.7-ts.0",
     "@rbxts/lazy": "^1.0.1",
     "@rbxts/lazy-iterator": "^1.0.1",
-    "@rbxts/mechanism": "^1.0.9",
+    "@rbxts/mechanism": "^1.1.0",
     "@rbxts/object-utils": "^1.0.4",
     "@rbxts/quaternion": "^1.0.0",
     "@rbxts/runit": "^1.2.0",
