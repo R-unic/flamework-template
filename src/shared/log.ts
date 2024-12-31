@@ -9,7 +9,7 @@ function getInstancePath(instance: Instance): string {
     .gsub("PlayerGui", "UI")[0];
 
   if (Runtime.IsClient())
-    path = path.gsub(`Players.${Players.LocalPlayer.Name}.`, "")[0];
+    [path] = path.gsub(`Players.${Players.LocalPlayer.Name}.`, "");
 
   return path;
 }

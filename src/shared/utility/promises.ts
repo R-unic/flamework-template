@@ -1,5 +1,3 @@
-import Signal from "@rbxts/signal";
-
 interface DelayUntilOptions {
   /** Delays until the value returned by this function returns true or the signal fires */
   readonly condition: RBXScriptSignal | (() => boolean);

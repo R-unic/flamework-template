@@ -95,27 +95,24 @@
 			"}",
 		]
 	},
-	"Bitfield": {
+	"rUnit Test": {
 		"prefix": [
-			"bitf, bitfield"
+			"test",
+			"runit",
+			"runit-test"
 		],
-		"description": "Create a Bitfield",
+		"description": "Create an rUnit test",
 		"body": [
-			"import Bitfield from \"shared/classes/bitfield\";",
+			"import { Fact, Assert } from \"@rbxts/runit\";",
 			"",
-			"export const enum ${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g}Masks {",
-			"\t",
-			"}",
-			"",
-			"export class ${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g} extends Bitfield<${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g}Masks> {",
-			"\tpublic constructor() {",
-			"\t\tsuper();",
-			"\t}",
-			"",
-			"\tprotected setDefaults(): void {",
-			"\t",
+			"class ${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g} {",
+			"\t@Fact()",
+			"\tpublic ${1:testCase}(): void {",
+			"\t\tAssert.equal(${2:expected}, ${3:actual});",
 			"\t}",
 			"}",
+			"",
+			"export = ${TM_FILENAME_BASE/(.*)/${0:/pascalcase}/g};"
 		]
 	}
 }
