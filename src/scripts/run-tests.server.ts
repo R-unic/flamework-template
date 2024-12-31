@@ -5,4 +5,4 @@ const testRunner = new TestRunner(
   ServerScriptService.WaitForChild("Tests")
 );
 
-testRunner.run();
+testRunner.run({ colors: true });

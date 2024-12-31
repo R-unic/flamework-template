@@ -1,7 +1,7 @@
 # Runic's Flamework Template
 
 This is my own pre-configured template you can use for your Roblox TypeScript projects that use [Flamework](https://flamework.fireboltofdeath.dev/docs/).
-It aims to be decently simple and lightweight but still provide as many reusable things as possible to create any type of game. React/Roact is not included, you'll have to install that yourself if you want it.
+It aims to be decently simple and lightweight but still provide as many reusable things as possible to create any type of game. React/Roact is not included, you'll have to install that yourself if you want it. ESLint and Prettier are also not included.
 
 ## Libraries
 - `@rbxts/firebase`

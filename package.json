@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rbxtsc",
-    "watch": "rbxtsc -w",
-    "test": "npm run build && \"%USERPROFILE%/.aftman/bin/rojo\" build . -o ./place.rbxl && \"%USERPROFILE%/.aftman/bin/run-in-roblox\" --place ./place.rbxl --script ./dist/scripts/run-tests.server.luau"
+    "build": "rokit install && rbxtsc",
+    "build-place": "npm run -s build && rojo build . -o ./place.rbxl",
+    "watch": "npm run -s build -- -w",
+    "test": "npm run -s build-place && lune run tests ./place.rbxl"
   },
   "keywords": [],
   "repository": {
@@ -20,11 +21,6 @@
     "@rbxts/types": "latest",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
-    "eslint": "^7.31.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-roblox-ts": "^0.0.30",
-    "prettier": "^2.3.2",
     "rbxts-transform-debug": "github:roblox-aurora/rbxts-transform-debug",
     "rbxts-transformer-flamework": "latest",
     "roblox-ts": "^3.0.0",
