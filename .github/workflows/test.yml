@@ -24,7 +24,7 @@ jobs:
         run: |
           npm test | tee test-output.txt
           output=$(<test-output.txt)
-          if [[ ! $output =~ Failed:[^0] ]]; then
+          if [[ ! $output =~ Failed:\ 0 ]]; then
             exit 0
           else
             exit 1
