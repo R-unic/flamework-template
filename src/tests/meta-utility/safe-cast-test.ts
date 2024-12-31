@@ -27,11 +27,12 @@ class SafeCastTest {
   private checkFoo<T extends Foo>(guard?: t.check<T> | Modding.Generic<T, "guard">): void {
     const invalidFoo = safeCast<T>({}, guard);
     const validFoo = safeCast<T>({ foo: 123 }, guard);
+
     Assert.undefined(invalidFoo);
     Assert.notUndefined(validFoo);
-    Assert.isType(validFoo, "table");
-    Assert.hasProperty(validFoo!, "foo");
-    Assert.equal(123, validFoo!.foo);
+    if (Assert.isType<T>(validFoo)) {
+      Assert.equal(123, validFoo.foo);
+    }
   }
 }
 

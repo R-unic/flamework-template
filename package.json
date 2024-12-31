@@ -53,7 +53,7 @@
     "@rbxts/mechanism": "^1.1.0",
     "@rbxts/object-utils": "^1.0.4",
     "@rbxts/quaternion": "^1.0.0",
-    "@rbxts/runit": "^1.2.0",
+    "@rbxts/runit": "^1.2.3",
     "@rbxts/signal": "^1.1.1",
     "@rbxts/strict-map": "^1.0.2",
     "@rbxts/string-builder": "^1.0.0",
