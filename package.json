@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "setup-rokit": "rokit install && rokit trust lune-org/lune && rokit trust rojo-rbx/rojo",
+    "setup-rokit": "rokit trust lune-org/lune && rokit trust rojo-rbx/rojo && rokit install",
     "build": "npm run setup-rokit && rbxtsc",
     "build-place": "npm run build && rojo build . -o ./place.rbxl",
     "watch": "npm run -s build -- -w",
