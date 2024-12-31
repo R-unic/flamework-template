@@ -1,7 +1,7 @@
 import { Controller } from "@flamework/core";
 
 import { Player } from "client/utility";
-import { promisifyEvent } from "shared/utility/other";
+import { promisifyEvent } from "shared/utility/promises";
 
 @Controller()
 export class CharacterController {
