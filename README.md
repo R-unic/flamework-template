@@ -20,10 +20,16 @@ It aims to be decently simple and lightweight but still provide as many reusable
   - You can skip manually deserializing arguments from remotes by using the `@LinkSerializedRemote` decorator
 
 ## Features
+- Snippets:
+  - Flamework controller
+  - Flamework service
+  - Flamework component
+  - Flamework UI component
+  - rUnit test
 - Frontend:
   - Custom mouse controller
   - `ReplicaController` which stores a copy of the local player's data
-  - Procedural animation system for cameras or models with these animations included:
+  - Procedural animation system for cameras or models with these animations included (just delete it if you don't want it):
     - Landing
     - Mouse sway
     - Walk cycle
