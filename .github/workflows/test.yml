@@ -9,28 +9,19 @@ on:
 jobs:
   unit-tests:
     name: Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Rokit
-        run: |
-          curl -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Verify Rokit Installation
-        run: rokit --version
-
-      - name: Install NPM Dependencies
-        run: npm i
-
       - name: Run Tests
         run: |
-          npm test | tee -file test-output.txt;
-          output=$(<test-output.txt)
-          if [[ ! $output =~ Failed:[^0] ]]; then
+          curl -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash
+          npm i
+          npm test | Tee-Object -file test-output.txt;
+          $output = Get-Content -Path main-test-output.txt;
+          if ($output -notmatch 'Failed: [^0]') {
             exit 0
-          else
+          } else {
             exit 1
-          fi
+          }
