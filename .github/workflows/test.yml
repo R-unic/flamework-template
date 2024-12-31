@@ -1,0 +1,31 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rokit
+        run: curl -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash
+
+      - name: Install NPM Dependencies
+        run: npm i
+
+      - name: Run Tests
+        run: |
+          npm test | Tee-Object -file test-output.txt;
+          $output = Get-Content -Path main-test-output.txt;
+          if ($output -notmatch 'Failed: [^0]') {
+            exit 0
+          } else {
+            exit 1
+          }
