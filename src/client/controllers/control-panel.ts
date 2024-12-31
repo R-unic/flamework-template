@@ -1,4 +1,5 @@
 import { Controller, type OnStart } from "@flamework/core";
+import { StandardActionBuilder } from "@rbxts/mechanism";
 import { processDependency } from "@rbxts/flamework-meta-utils";
 import Iris from "@rbxts/iris";
 
@@ -10,7 +11,6 @@ import { createMappingDecorator } from "shared/utility/meta";
 import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel";
 
 import type { MouseController } from "./mouse";
-import { StandardActionBuilder } from "@rbxts/mechanism";
 
 const [renderableMeta, ControlPanelRenderable] = createMappingDecorator<ControlPanelDropdownRenderer, never[], [dropdownName: string, order?: number]>();
 export { ControlPanelRenderable };

@@ -1,8 +1,8 @@
 import { Controller } from "@flamework/core";
+import { StandardActionBuilder } from "@rbxts/mechanism";
 
 import type { LogStart } from "shared/hooks";
 import { OnInput, OnInputRelease } from "client/decorators";
-import { StandardActionBuilder } from "@rbxts/mechanism";
 
 export const enum ActionID {
   LMB,

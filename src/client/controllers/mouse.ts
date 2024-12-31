@@ -1,12 +1,12 @@
 import { Controller, type OnInit, type OnRender } from "@flamework/core";
 import { UserInputService as UserInput, Workspace as World } from "@rbxts/services";
+import { AxisAction, AxisActionBuilder, StandardActionBuilder } from "@rbxts/mechanism";
 import { RaycastParamsBuilder } from "@rbxts/builders";
 import Charm, { atom } from "@rbxts/charm";
 import Signal from "@rbxts/signal";
 
 import { OnInput, OnAxisInput, OnInputRelease, inputManager } from "client/decorators";
 import { Player } from "client/utility";
-import { AxisAction, AxisActionBuilder, StandardActionBuilder } from "@rbxts/mechanism";
 import { ActionID } from "./input";
 
 const { abs } = math;
