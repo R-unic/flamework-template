@@ -14,14 +14,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Rokit
+        run: |
+          curl -sSf -o install_rokit.sh https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh
+          chmod +x install_rokit.sh
+          install_rokit.sh
+
+      - name: Install NPM dependencies
+        run: npm i
+
       - name: Run Tests
         run: |
-          curl -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash
-          npm i
-          npm test | Tee-Object -file test-output.txt;
-          $output = Get-Content -Path main-test-output.txt;
-          if ($output -notmatch 'Failed: [^0]') {
+          npm test | tee test-output.txt
+          output=$(<test-output.txt)
+          if [[ ! $output =~ Failed:[^0] ]]; then
             exit 0
-          } else {
+          else
             exit 1
-          }
+          fi
