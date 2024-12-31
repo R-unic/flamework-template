@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "setup-rokit": "rokit install && rokit trust lune-org/lune && rokit trust rojo-rbx/rojo",
-    "build": "npm run -s setup-rokit && rbxtsc",
-    "build-place": "npm run -s build && rojo build . -o ./place.rbxl",
+    "build": "npm run setup-rokit && rbxtsc",
+    "build-place": "npm run build && rojo build . -o ./place.rbxl",
     "watch": "npm run -s build -- -w",
-    "test": "npm run -s build-place && lune run tests ./place.rbxl"
+    "test": "npm run build-place && lune run tests ./place.rbxl"
   },
   "keywords": [],
   "repository": {
