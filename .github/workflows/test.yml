@@ -15,11 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Rokit
-        run: |
-          curl -sSf -o install_rokit.sh https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh
-          chmod +x ./install_rokit.sh
-          ./install_rokit.sh
-          echo "${{ github.workspace }}/.rokit/bin" >> $GITHUB_PATH
+        uses: CompeyDev/setup-rokit@v0.1.2
 
       - name: Install NPM dependencies
         run: npm i
