@@ -24,6 +24,7 @@ export class TransactionsService implements OnInit {
       const productKey = `${PlayerId}_${PurchaseId}`;
       const player = Players.GetPlayerByUserId(PlayerId);
       const playerExists = player !== undefined;
+
       let purchaseRecorded: Maybe<boolean> = true;
       if (playerExists) {
         const data = this.data.get(player);
@@ -36,8 +37,8 @@ export class TransactionsService implements OnInit {
       let success = true;
       try {
         const grantReward = this.rewardHandlers[ProductId];
-        if (playerExists && grantReward !== undefined)
-          grantReward(player);
+        if (playerExists)
+          grantReward?.(player);
       } catch (err) {
         success = false;
         purchaseRecorded = undefined;

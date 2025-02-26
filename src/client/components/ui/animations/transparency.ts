@@ -27,10 +27,6 @@ export class TransparencyAnimation extends ButtonTweenAnimation<Attributes> impl
     .SetTime(this.attributes.TransparencyAnimation_Speed)
     .Build();
 
-  public onStart(): void {
-    super.onStart();
-  }
-
   public active(): void {
     tween(this.instance, this.tweenInfo, {
       BackgroundTransparency: this.attributes.TransparencyAnimation_TransparencyGoal

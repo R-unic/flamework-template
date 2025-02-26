@@ -1,3 +1,6 @@
 import type { PacketSafePlaySoundOptions } from "./audio";
 
-export type AudioPacket = { sound: Sound, options?: PacketSafePlaySoundOptions };
+export interface AudioPacket {
+  readonly sound: Sound;
+  readonly options?: PacketSafePlaySoundOptions;
+}

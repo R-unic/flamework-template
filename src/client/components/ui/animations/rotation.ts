@@ -27,10 +27,6 @@ export class RotationAnimation extends ButtonTweenAnimation<Attributes> implemen
     .SetTime(this.attributes.RotationAnimation_Speed)
     .Build();
 
-  public onStart(): void {
-    super.onStart();
-  }
-
   public active(): void {
     tween(this.instance, this.tweenInfo, {
       Rotation: this.attributes.RotationAnimation_RotationGoal

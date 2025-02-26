@@ -26,10 +26,6 @@ export class GradientAnimation extends ButtonTweenAnimation<Attributes, GuiButto
     .SetTime(this.attributes.GradientAnimation_Speed)
     .Build();
 
-  public onStart(): void {
-    super.onStart();
-  }
-
   public active(): void {
     tween(this.instance.UIGradient, this.tweenInfo, {
       Offset: this.attributes.GradientAnimation_OffsetGoal

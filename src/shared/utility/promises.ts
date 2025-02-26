@@ -1,6 +1,6 @@
 interface DelayUntilOptions {
   /** Delays until the value returned by this function returns true or the signal fires */
-  readonly condition: RBXScriptSignal | (() => boolean);
+  readonly condition: RBXScriptSignal | (() => boolean | Promise<boolean>);
   /** The interval between each check of the condition */
   readonly checkInterval: number;
   /** Whether it should check the condition at the start of the loop */
@@ -14,7 +14,7 @@ export async function delayUntil({ condition, checkInterval, initialCheck, timeo
     let elapsed = 0;
     if (!typeIs(condition, "function")) {
       await promisifyEvent(condition);
-      return;
+      return resolve();
     }
 
     do {

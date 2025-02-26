@@ -28,10 +28,6 @@ export class ScaleAnimation extends ButtonTweenAnimation<Attributes> implements 
     .SetTime(this.attributes.ScaleAnimation_Speed)
     .Build();
 
-  public onStart(): void {
-    super.onStart();
-  }
-
   protected inactive(): void {
     tween(this.scale, this.tweenInfo, {
       Scale: this.defaultScale
