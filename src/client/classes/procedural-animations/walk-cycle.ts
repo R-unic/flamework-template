@@ -2,7 +2,7 @@ import Wave from "@rbxts/wave";
 
 import { Singleton } from "shared/decorators";
 import { Spring } from "shared/classes/spring";
-import { ProceduralAnimation, BaseProceduralAnimation, ProceduralAnimationInstance } from "../procedural-animation-host";
+import { ProceduralAnimation, BaseProceduralAnimation, ProceduralAnimationTarget } from "../procedural-animation-host";
 
 import type { CharacterController } from "client/controllers/character";
 
@@ -14,13 +14,13 @@ const BASE_FREQUENCY = 16;
 const BASE_VERTICAL_SHIFT = -1;
 
 @Singleton()
-@ProceduralAnimation(ProceduralAnimationInstance.Any)
+@ProceduralAnimation(ProceduralAnimationTarget.Any)
 export class WalkCycleAnimation extends BaseProceduralAnimation {
-  public readonly spring = new Spring;
-  public readonly sineWave = new Wave(BASE_AMPLITUDE, BASE_FREQUENCY, BASE_VERTICAL_SHIFT, 0, WAVE_DAMPING);
-  public readonly cosineWave = new Wave(BASE_AMPLITUDE, BASE_FREQUENCY, BASE_VERTICAL_SHIFT, 1, WAVE_DAMPING, cos);
-  public damping = -6;
-  public minimumSpeed = 1; // if you want
+  private readonly spring = new Spring;
+  private readonly sineWave = new Wave(BASE_AMPLITUDE, BASE_FREQUENCY, BASE_VERTICAL_SHIFT, 0, WAVE_DAMPING);
+  private readonly cosineWave = new Wave(BASE_AMPLITUDE, BASE_FREQUENCY, BASE_VERTICAL_SHIFT, 1, WAVE_DAMPING, cos);
+  private readonly damping = -6;
+  private readonly minimumSpeed = 1; // if you want
 
   public constructor(
     private readonly character: CharacterController

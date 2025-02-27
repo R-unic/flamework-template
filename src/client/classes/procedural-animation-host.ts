@@ -2,15 +2,15 @@ import { getChildrenOfType } from "@rbxts/instance-utility";
 import { processDependency } from "@rbxts/flamework-meta-utils";
 import Object from "@rbxts/object-utils";
 
-import { createMappingDecorator } from "shared/utility/meta";
+import { createMappingDecorator, getInstanceAtPath } from "shared/utility/meta";
 
 const { min } = math;
 
-type ProceduralAnimationDecoratorArgs = [instance: ProceduralAnimationInstance];
+type ProceduralAnimationDecoratorArgs = [target: ProceduralAnimationTarget];
 const [animationClassMap, ProceduralAnimation] = createMappingDecorator<BaseProceduralAnimation, never[], ProceduralAnimationDecoratorArgs>();
 export { ProceduralAnimation };
 
-export const enum ProceduralAnimationInstance {
+export const enum ProceduralAnimationTarget {
   Camera,
   Model,
   Any
@@ -37,8 +37,7 @@ export class ProceduralAnimationHost<I extends Camera | Model = Camera | Model> 
     private readonly target: I
   ) {
     this.connectedToCamera = this.target.IsA("Camera");
-
-    for (const animationModule of getChildrenOfType(script.Parent!.WaitForChild("procedural-animations"), "ModuleScript"))
+    for (const animationModule of getChildrenOfType(getInstanceAtPath("src/client/classes/procedural-animations")!, "ModuleScript"))
       require(animationModule);
 
     for (const [ProceduralAnimation, args] of Object.values(animationClassMap))
@@ -55,8 +54,8 @@ export class ProceduralAnimationHost<I extends Camera | Model = Camera | Model> 
   private getOffset(dt: number): CFrame {
     const offsets: CFrame[] = [];
     for (const [animation, [instance]] of this.animations) {
-      if (instance === ProceduralAnimationInstance.Camera && !this.connectedToCamera) continue;
-      if (instance === ProceduralAnimationInstance.Model && this.connectedToCamera) continue;
+      if (instance === ProceduralAnimationTarget.Camera && !this.connectedToCamera) continue;
+      if (instance === ProceduralAnimationTarget.Model && this.connectedToCamera) continue;
       offsets.push(animation.getCFrame(dt));
     }
 

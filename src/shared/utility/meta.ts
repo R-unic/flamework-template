@@ -41,5 +41,5 @@ export function createMappingDecorator<T extends object, CtorArgs extends unknow
 
   const map = new Map<string, [ObjectConstructor, Args]>;
   const decorator = (...args: Args) => <K extends ObjectConstructor>(ctor: K) => void map.set(tostring(ctor), [ctor, args]);
-  return <const>[map, decorator];
+  return [map, decorator] as const;
 }

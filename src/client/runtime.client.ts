@@ -13,6 +13,3 @@ try {
 } catch (e) {
   error("Issue igniting Flamework: " + <string>e);
 }
-
-const i = getInstanceAtPath("src/client/controllers/mouse.ts");
-print(i)

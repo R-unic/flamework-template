@@ -3,16 +3,15 @@ import Iris from "@rbxts/iris";
 import { Singleton } from "shared/decorators";
 import { Spring } from "shared/classes/spring";
 import { doubleSidedLimit } from "shared/utility/numbers";
-import { ProceduralAnimation, BaseProceduralAnimation, ProceduralAnimationInstance } from "../procedural-animation-host";
+import { ProceduralAnimation, BaseProceduralAnimation, ProceduralAnimationTarget } from "../procedural-animation-host";
 import type { ControlPanelDropdownRenderer } from "shared/structs/control-panel";
 
 import type { MouseController } from "client/controllers/mouse";
 
 @Singleton()
-@ProceduralAnimation(ProceduralAnimationInstance.Model)
+@ProceduralAnimation(ProceduralAnimationTarget.Model)
 export class MouseSwayAnimation extends BaseProceduralAnimation implements ControlPanelDropdownRenderer {
   private readonly horizontalDamping = 0.5;
-
   private readonly spring = new Spring(4, 25, 16, 3.5);
   private damping = 450;
   private limit = 0.018;
