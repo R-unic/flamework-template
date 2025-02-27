@@ -3,7 +3,7 @@ import { Fact, Theory, InlineData, Assert } from "@rbxts/runit";
 import { toSpaced, capitalize, slugToPascal, stripWhitespace } from "shared/utility/strings";
 
 class StringUtilityTest {
-  @Theory()
+  @Theory
   @InlineData("hey-guys", "HeyGuys")
   @InlineData("abc-123", "Abc123")
   public convertsSlugToPascal(input: string, expected: string): void {
@@ -11,7 +11,7 @@ class StringUtilityTest {
     Assert.equal(expected, pascal);
   }
 
-  @Theory()
+  @Theory
   @InlineData("hey Guys", "hey Guys")
   @InlineData("LaLa123", "La La 123")
   public convertsToSpacedText(input: string, expected: string): void {
@@ -19,13 +19,13 @@ class StringUtilityTest {
     Assert.equal(expected, pascal);
   }
 
-  @Fact()
+  @Fact
   public capitalizesFirstLetter(): void {
     const capitalized = capitalize("hey guys");
     Assert.equal("Hey guys", capitalized);
   }
 
-  @Fact()
+  @Fact
   public removesAllWhitespace(): void {
     const stripped = stripWhitespace("   hello chat ");
     Assert.equal("hellochat", stripped);

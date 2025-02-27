@@ -9,12 +9,12 @@ interface Foo {
 }
 
 class SafeCastTest {
-  @Fact()
+  @Fact
   public generatesTypeGuard(): void {
     this.checkFoo();
   }
 
-  @Fact()
+  @Fact
   public usesExistingTypeGuard(): void {
     const fooGuard = t.interface({
       foo: t.number
