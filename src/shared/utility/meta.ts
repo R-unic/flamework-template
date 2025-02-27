@@ -1,6 +1,27 @@
 import { Modding } from "@flamework/core";
 import { t } from "@rbxts/t";
 
+/** @hidden */
+function _getInstanceAtPath([paths]: string[][]): Maybe<Instance> {
+  let instance: Maybe<Instance> = game;
+
+  for (const path of paths) {
+    if (instance === undefined) break;
+    instance = instance.FindFirstChild(path);
+  }
+
+  return instance;
+}
+
+/**
+ * Resolves the instance at the given path using Rojo
+ *
+ * @metadata macro intrinsic-arg-shift
+ */
+export function getInstanceAtPath<T extends string>(path: T, meta?: Modding.Intrinsic<"path", [T]>): Maybe<Instance> {
+  return _getInstanceAtPath(path as unknown as string[][]);
+}
+
 /**
  * Macro that generates a type guard (if one is not specified) then if the guard passes, returns the casted value
  *

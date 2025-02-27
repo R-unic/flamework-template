@@ -1,6 +1,7 @@
 import { Flamework } from "@flamework/core";
 
 import { FlameworkIgnited } from "shared/constants";
+import { getInstanceAtPath } from "shared/utility/meta";
 
 try {
   Flamework.addPaths("src/client/hook-managers");
@@ -12,3 +13,6 @@ try {
 } catch (e) {
   error("Issue igniting Flamework: " + <string>e);
 }
+
+const i = getInstanceAtPath("src/client/controllers/mouse.ts");
+print(i)
